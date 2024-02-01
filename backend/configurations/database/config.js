@@ -1,16 +1,11 @@
 const sequelize = require('../database/sequelizeConnection');
+const Users = require("../../entities/user")
 
 const dbConnection = async () => {
     try {
 
         await sequelize.authenticate();
-        await sequelize.sync({force: true})
-            .then(() => {
-                console.log('Tabla creada con éxito');
-            })
-            .catch(error => {
-                console.error('Error al crear la tabla:', error);
-            });
+        await sequelize.sync();
 
         console.log("Database online");
     } catch (error) {
