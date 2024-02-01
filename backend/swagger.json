@@ -25,7 +25,7 @@
     }
   ],
   "paths": {
-    "/auth/login": {
+    "/v1/auth/login": {
       "post": {
         "tags": [
           "Auth"
@@ -70,7 +70,7 @@
         }
       }
     },
-    "/auth/signup": {
+    "/v1/auth/signup": {
       "post": {
         "tags": [
           "Auth"
@@ -115,7 +115,7 @@
         }
       }
     },
-    "/users/{userId}": {
+    "/v1/users/{userId}": {
       "get": {
         "tags": [
           "Usuarios"
@@ -273,7 +273,7 @@
         }
       }
     },
-    "/users/{userId}/favorites": {
+    "/v1/users/{userId}/favorites": {
       "post": {
         "tags": [
           "Usuarios"
@@ -371,7 +371,7 @@
         }
       }
     },
-    "/recipes": {
+    "/v1/recipes": {
       "get": {
         "tags": [
           "Recetas"
@@ -525,7 +525,7 @@
         }
       }
     },
-    "/recipes/{recipeId}": {
+    "/v1/recipes/{recipeId}": {
       "put": {
         "tags": [
           "Recetas"
@@ -694,7 +694,7 @@
         }
       }
     },
-    "/recipes/{recipeId}/califications": {
+    "/v1/recipes/{recipeId}/califications": {
       "post": {
         "tags": [
           "Recetas"
