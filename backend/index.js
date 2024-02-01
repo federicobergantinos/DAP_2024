@@ -1,9 +1,13 @@
 const express = require('express');
-const router = require('express').Router();
-
 
 const app = express();
-app.get('/ping', (req, res) => { res.send('pong'); });
+
+paths = {
+    status: "/ping",
+};
+
+app.use(paths.status, require("./routes/healthCheck"));
+
 
 const PORT = 8080;
 app.listen(PORT, () => {
