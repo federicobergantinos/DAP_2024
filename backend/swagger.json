@@ -37,6 +37,10 @@
               "schema": {
                 "type": "object",
                 "example": {
+                  "name": "name",
+                  "surname": "surname",
+                  "email": "email",
+                  "photoUrl": "photoUrl",
                   "googleToken": "token"
                 }
               }
