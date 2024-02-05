@@ -3,6 +3,8 @@ const express = require('express');
 const {dbConnection} = require("./configurations/database/config");
 
 const app = express();
+app.use(express.json());
+
 dbConnection();
 paths = {
     status: "/ping",

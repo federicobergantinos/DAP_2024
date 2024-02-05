@@ -17,15 +17,15 @@ const User = sequelize.define('users', {
         allowNull: false,
         unique: true
     },
-    username: {
+    email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
-    photo: {
+    photoUrl: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: false
     }
 })
 

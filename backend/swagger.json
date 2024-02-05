@@ -7,9 +7,6 @@
   "servers": [
     {
       "url": "http://localhost:8080"
-    },
-    {
-      "url": "localhost://"
     }
   ],
   "tags": [
@@ -98,6 +95,7 @@
             "content": {
               "application/json": {
                 "example": {
+                  "id" : "123",
                   "accessToken" : "token",
                   "refreshToken" : "refresh"
                 }
