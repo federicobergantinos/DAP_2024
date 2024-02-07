@@ -11,55 +11,69 @@
   ],
   "tags": [
     {
+      "name": "Health"
+    },
+    {
       "name": "Auth",
       "description": "Request asociadas a autenticación del usuario"
     },
     {
-      "name": "Recetas"
+      "name": "Usuarios"
     },
     {
-      "name": "Usuarios"
+      "name": "Recetas"
     }
   ],
   "paths": {
-    "/v1/auth/login": {
+    "/ping": {
       "post": {
         "tags": [
-          "Auth"
+          "Health"
         ],
-        "summary": "Login",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "example": {
-                  "name": "name",
-                  "surname": "surname",
-                  "email": "email",
-                  "photoUrl": "photoUrl",
-                  "googleToken": "token"
-                }
-              }
-            }
-          }
-        },
+        "summary": "Health check",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
-                "example": {
-                  "accessToken" : "token",
-                  "refreshToken" : "refresh"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Crea o loguea al usuario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Invalid credentials",
             "content": {
-              "application/json": {}
+              "application/json": {
+                "example": {
+                  "msg": "Token not found"
+                }
+              }
             }
           },
           "500": {
@@ -71,48 +85,67 @@
         }
       }
     },
-    "/v1/auth/signup": {
+    "/v1/auth/refresh": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "signup",
+        "tags": ["Auth"],
+        "summary": "refresca el token",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
+                "type": "string",
                 "example": {
-                  "googleToken": "token"
+                  "refreshToken": "token"
                 }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Created",
+          "200": {
+            "description": "Ok",
             "content": {
               "application/json": {
-                "example": {
-                  "id" : "123",
-                  "accessToken" : "token",
-                  "refreshToken" : "refresh"
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Error - credenciales incorrectas",
-            "content": {
-              "application/json": {}
-            }
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/v1/auth/signOut": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Desloguea al usuario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "example": {
+                  "accessToken": "token"
+                }
+              }
             }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Error"
           }
         }
       }
@@ -136,37 +169,34 @@
           },
           {
             "name": "Authorization",
+            "required": true,
             "in": "header",
+            "description": "Access token",
             "schema": {
-              "type": "string"
-            },
-            "example": "{{TOKEN}}"
+              "type": "string",
+              "example": "{{TOKEN}}"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
             }
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "404": {
-            "description": "Usuario no encontrado",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Usuario no encontrado"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       },
@@ -175,6 +205,15 @@
           "Usuarios"
         ],
         "summary": "Modificar información del usuario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserWithoutEmail"
+              }
+            }
+          }
+        },
         "parameters": [
           {
             "in": "path",
@@ -189,36 +228,26 @@
           {
             "name": "Authorization",
             "in": "header",
+            "required": true,
+            "description": "Access token",
             "schema": {
-              "type": "string"
-            },
-            "example": "{{TOKEN}}"
+              "type": "string",
+              "example": "{{TOKEN}}"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Successful response"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "404": {
-            "description": "Usuario no encontrado",
-            "content": {
-              "application/json": {}
-            }
+            "description": "User not found"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       },
@@ -241,36 +270,26 @@
           {
             "name": "Authorization",
             "in": "header",
+            "required": true,
+            "description": "Access token",
             "schema": {
-              "type": "string"
-            },
-            "example": "{{TOKEN}}"
+              "type": "string",
+              "example": "{{TOKEN}}"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Successful response"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "404": {
-            "description": "Usuario no encontrado",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Usuario no encontrado"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       }
@@ -281,6 +300,19 @@
           "Usuarios"
         ],
         "summary": "Agrega un nuevo favorito al usuario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int64",
+                "example": {
+                  "recipeId": 123
+                }
+              }
+            }
+          }
+        },
         "parameters": [
           {
             "in": "path",
@@ -295,30 +327,23 @@
           {
             "name": "Authorization",
             "in": "header",
+            "required": true,
+            "description": "Access token",
             "schema": {
-              "type": "string"
-            },
-            "example": "{{TOKEN}}"
+              "type": "string",
+              "example": "{{TOKEN}}"
+            }
           }
         ],
         "responses": {
           "201": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Successful response"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       },
@@ -341,10 +366,42 @@
           {
             "name": "Authorization",
             "in": "header",
+            "required": true,
+            "description": "Access token",
             "schema": {
               "type": "string"
             },
             "example": "{{TOKEN}}"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número de página",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Offset",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Cantidad de resultados por página",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           }
         ],
         "responses": {
@@ -352,23 +409,88 @@
             "description": "Successful response",
             "content": {
               "application/json": {
-                "example": {
-                  "favorites": ["string1", "string2", "string3"]
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pageNumber": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "offset": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "example": 10
+                    },
+                    "recipes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/FavoritesResponse"
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/v1/users/{userId}/favorites/{recipeId}": {
+      "delete": {
+        "tags": [
+          "Usuarios"
+        ],
+        "summary": "Elimina un favorito del usuario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "description": "ID del usuario",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
             }
+          },
+          {
+            "in": "path",
+            "name": "recipeId",
+            "required": true,
+            "description": "ID de la receta",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "description": "Access token",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{TOKEN}}"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful response"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Error"
           }
         }
       }
@@ -379,25 +501,84 @@
           "Recetas"
         ],
         "summary": "Devuelve un listado de recetas",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "description": "Access token",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{TOKEN}}"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número de página",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Offset",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Cantidad de resultados por página",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
-                "example": {
-                  "pageNumber": 1,
-                  "offset": 1,
-                  "pageSize": 10,
-                  "recipes": ["Recipe1", "Recipe2"]
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pageNumber": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "offset": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "example": 10
+                    },
+                    "recipes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RecipesResponse"
+                      }
+                    }
+                  }
                 }
               }
             }
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       },
@@ -411,76 +592,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "example": "Delicious Recipe"
-                  },
-                  "media": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "example": ["image1.jpg", "image2.jpg"]
-                    }
-                  },
-                  "preparationTime": {
-                    "type": "string",
-                    "example": "60 minutos"
-                  },
-                  "servingCount": {
-                    "type": "integer",
-                    "example": 4
-                  },
-                  "ingredients": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "example": ["ingredient1", "ingredient2"]
-                    }
-                  },
-                  "steps": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "example": ["Step 1", "Step 2"]
-                    }
-                  },
-                  "tags": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "enum": [
-                        "RAPID_PREPARATION",
-                        "VEGETARIAN",
-                        "VEGAN",
-                        "GLUTEN_FREE",
-                        "IMMUNE_SYSTEM",
-                        "INTESTINAL_FLORA",
-                        "ANTI_INFLAMMATORY",
-                        "LOW_SODIUM",
-                        "LOW_CARB"
-                      ],
-                      "example": ["VEGETARIAN", "VEGAN"]
-                    }
-                  },
-                  "calories": {
-                    "type": "integer",
-                    "example": 500
-                  },
-                  "proteins": {
-                    "type": "number",
-                    "example": 20.5
-                  },
-                  "totalFats": {
-                    "type": "number",
-                    "example": 15.3
-                  },
-                  "rating": {
-                    "type": "integer",
-                    "example": 4
-                  }
-                }
+                "$ref": "#/components/schemas/Recipe"
               }
             }
           }
@@ -489,6 +601,8 @@
           {
             "name": "Authorization",
             "in": "header",
+            "required": true,
+            "description": "Access token",
             "schema": {
               "type": "string"
             },
@@ -507,22 +621,13 @@
             }
           },
           "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Bad request"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       }
@@ -537,37 +642,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "example": {
-                  "title": "receta",
-                  "media": 1,
-                  "preparationTime": "60 minutos",
-                  "servingCount": 4,
-                  "ingredients": ["ingredient1", "ingredient2", "ingredient3"],
-                  "steps": ["step1", "step2", "step3"],
-                  "tags": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "enum": [
-                        "RAPID_PREPARATION",
-                        "VEGETARIAN",
-                        "VEGAN",
-                        "GLUTEN_FREE",
-                        "IMMUNE_SYSTEM",
-                        "INTESTINAL_FLORA",
-                        "ANTI_INFLAMMATORY",
-                        "LOW_SODIUM",
-                        "LOW_CARB"
-                      ],
-                      "example": ["VEGETARIAN", "VEGAN"]
-                    }
-                  },
-                  "calories": 100,
-                  "proteins": 1.1,
-                  "totalFats": 1.1,
-                  "rating" : [1, 2, 3, 4, 5]
-                }
+                "$ref": "#/components/schemas/Recipe"
               }
             }
           }
@@ -582,32 +657,30 @@
               "type": "integer",
               "format": "int64"
             }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "description": "Access token",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{TOKEN}}"
           }
         ],
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+          "204": {
+            "description": "Successful response"
           },
           "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Not Found"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       },
@@ -620,6 +693,8 @@
           {
             "name": "Authorization",
             "in": "header",
+            "required": true,
+            "description": "Access token",
             "schema": {
               "type": "string"
             },
@@ -638,22 +713,13 @@
         ],
         "responses": {
           "204": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Successful response"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       },
@@ -662,6 +728,16 @@
           "Recetas"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "description": "Access token",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{TOKEN}}"
+          },
           {
             "in": "path",
             "name": "recipeId",
@@ -678,82 +754,47 @@
           "200": {
             "description": "Successful response",
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recipe"
+                }
+              }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Not found"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Error"
           }
         }
       }
     },
     "/v1/recipes/{recipeId}/califications": {
-      "post": {
+      "put": {
         "tags": [
           "Recetas"
         ],
         "summary": "Agrega una calificación a la receta",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            },
-            "example": "{{TOKEN}}"
-          },
-          {
-            "in": "path",
-            "name": "recipeId",
-            "required": true,
-            "description": "ID de la receta",
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
-          },
-          "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Recetas"
-        ],
-        "summary": "Elimina una clasificación de una receta",
         "requestBody": {
           "content": {
             "application/json": {
-              "example": {
-                "userId": 123,
-                "value": 1
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "integer",
+                    "enum": [1, 2, 3, 4, 5]
+                  },
+                  "userId": {
+                    "type": "integer",
+                    "example": 123
+                  }
+                },
+                "required": ["value"]
               }
             }
           }
@@ -762,6 +803,8 @@
           {
             "name": "Authorization",
             "in": "header",
+            "required": true,
+            "description": "Access token",
             "schema": {
               "type": "string"
             },
@@ -780,22 +823,208 @@
         ],
         "responses": {
           "204": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Successful response"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Error",
-            "content": {
-              "application/json": {}
+            "description": "Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "name"
+          },
+          "surname": {
+            "type": "string",
+            "example": "surname"
+          },
+          "email": {
+            "type": "string",
+            "example": "email"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "photoUrl"
+          },
+          "googleToken": {
+            "type": "string",
+            "example": "token"
+          }
+        }
+      },
+      "Recipe": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "example": 123
+          },
+          "title": {
+            "type": "string",
+            "example": "Delicious Recipe"
+          },
+          "media": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": ["image1.jpg", "image2.jpg"]
             }
+          },
+          "preparationTime": {
+            "type": "string",
+            "example": "60 minutos"
+          },
+          "servingCount": {
+            "type": "integer",
+            "example": 4
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": ["ingredient1", "ingredient2"]
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": ["Step 1", "Step 2"]
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "RAPID_PREPARATION",
+                "VEGETARIAN",
+                "VEGAN",
+                "GLUTEN_FREE",
+                "IMMUNE_SYSTEM",
+                "INTESTINAL_FLORA",
+                "ANTI_INFLAMMATORY",
+                "LOW_SODIUM",
+                "LOW_CARB"
+              ],
+              "example": ["VEGETARIAN", "VEGAN"]
+            }
+          },
+          "calories": {
+            "type": "integer",
+            "example": 500
+          },
+          "proteins": {
+            "type": "number",
+            "example": 20.5
+          },
+          "totalFats": {
+            "type": "number",
+            "example": 15.3
+          },
+          "rating": {
+            "type": "integer",
+            "example": 4
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "integer",
+            "format": "int64",
+            "example": "id"
+          },
+          "surname": {
+            "type": "string",
+            "example": "accessToken"
+          },
+          "email": {
+            "type": "string",
+            "example": "refreshToken"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "name"
+          },
+          "surname": {
+            "type": "string",
+            "example": "surname"
+          },
+          "email": {
+            "type": "string",
+            "example": "email"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "photoUrl"
+          }
+        }
+      },
+      "UserWithoutEmail": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "name"
+          },
+          "surname": {
+            "type": "string",
+            "example": "surname"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "photoUrl"
+          }
+        }
+      },
+      "FavoritesResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 123
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "imageUrl"
+          }
+        }
+      },
+      "RecipesResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 123
+          },
+          "title": {
+            "type": "string",
+            "example": "title"
+          },
+          "rating": {
+            "type": "integer",
+            "example": 4
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "photoUrl"
           }
         }
       }
