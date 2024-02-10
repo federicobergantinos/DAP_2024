@@ -1,18 +1,41 @@
-import React, { useState } from "react";
-import { StyleSheet, Dimensions, FlatList, View, ActivityIndicator, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Dimensions, FlatList, View, ActivityIndicator, Text, TouchableOpacity } from "react-native";
 import { Block, theme } from "galio-framework";
-
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Card } from "../components";
 import recipes from "../constants/recipes";
 const { width } = Dimensions.get("screen");
 
-// Ajustamos la cantidad de elementos por página a 6 ya que queremos 2 tarjetas por fila y 3 filas por página
-const ITEMS_PER_PAGE = 4; 
+const ITEMS_PER_PAGE = 5; 
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [data, setData] = useState(recipes.slice(0, ITEMS_PER_PAGE));
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedTag, setSelectedTag] = useState(null); // Nuevo estado para el tag seleccionado
+
+  const navigation = useNavigation();
+  const route = useRoute();
+  const tabId = route.params?.tabId;
+  
+  useEffect(() => {
+    // Establece el tag seleccionado basado en el parámetro recibido
+    setSelectedTag(tabId);
+  }, [tabId]);
+  
+  useEffect(() => {
+    // Filtra las recetas cada vez que cambia el tag seleccionado
+    filterRecipesByTag();
+  }, [selectedTag]);
+
+  const filterRecipesByTag = () => {
+    const filteredData = selectedTag
+      ? recipes.filter(recipe => recipe.tags.includes(selectedTag))
+      : recipes; // Filtra las recetas basándose en el tag seleccionado
+
+    setData(filteredData.slice(0, ITEMS_PER_PAGE));
+    setCurrentPage(0); // Resetea la paginación
+  };
   
   const loadMoreItems = () => {
     if (loading) return;
@@ -20,7 +43,6 @@ const Home = () => {
     setLoading(true);
     const nextPage = currentPage + 1;
     const nextSetOfItems = recipes.slice(nextPage * ITEMS_PER_PAGE, (nextPage + 1) * ITEMS_PER_PAGE);
-    console.log(nextSetOfItems.length)
 
     setTimeout(() => {
       if (nextSetOfItems.length > 0) {
@@ -40,9 +62,7 @@ const Home = () => {
     );
   };
 
-  // Actualizamos el renderRecipe para manejar correctamente los elementos por fila
   const renderRecipe = ({ item, index }) => {
-    // Calculamos si el elemento debe tener un margen a la derecha
     const marginRight = (index % 2 === 0) ? theme.SIZES.BASE : 0;
 
     return (
@@ -52,6 +72,7 @@ const Home = () => {
       />
     );
   };
+  
   
   return (
     <Block flex center style={styles.home}>
@@ -64,10 +85,16 @@ const Home = () => {
         onEndReached={loadMoreItems}
         onEndReachedThreshold={0.1}
         ListFooterComponent={renderFooter}
-        numColumns={2} // Aquí configuramos FlatList para usar dos columnas
+        numColumns={2} 
       />
+      <TouchableOpacity
+        onPress={() => console.log('Botón presionado')}
+        style={styles.fab}
+      >
+        <Text style={styles.fabIcon}>+</Text>
+      </TouchableOpacity>
     </Block>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({
@@ -75,10 +102,32 @@ const styles = StyleSheet.create({
     width: width,
   },
   recipes: {
-    justifyContent: 'space-between', // Asegura que las tarjetas estén distribuidas uniformemente
+    justifyContent: 'space-between',
     width: width - theme.SIZES.BASE * 2,
     paddingVertical: theme.SIZES.BASE,
   },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 20,
+    bottom: 20,
+    backgroundColor: 'white',
+    width: 56, 
+    height: 56, 
+    borderRadius: 28, 
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8, 
+    shadowColor: '#000', 
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 2,
+  },
+  fabIcon: {
+    fontSize: 24,
+    color: '#333',
+  },
 });
+
 
 export default Home;

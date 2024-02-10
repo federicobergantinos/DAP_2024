@@ -12,23 +12,24 @@ import yummlyTheme from '../constants/Theme';
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
-const BellButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('ProfileDrawer')}>
+const ProfileButton = ({isWhite, style, navigation}) => (
+  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Notifications')}>
     <Icon
       family="YummlyExtra"
       size={16}
-      name="chart-pie-35"
+      name="bell"
       color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
     />
+    <Block middle style={styles.notify} />
   </TouchableOpacity>
 );
 
-const BasketButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('SettingsDrawer')}>
+const SettingsButton = ({isWhite, style, navigation}) => (
+  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Cart')}>
     <Icon
       family="YummlyExtra"
       size={16}
-      name="calendar-date"
+      name="basket"
       color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
     />
   </TouchableOpacity>
@@ -56,23 +57,20 @@ class Header extends React.Component {
 
     if (title === 'Title') {
       return [
-        <BellButton key='chat-title' navigation={navigation} isWhite={white} />,
-        <BasketButton key='basket-title' navigation={navigation} isWhite={white} />
+        <ProfileButton key='chat-title' navigation={navigation} isWhite={white} />,
+        <SettingsButton key='basket-title' navigation={navigation} isWhite={white} />
       ]
     }
 
     switch (title) {
       case 'Home':
-      case 'Deals':
-      case 'Categories':
-      case 'Category':
       case 'Profile':
       case 'Recipe':
       case 'Search':
       case 'Settings':
         return ([
-          <BellButton key='chat-categories' navigation={navigation} isWhite={white}/>,
-          <BasketButton key='basket-categories' navigation={navigation} isWhite={white}/>
+          <ProfileButton key='chat-categories' navigation={navigation} isWhite={white}/>,
+          <SettingsButton key='basket-categories' navigation={navigation} isWhite={white}/>
         ]);
       default:
         break;
@@ -85,31 +83,11 @@ class Header extends React.Component {
         right
         color="black"
         style={styles.search}
-        placeholder="What are you looking for?"
+        placeholder="Que estas buscando?"
         placeholderTextColor={'#8898AA'}
         onFocus={() => {Keyboard.dismiss(); navigation.navigate('Search');}}
         iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="search-zoom-in" family="YummlyExtra" />}
       />
-    );
-  }
-  renderOptions = () => {
-    const { navigation, optionLeft, optionRight } = this.props;
-
-    return (
-      <Block row style={styles.options}>
-        <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Beauty')}>
-          <Block row middle>
-            <Icon name="diamond" family="YummlyExtra" style={{ paddingRight: 8 }} color={yummlyTheme.COLORS.ICON} />
-            <Text style={{ fontFamily: 'open-sans-regular' }} size={16}  style={styles.tabTitle}>{optionLeft || 'Beauty'}</Text>
-          </Block>
-        </Button>
-        <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Fashion')}>
-          <Block row middle>
-            <Icon size={16} name="bag-17" family="YummlyExtra" style={{ paddingRight: 8 }} color={yummlyTheme.COLORS.ICON}/>
-            <Text style={{ fontFamily: 'open-sans-regular' }} size={16} style={styles.tabTitle}>{optionRight || 'Fashion'}</Text>
-          </Block>
-        </Button>
-      </Block>
     );
   }
   renderTabs = () => {
@@ -126,12 +104,11 @@ class Header extends React.Component {
     )
   }
   renderHeader = () => {
-    const { search, options, tabs } = this.props;
-    if (search || tabs || options) {
+    const { search, tabs } = this.props;
+    if (search || tabs) {
       return (
         <Block center>
           {search ? this.renderSearch() : null}
-          {options ? this.renderOptions() : null}
           {tabs ? this.renderTabs() : null}
         </Block>
       );
@@ -231,11 +208,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     borderColor: yummlyTheme.COLORS.BORDER
-  },
-  options: {
-    marginBottom: 24,
-    marginTop: 10,
-    elevation: 4,
   },
   tab: {
     backgroundColor: theme.COLORS.TRANSPARENT,

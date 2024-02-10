@@ -1,12 +1,9 @@
 import { Animated, Dimensions, Easing } from "react-native";
 // header for screens
 import { Header, Icon } from "../components";
-import { argonTheme, tabs } from "../constants";
-import Beauty from "../screens/Beauty";
-import Category from "../screens/Category";
+import { yummlyTheme, tabs } from "../constants";
 // drawer
 import CustomDrawerContent from "./Menu";
-import Fashion from "../screens/Fashion";
 import Gallery from "../screens/Gallery";
 // screens
 import Home from "../screens/Home";
@@ -128,58 +125,7 @@ function HomeStack(props) {
             <Header
               title="Home"
               search
-              options
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-      <Stack.Screen
-        name="Beauty"
-        component={Beauty}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              title="Beauty"
-              back
-              tabs={tabs.beauty}
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-      <Stack.Screen
-        name="Category"
-        component={Category}
-        options={{
-          header: ({ navigation, scene }) => {
-            const { params } = scene.descriptor;
-            const title = (params && params.headerTitle) || "Category";
-            return (
-              <Header
-                title={title}
-                back
-                navigation={navigation}
-                scene={scene}
-              />
-            );
-          },
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-      <Stack.Screen
-        name="Fashion"
-        component={Fashion}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              title="Fashion"
-              back
-              tabs={tabs.fashion}
+              tabs={tabs.tags}
               navigation={navigation}
               scene={scene}
             />

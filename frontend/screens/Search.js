@@ -78,7 +78,7 @@ export default class Search extends React.Component {
         iconContent={iconSearch}
         defaultValue={search}
         style={[styles.search, this.state.active ? styles.shadow : null]}
-        placeholder="What are you looking for?"
+        placeholder="Que estas buscando?"
         onFocus={() => this.setState({ active: true })}
         onBlur={() => this.setState({ active: false })}
         onChangeText={this.handleSearchChange}
@@ -213,7 +213,6 @@ const styles = StyleSheet.create({
   },
   shadow: {
     shadowColor: "black",
-    backgroundColor: '#FFF',
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 4,
     shadowOpacity: 0.1,
@@ -222,7 +221,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: theme.COLORS.WHITE,
     shadowColor: "rgba(0, 0, 0, 0.2)",
-    backgroundColor: '#FFF',
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     shadowOpacity: 1,
