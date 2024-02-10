@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   containerShadow: {
     shadowColor: 'black',
-    backgroundColor: '#FFF',
+    backgroundColor: yummlyTheme.COLORS.ACTIVE,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     shadowOpacity: 0.1,
