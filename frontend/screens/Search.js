@@ -1,11 +1,9 @@
 import React from "react";
 import {
   Animated,
-  FlatList,
   Dimensions,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   TouchableWithoutFeedback
 } from "react-native";
 import { Block, Text, Input, theme } from "galio-framework";
@@ -14,12 +12,6 @@ const { width } = Dimensions.get("screen");
 
 import { recipes, categories, yummlyTheme } from "../constants/";
 import { Icon, Card } from "../components/";
-
-const suggestions = [
-  { id: "DJs", title: "DJs", image: categories["DJs"] },
-  { id: "artists", title: "Artists", image: categories["artists"] },
-  { id: "accessory", title: "Accessories", image: categories["accessory"] }
-];
 
 export default class Search extends React.Component {
   state = {
@@ -100,52 +92,6 @@ export default class Search extends React.Component {
     );
   };
 
-  renderSuggestions = () => {
-    const { navigation } = this.props;
-
-    return (
-      <FlatList
-        data={suggestions}
-        keyExtractor={(item, index) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.suggestion}
-            onPress={() => navigation.navigate("Category", { ...item })}
-          >
-            <Block flex row middle space="between">
-              <Text style={{ fontFamily: 'open-sans-regular' }} size={14} color={yummlyTheme.COLORS.TEXT}>{item.title}</Text>
-              <Icon
-                name="chevron-right"
-                family="evilicon"
-                style={{ paddingRight: 5 }}
-              />
-            </Block>
-          </TouchableOpacity>
-        )}
-      />
-    );
-  };
-
-  renderDeals = () => {
-    return (
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.dealsContainer}
-      >
-        <Block flex>
-          <Block flex row>
-            <Card
-              item={recipes[1]}
-              style={{ marginRight: theme.SIZES.BASE }}
-            />
-            <Card item={recipes[2]} />
-          </Block>
-          <Card item={recipes[0]} horizontal />
-        </Block>
-      </ScrollView>
-    );
-  };
-
   renderResult = result => {
     const opacity = this.animatedValue.interpolate({
       inputRange: [0, 1],
@@ -170,7 +116,6 @@ export default class Search extends React.Component {
       return (
         <Block style={{ width: width - 40 }}>
           {this.renderNotFound()}
-          {this.renderSuggestions()}
           <Text style={{ fontFamily: 'open-sans-regular' }} size={18} color={yummlyTheme.COLORS.TEXT}>Daily Deals</Text>
           {this.renderDeals()}
         </Block>

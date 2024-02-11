@@ -6,7 +6,7 @@ import { Card } from "../components";
 import recipes from "../constants/recipes";
 const { width } = Dimensions.get("screen");
 
-const ITEMS_PER_PAGE = 5; 
+const ITEMS_PER_PAGE = 6; 
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
