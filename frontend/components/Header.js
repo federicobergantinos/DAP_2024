@@ -34,32 +34,14 @@ const SettingsButton = ({isWhite, style, navigation}) => (
   </TouchableOpacity>
 );
 
-const HomeButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('HomeDrawer')}>
-    <Icon
-      family="Feather"
-      size={20}
-      name="home"
-      color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-    />
-  </TouchableOpacity>
-);
-
 
 class Header extends React.Component {
-  handleLeftPress = () => {
-    const { back, navigation, scene } = this.props;
-    return (back ? navigation.dispatch(CommonActions.goBack()) : navigation.openDrawer());
-  }
-
   renderLeft = () => {
     const { back, white, navigation } = this.props;
-    console.log(back)
-    return(back ? navigation.dispatch(CommonActions.goBack()) : <HomeButton key='home-title' navigation={navigation} isWhite={white} />);
+    return(back ? navigation.dispatch(CommonActions.goBack()) : navigation.navigate('HomeDrawer'));
   }
   renderRight = () => {
     const { white, title, navigation } = this.props;
-    // const { routeName } = navigation.state;
 
     if (title === 'Title') {
       return [
@@ -142,9 +124,13 @@ class Header extends React.Component {
           transparent={transparent}
           right={this.renderRight()}
           rightStyle={{ alignItems: 'center' }}
-          onLeftPress={this.handleLeftPress}
           left={
-            <HomeButton key='home-title' navigation={navigation} isWhite={white} />
+            <Icon 
+              name={back ? 'chevron-left' : "home"} family="Feather" 
+              size={back ? 20 : 20} onPress={this.renderLeft}
+              color={iconColor || (white ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.ICON)}
+              style={{ marginTop: 2 }}
+              />
           }
           leftStyle={{ flex: 0.4 }}
           titleStyle={[

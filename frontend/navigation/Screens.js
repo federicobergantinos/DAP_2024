@@ -45,7 +45,6 @@ function SettingsStack(props) {
   );
 }
 
-
 function ProfileStack(props) {
   return (
     <Stack.Navigator
