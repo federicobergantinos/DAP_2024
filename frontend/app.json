@@ -22,8 +22,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.k24956.yummlyreactnative"
     },
-    "description": "Yummly React Native"
+    "description": "Yummly React Native",
+    "android": {
+      "package": "com.k24956.yummlyreactnative"
+    }
   }
 }

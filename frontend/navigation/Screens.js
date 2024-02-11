@@ -3,7 +3,6 @@ import { Animated, Dimensions, Easing } from "react-native";
 import { Header, Icon } from "../components";
 import { yummlyTheme, tabs } from "../constants";
 // drawer
-import CustomDrawerContent from "./Menu";
 import Gallery from "../screens/Gallery";
 // screens
 import Home from "../screens/Home";
@@ -15,7 +14,6 @@ import Login from "../screens/Login";
 import Search from "../screens/Search";
 // settings
 import SettingsScreen from "../screens/Settings";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -23,7 +21,6 @@ const { width } = Dimensions.get("screen");
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-const Tab = createBottomTabNavigator();
 
 
 function SettingsStack(props) {
@@ -40,21 +37,6 @@ function SettingsStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header title="Settings" scene={scene} navigation={navigation} />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-      <Stack.Screen
-        name="NotificationsSettings"
-        component={NotificationsScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              back
-              title="Notifications"
-              scene={scene}
-              navigation={navigation}
-            />
           ),
           cardStyle: { backgroundColor: "#F8F9FE" },
         }}
@@ -88,21 +70,6 @@ function ProfileStack(props) {
           ),
           cardStyle: { backgroundColor: "#FFFFFF" },
           headerTransparent: true,
-        }}
-      />
-      <Stack.Screen
-        name="Notifications"
-        component={NotificationsStack}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              back
-              title="Notifications"
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
         }}
       />
     </Stack.Navigator>
@@ -185,7 +152,6 @@ function AppStack(props) {
   return (
     <Drawer.Navigator
       style={{ flex: 1 }}
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
       drawerStyle={{
         backgroundColor: "white",
         width: width * 0.8,
@@ -210,7 +176,7 @@ function AppStack(props) {
           fontWeight: "normal",
         },
       }}
-      initialRouteName="HomeDrawer"
+      initialRouteName="LoginDrawer"
     >
       <Drawer.Screen
         name="HomeDrawer"
