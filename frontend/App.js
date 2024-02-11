@@ -6,23 +6,17 @@ import { Block, GalioProvider } from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
 import { Image } from "react-native";
 
-// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
-// Before rendering any navigation stack
 import { enableScreens } from "react-native-screens";
 enableScreens();
 
 import Screens from "./navigation/Screens";
 import { Images, recipes, yummlyTheme } from "./constants";
 
-// cache app images
 const assetImages = [
-  Images.iOSLogo,
-  Images.androidLogo
 ];
 
-// cache product images
 recipes.map((article) => assetImages.push(article.image));
 
 function cacheImages(images) {
