@@ -5,7 +5,7 @@ const dbConnection = async () => {
     try {
 
         await sequelize.authenticate();
-        await sequelize.sync();
+        await sequelize.sync({force: true});
 
         console.log("Database online");
     } catch (error) {
