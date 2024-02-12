@@ -65,6 +65,7 @@ const Home = () => {
   const renderRecipe = ({ item, index }) => {
     const marginRight = (index % 2 === 0) ? theme.SIZES.BASE : 0;
 
+
     return (
       <Card
         item={item}
