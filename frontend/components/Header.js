@@ -132,7 +132,7 @@ class Header extends React.Component {
               style={{ marginTop: 2 }}
               />
           }
-          leftStyle={{ flex: 0.4 }}
+          leftStyle={{ flex: 0.35 }}
           titleStyle={[
             styles.title,
             { color: yummlyTheme.COLORS[white ? 'WHITE' : 'HEADER'] },

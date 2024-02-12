@@ -23,9 +23,9 @@ class Profile extends React.Component {
       <Block flex style={styles.profile}>
         <Block flex>
           <ImageBackground
-            source={Images.ProfileBackground}
+            source={Images.Background}
             style={styles.profileContainer}
-            imageStyle={styles.profileBackground}
+            imageStyle={styles.Background}
           >
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     padding: 0,
     zIndex: 1
   },
-  profileBackground: {
+  Background: {
     width: width,
     height: height / 2
   },

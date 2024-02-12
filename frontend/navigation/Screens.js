@@ -9,6 +9,7 @@ import Home from "../screens/Home";
 // Notifications
 import Recipe from "../screens/Recipe";
 import Profile from "../screens/Profile";
+import CreateRecipe from "../screens/CreateRecipe";
 import React from "react";
 import Login from "../screens/Login";
 import Search from "../screens/Search";
@@ -31,16 +32,16 @@ function SettingsStack(props) {
         headerShown: "screen",
       }}
     >
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header title="Settings" scene={scene} navigation={navigation} />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
+    <Stack.Screen
+      name="Settings"
+      component={SettingsScreen}
+      options={{
+        header: ({ navigation, scene }) => (
+          <Header title="Settings" scene={scene} navigation={navigation} />
+        ),
+        cardStyle: { backgroundColor: "#F8F9FE" },
+      }}
+    />
     </Stack.Navigator>
   );
 }
@@ -147,6 +148,37 @@ function HomeStack(props) {
   );
 }
 
+function CreateRecipeStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="CreateRecipe"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="CreateRecipe"
+        component={CreateRecipe}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              back
+              transparent
+              white
+              title="Crear Receta"
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: true,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function AppStack(props) {
   return (
     <Drawer.Navigator
@@ -175,7 +207,7 @@ function AppStack(props) {
           fontWeight: "normal",
         },
       }}
-      initialRouteName="LoginDrawer"
+      initialRouteName="CreateRecipeDrawer"
     >
       <Drawer.Screen
         name="HomeDrawer"
@@ -201,6 +233,13 @@ function AppStack(props) {
       <Drawer.Screen
         name="LoginDrawer"
         component={Login}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="CreateRecipeDrawer"
+        component={CreateRecipeStack}
         options={{
           headerShown: false,
         }}
