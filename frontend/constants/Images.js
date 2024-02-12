@@ -1,5 +1,5 @@
 // local imgs
-const ProfileBackground = require("../assets/imgs/profile-screen-bg.png");
+const Background = require("../assets/imgs/profile-screen-bg.png");
 const LoginBackground = require("../assets/imgs/login-bg.png");
 const ProfilePicture = require("../assets/imgs/profile-img.jpg")
 
@@ -18,7 +18,7 @@ const Products = {
 };
 
 export default {
-  ProfileBackground,
+  Background,
   ProfilePicture,
   LoginBackground,
   Viewed,

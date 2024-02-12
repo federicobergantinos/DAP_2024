@@ -17,6 +17,7 @@ import { Images, recipes, yummlyTheme } from "./constants";
 const assetImages = [
 ];
 
+// cache product images
 recipes.map((article) => assetImages.push(article.image));
 
 function cacheImages(images) {
