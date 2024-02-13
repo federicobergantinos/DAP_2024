@@ -18,6 +18,11 @@ const createUser = async (userData) => {
     return { id: newUser.id, accessToken: token.accessToken, refreshToken: token.refreshToken }
 };
 
+const isValidUser = async (userId) => {
+    const existingUser = await User.findByPk(userId)
+    return existingUser !== null
+}
+
 function getToken(newUser) {
     const payload = {userId: newUser.id, email: newUser.email};
     const accessOptions = {expiresIn: '1h'};
@@ -29,4 +34,5 @@ function getToken(newUser) {
 
 module.exports = {
     createUser,
+    isValidUser
 };

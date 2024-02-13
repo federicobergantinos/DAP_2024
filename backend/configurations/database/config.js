@@ -1,20 +1,26 @@
 const sequelize = require('../database/sequelizeConnection');
 
-const { User, Recipe, Media, Tag } = require("../../entities/associateModels");
+const { User, Recipe, Media, Tag, Classification, RecipeTags} = require("../../entities/associateModels");
 
 const dbConnection = async () => {
     try {
-        await sequelize.sync({force: true})
+        await User.sync({ force: true });
+        await Recipe.sync({ force: true });
+        await Media.sync({ force: true });
+        await Tag.sync({ force: true });
+        await Classification.sync({ force: true });
+        await RecipeTags.sync({ force: true });
+
         await Tag.bulkCreate([
-            {title: 'Rápida prepración'},
-            {title: 'Vegetariana'},
-            {title: 'Vegana'},
-            {title: 'Apto celiaco'},
-            {title: 'Estimula sistema inmune'},
-            {title: 'Promueve flora instestinal'},
-            {title: 'Antiinflamatorio'},
-            {title: 'Bajo en sodio'},
-            {title: 'Baja en carbohidratos'}
+            {title: 'RAPID_PREPARATION'},
+            {title: 'VEGETARIAN'},
+            {title: 'VEGAN'},
+            {title: 'GLUTEN_FREE'},
+            {title: 'IMMUNE_SYSTEM'},
+            {title: 'INTESTINAL_FLORA'},
+            {title: 'ANTI_INFLAMMATORY'},
+            {title: 'LOW_SODIUM'},
+            {title: 'LOW_CARB'}
         ])
         await sequelize.authenticate();
 

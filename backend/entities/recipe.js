@@ -2,6 +2,11 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../configurations/database/sequelizeConnection');
 
 const Recipe = sequelize.define('recipes', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     title: {
         type: DataTypes.STRING,
         allowNull: false

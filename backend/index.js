@@ -9,12 +9,12 @@ dbConnection();
 paths = {
     status: "/ping",
     loginV1: "/v1/auth",
-    recipes: "v1/recipes"
+    recipes: "/v1/recipes"
 };
 
 app.use(paths.status, require("./routes/healthCheck"));
 app.use(paths.loginV1, require("./routes/auth"));
-app.use(paths.recipes, require("./routes/auth"));
+app.use(paths.recipes, require("./routes/recipes"));
 
 
 
