@@ -3,19 +3,18 @@ import { Animated, Dimensions, Easing } from "react-native";
 import { Header, Icon } from "../components";
 import { yummlyTheme, tabs } from "../constants";
 // drawer
-import CustomDrawerContent from "./Menu";
 import Gallery from "../screens/Gallery";
 // screens
 import Home from "../screens/Home";
 // Notifications
 import Recipe from "../screens/Recipe";
 import Profile from "../screens/Profile";
+import CreateRecipe from "../screens/CreateRecipe";
 import React from "react";
 import Login from "../screens/Login";
 import Search from "../screens/Search";
 // settings
 import SettingsScreen from "../screens/Settings";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -23,7 +22,6 @@ const { width } = Dimensions.get("screen");
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-const Tab = createBottomTabNavigator();
 
 
 function SettingsStack(props) {
@@ -34,35 +32,19 @@ function SettingsStack(props) {
         headerShown: "screen",
       }}
     >
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header title="Settings" scene={scene} navigation={navigation} />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-      <Stack.Screen
-        name="NotificationsSettings"
-        component={NotificationsScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              back
-              title="Notifications"
-              scene={scene}
-              navigation={navigation}
-            />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
+    <Stack.Screen
+      name="Settings"
+      component={SettingsScreen}
+      options={{
+        header: ({ navigation, scene }) => (
+          <Header title="Settings" scene={scene} navigation={navigation} />
+        ),
+        cardStyle: { backgroundColor: "#F8F9FE" },
+      }}
+    />
     </Stack.Navigator>
   );
 }
-
 
 function ProfileStack(props) {
   return (
@@ -88,21 +70,6 @@ function ProfileStack(props) {
           ),
           cardStyle: { backgroundColor: "#FFFFFF" },
           headerTransparent: true,
-        }}
-      />
-      <Stack.Screen
-        name="Notifications"
-        component={NotificationsStack}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              back
-              title="Notifications"
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
         }}
       />
     </Stack.Navigator>
@@ -181,11 +148,41 @@ function HomeStack(props) {
   );
 }
 
+function CreateRecipeStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="CreateRecipe"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="CreateRecipe"
+        component={CreateRecipe}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              back
+              transparent
+              white
+              title="Crear Receta"
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: true,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function AppStack(props) {
   return (
     <Drawer.Navigator
       style={{ flex: 1 }}
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
       drawerStyle={{
         backgroundColor: "white",
         width: width * 0.8,
@@ -210,7 +207,7 @@ function AppStack(props) {
           fontWeight: "normal",
         },
       }}
-      initialRouteName="HomeDrawer"
+      initialRouteName="CreateRecipeDrawer"
     >
       <Drawer.Screen
         name="HomeDrawer"
@@ -236,6 +233,13 @@ function AppStack(props) {
       <Drawer.Screen
         name="LoginDrawer"
         component={Login}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="CreateRecipeDrawer"
+        component={CreateRecipeStack}
         options={{
           headerShown: false,
         }}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions, Keyboard } from 'react-native';
-import { Button, Block, NavBar, Text, theme } from 'galio-framework';
+import { Block, NavBar, theme } from 'galio-framework';
 import { CommonActions } from '@react-navigation/native';
 
 import Icon from './Icon';
@@ -13,55 +13,43 @@ const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
 const ProfileButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Notifications')}>
+  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('ProfileDrawer')}>
     <Icon
-      family="YummlyExtra"
-      size={16}
-      name="bell"
+      family="Feather"
+      size={20}
+      name="user"
       color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
     />
-    <Block middle style={styles.notify} />
   </TouchableOpacity>
 );
 
 const SettingsButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Cart')}>
+  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('SettingsDrawer')}>
     <Icon
-      family="YummlyExtra"
-      size={16}
-      name="basket"
+      family="Feather"
+      size={20}
+      name="settings"
       color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
     />
   </TouchableOpacity>
 );
 
-const SearchButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Search')}>
-    <Icon
-      size={16}
-      family="Galio"
-      name="search-zoom-in"
-      color={theme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-    />
-  </TouchableOpacity>
-);
 
 class Header extends React.Component {
-  handleLeftPress = () => {
-    const { back, navigation, scene } = this.props;
-    return (back ? navigation.dispatch(CommonActions.goBack()) : navigation.openDrawer());
+  renderLeft = () => {
+    const { back, white, navigation } = this.props;
+    return(back ? navigation.dispatch(CommonActions.goBack()) : navigation.navigate('HomeDrawer'));
   }
   renderRight = () => {
     const { white, title, navigation } = this.props;
-    // const { routeName } = navigation.state;
 
     if (title === 'Title') {
       return [
-        <ProfileButton key='chat-title' navigation={navigation} isWhite={white} />,
-        <SettingsButton key='basket-title' navigation={navigation} isWhite={white} />
+        <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />,
+        <SettingsButton key='settings-title' navigation={navigation} isWhite={white} />
       ]
     }
-
+    
     switch (title) {
       case 'Home':
       case 'Profile':
@@ -69,8 +57,8 @@ class Header extends React.Component {
       case 'Search':
       case 'Settings':
         return ([
-          <ProfileButton key='chat-categories' navigation={navigation} isWhite={white}/>,
-          <SettingsButton key='basket-categories' navigation={navigation} isWhite={white}/>
+          <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />,
+          <SettingsButton key='settings-title' navigation={navigation} isWhite={white} />
         ]);
       default:
         break;
@@ -116,8 +104,7 @@ class Header extends React.Component {
   }
   render() {
     const { back, title, white, transparent, bgColor, iconColor, titleColor, navigation, ...props } = this.props;
-    // const { routeName } = navigation.state;
-    const noShadow = ['Search', 'Categories', 'Deals', 'Pro', 'Profile'].includes(title);
+    const noShadow = ['Search', 'Profile'].includes(title);
     const headerStyles = [
       !noShadow ? styles.shadow : null,
       transparent ? { backgroundColor: 'rgba(0,0,0,0)' } : null,
@@ -137,17 +124,15 @@ class Header extends React.Component {
           transparent={transparent}
           right={this.renderRight()}
           rightStyle={{ alignItems: 'center' }}
-          onLeftPress={this.handleLeftPress}
           left={
             <Icon 
-              name={back ? 'chevron-left' : "menu"} family="entypo" 
-              // name={back ? 'nav-left' : "menu-8"} family="YummlyExtra" 
-              size={back ? 20 : 20} onPress={this.handleLeftPress}
+              name={back ? 'chevron-left' : "home"} family="Feather" 
+              size={back ? 20 : 20} onPress={this.renderLeft}
               color={iconColor || (white ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.ICON)}
               style={{ marginTop: 2 }}
               />
           }
-          leftStyle={{ paddingVertical: 12, flex: 0.2 }}
+          leftStyle={{ flex: 0.35 }}
           titleStyle={[
             styles.title,
             { color: yummlyTheme.COLORS[white ? 'WHITE' : 'HEADER'] },

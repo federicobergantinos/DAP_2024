@@ -41,7 +41,7 @@ class Login extends React.Component {
                     </Block>
                     <Block flex={0.4} row style={{ marginBottom: 18 }}>
                       <Button
-                        style={{ ...styles.socialButtons }}
+                        style={{ ...styles.socialButtons }} onPress={() => this.props.navigation.navigate('HomeDrawer')}
                       >
                         <Block row>
                           <Icon
@@ -68,8 +68,8 @@ class Login extends React.Component {
 
 const styles = StyleSheet.create({
   loginContainer: {
-    width: width * 0.9,
-    height: height < 812 ? height * 0.3 : height * 0.2,
+    width: width * 0.7,
+    height: height < 812 ? height * 0.25 : height * 0.15,
     backgroundColor: "#F4F5F7",
     borderRadius: 4,
     shadowColor: yummlyTheme.COLORS.BLACK,
@@ -106,19 +106,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 14
   },
-  inputIcons: {
-    marginRight: 12
-  },
-  passwordCheck: {
-    paddingLeft: 2,
-    paddingTop: 6,
-    paddingBottom: 15
-  },
-  createButton: {
-    width: width * 0.5,
-    marginTop: 25,
-    marginBottom: 40
-  }
 });
 
 export default Login;

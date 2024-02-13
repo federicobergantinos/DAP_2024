@@ -74,7 +74,7 @@ class Card extends React.Component {
                 color={ctaColor || yummlyTheme.COLORS.ACTIVE}
                 bold
               >
-                {item.cta}
+                Ver receta
               </Text>
             </Block>
           </Block>

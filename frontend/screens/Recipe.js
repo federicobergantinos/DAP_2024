@@ -269,10 +269,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOpacity: 0.2
   },
-  galleryImage: {
-    width: width,
-    height: "auto"
-  },
   dots: {
     height: theme.SIZES.BASE / 2,
     margin: theme.SIZES.BASE / 2,
@@ -301,23 +297,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: theme.SIZES.BASE,
     marginRight: 8
-  },
-  chat: {
-    width: 56,
-    height: 56,
-    padding: 20,
-    borderRadius: 28,
-    shadowColor: "rgba(0, 0, 0, 0.2)",
-    backgroundColor: '#FFF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    shadowOpacity: 1
-  },
-  chatContainer: {
-    top: -32,
-    right: theme.SIZES.BASE,
-    zIndex: 2,
-    position: "absolute"
   },
   size: {
     height: theme.SIZES.BASE * 3,

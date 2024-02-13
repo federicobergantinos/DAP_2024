@@ -23,9 +23,9 @@ class Profile extends React.Component {
       <Block flex style={styles.profile}>
         <Block flex>
           <ImageBackground
-            source={Images.ProfileBackground}
+            source={Images.Background}
             style={styles.profileContainer}
-            imageStyle={styles.profileBackground}
+            imageStyle={styles.Background}
           >
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -41,12 +41,8 @@ class Profile extends React.Component {
                 <Block style={styles.info}>
                   <Block middle style={styles.nameInfo}>
                     <Text style={{ fontFamily: 'open-sans-regular' }} size={28} color="#32325D">
-                      Jessica Jones
+                      Lucia Fernandez
                     </Text>
-                    {/* TODO */}
-                    {/* <Text size={16} color="#32325D" style={{ marginTop: 10, fontFamily: 'open-sans-light' }}>
-                      San Francisco, USA
-                    </Text> */} 
                   </Block>
                   <Block
                     middle
@@ -84,7 +80,7 @@ class Profile extends React.Component {
                   </Block>
                   <Block
                     row
-                    style={{ paddingVertical: 14 }}
+                    style={{ paddingVertical: 14, alignItems: 'center'  }}
                     space="between"
                   >
                     <Text bold size={16} color="#525F7F" style={{ marginTop: 3 }}>
@@ -133,7 +129,7 @@ const styles = StyleSheet.create({
     padding: 0,
     zIndex: 1
   },
-  profileBackground: {
+  Background: {
     width: width,
     height: height / 2
   },
