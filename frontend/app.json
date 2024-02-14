@@ -29,7 +29,8 @@
     },
     "description": "Yummly",
     "android": {
-      "package": "com.yummly.uade"
+      "package": "com.yummly.uade",
+      "permissions": ["INTERNET"]
     },
     "extra": {
       "eas": {

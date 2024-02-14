@@ -1,13 +1,14 @@
-const {response} = require("express");
-const signUp = async (req, res = response) => {
+const {createUser} = require("../services/userService");
+const signUp = async (req, res ) => {
     try {
-        const { googleToken } = req.params;
-        //hacer signUp
+
+        const newUser = await createUser(req.body)
 
         res.status(201).json(
             {
-                "accessToken": googleToken,
-                "refreshToken": "refresh"
+                id: newUser.id,
+                accessToken: newUser.accessToken,
+                refreshToken: newUser.refreshToken
             }
         );
     } catch (error) {

@@ -85,6 +85,13 @@ function HomeStack(props) {
       }}
     >
       <Stack.Screen
+        name="LoginDrawer"
+        component={Login}
+        options={{
+            headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="Home"
         component={Home}
         options={{

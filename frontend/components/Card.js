@@ -4,6 +4,17 @@ import { StyleSheet, Image, TouchableWithoutFeedback } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 import { useNavigation } from '@react-navigation/native'; // Importa useNavigation
 import { yummlyTheme } from "../constants";
+const Card = (props) => {
+  const navigation = useNavigation();
+  const {
+    item,
+    horizontal,
+    full,
+    style,
+    ctaColor,
+    imageStyle,
+    ctaRight
+  } = props;
 
 const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight }) => {
   const navigation = useNavigation(); // Usa el hook useNavigation
