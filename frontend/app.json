@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Yummly",
-    "slug": "yummly",
+    "slug": "yummly-react-native",
     "privacy": "public",
     "scheme": "yummlyapp",
     "platforms": [
@@ -17,23 +17,27 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/46a14906-b6b6-4d26-8b7f-14dafda9040e"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yummly.yummlyreactnative"
+      "bundleIdentifier": "com.yummly"
     },
     "description": "Yummly",
     "android": {
-      "package": "com.yummly.yummlyreactnative"
+      "package": "com.yummly"
     },
     "extra": {
       "eas": {
         "projectId": "46a14906-b6b6-4d26-8b7f-14dafda9040e"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
