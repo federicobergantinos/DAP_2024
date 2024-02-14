@@ -25,11 +25,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yummly"
+      "bundleIdentifier": "com.yummly.uade"
     },
     "description": "Yummly",
     "android": {
-      "package": "com.yummly"
+      "package": "com.yummly.uade"
     },
     "extra": {
       "eas": {
