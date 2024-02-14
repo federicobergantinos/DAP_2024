@@ -3,6 +3,7 @@
     "name": "Yummly",
     "slug": "yummly",
     "privacy": "public",
+    "scheme": "yummlyapp",
     "platforms": [
       "ios",
       "android"

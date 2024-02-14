@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   ImageBackground,
   Dimensions,
   StatusBar,
   TouchableWithoutFeedback,
-  Keyboard
-} from "react-native";
-import { Block, Checkbox, Text } from "galio-framework";
-
-import { Button, Icon, Input } from "../components";
+  Keyboard,
+  View,
+  Button,
+} from 'react-native';
+import { Block, Text } from 'galio-framework';
+import { Icon } from "../components"; // Asegúrate de tener este componente.
 import { Images, yummlyTheme } from "../constants";
+import * as Google from 'expo-auth-session/providers/google';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -20,51 +22,66 @@ const DismissKeyboard = ({ children }) => (
   </TouchableWithoutFeedback>
 );
 
-class Login extends React.Component {
-  render() {
-    return (
-      <DismissKeyboard>
-        <Block flex style={{ justifyContent: 'flex-end', marginTop: 'auto' }}>
-          <StatusBar hidden />
-          <ImageBackground
-            source={Images.LoginBackground}
-            style={{ width, height, zIndex: 1 }}
-          >
-            <Block style={{ width, height: height * 0.8, justifyContent: 'flex-end', marginBottom: 20 }} middle>
-              <Block style={styles.loginContainer}>
-                <Block flex space="between">
-                  <Block flex={1} middle style={styles.socialConnect}>
-                    <Block flex={0.6} middle>
-                      <Text color="#8898AA" size={16}>
-                        Login & Sign Up
-                      </Text>
-                    </Block>
-                    <Block flex={0.4} row style={{ marginBottom: 18 }}>
-                      <Button
-                        style={{ ...styles.socialButtons }} onPress={() => this.props.navigation.navigate('HomeDrawer')}
-                      >
-                        <Block row>
-                          <Icon
-                            name="logo-google"
-                            family="Ionicon"
-                            size={16}
-                            color={"black"}
-                            style={{ marginTop: 2, marginRight: 5 }}
-                          />
-                          <Text style={styles.socialTextButtons}>Google</Text>
-                        </Block>
-                      </Button>
-                    </Block>
+const Login = ({ navigation }) => {
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+
+      // Aquí manejas el éxito de la autenticación, como almacenar el token,
+      // navegar a otra pantalla, etc.
+    }
+  }, [response]);
+
+  return (
+    <DismissKeyboard>
+      <Block flex style={{ justifyContent: 'flex-end', marginTop: 'auto' }}>
+        <StatusBar hidden />
+        <ImageBackground
+          source={Images.LoginBackground}
+          style={{ width, height, zIndex: 1 }}
+        >
+          <Block style={{ width, height: height * 0.8, justifyContent: 'flex-end', marginBottom: 20 }} middle>
+                  <Block flex={0.4} row style={{ marginBottom: 18 }}>
+                    <Button
+                      title="Go Home"
+                      onPress={() => {
+                        navigation.navigate("HomeDrawer");
+                      }}
+                      disabled={!request}
+                    />
+                  </Block>
+            <Block style={styles.loginContainer}>
+              <Block flex space="between">
+                <Block flex={1} middle style={styles.socialConnect}>
+                  <Block flex={0.6} middle>
+                    <Text color="#8898AA" size={16}>
+                      Login & Sign Up
+                    </Text>
+                  </Block>
+                  <Block flex={0.4} row style={{ marginBottom: 18 }}>
+                    {/* Botón de inicio de sesión con Google */}
+                    <Button
+                      title="Login with Google"
+                      onPress={() => {
+                        promptAsync();
+                      }}
+                      disabled={!request}
+                    />
                   </Block>
                 </Block>
               </Block>
             </Block>
-          </ImageBackground>
-        </Block>
-      </DismissKeyboard>
-    );
-  }
+          </Block>
+        </ImageBackground>
+      </Block>
+    </DismissKeyboard>
+  );
 }
+
 
 const styles = StyleSheet.create({
   loginContainer: {

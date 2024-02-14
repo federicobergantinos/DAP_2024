@@ -207,7 +207,7 @@ function AppStack(props) {
           fontWeight: "normal",
         },
       }}
-      initialRouteName="CreateRecipeDrawer"
+      initialRouteName="LoginDrawer"
     >
       <Drawer.Screen
         name="HomeDrawer"
