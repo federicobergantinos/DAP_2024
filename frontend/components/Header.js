@@ -54,7 +54,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
         <SettingsButton key='settings-title' isWhite={white} />
       ];
     }
-
+    
     switch (title) {
       case 'Home':
       case 'Profile':
@@ -174,6 +174,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     elevation: 3,
   },
+  notify: {
+    backgroundColor: yummlyTheme.COLORS.LABEL,
+    borderRadius: 4,
+    height: theme.SIZES.BASE / 2,
+    width: theme.SIZES.BASE / 2,
+    position: 'absolute',
+    top: 9,
+    right: 12,
+  },
+  header: {
+    backgroundColor: theme.COLORS.WHITE,
+  },
+  divider: {
+    borderRightWidth: 0.3,
+    borderRightColor: theme.COLORS.ICON,
+  },
   search: {
     height: 48,
     width: width - 32,
@@ -181,6 +197,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     borderColor: yummlyTheme.COLORS.BORDER
+  },
+  tab: {
+    backgroundColor: theme.COLORS.TRANSPARENT,
+    width: width * 0.35,
+    borderRadius: 0,
+    borderWidth: 0,
+    height: 24,
+    elevation: 0,
+  },
+  tabTitle: {
+    lineHeight: 19,
+    fontWeight: '400',
+    color: yummlyTheme.COLORS.HEADER
   },
 });
 
