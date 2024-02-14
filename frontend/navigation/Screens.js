@@ -85,6 +85,13 @@ function HomeStack(props) {
       }}
     >
       <Stack.Screen
+        name="LoginDrawer"
+        component={Login}
+        options={{
+            headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="Home"
         component={Home}
         options={{
@@ -207,7 +214,7 @@ function AppStack(props) {
           fontWeight: "normal",
         },
       }}
-      initialRouteName="CreateRecipeDrawer"
+      initialRouteName="HomeDrawer"
     >
       <Drawer.Screen
         name="HomeDrawer"

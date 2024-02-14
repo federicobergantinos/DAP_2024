@@ -5,8 +5,8 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "npx expo start",
-    "android": "npx expo start --android",
-    "ios": "npx expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "eject": "npx expo prebuild"
   },
   "repository": {
@@ -14,12 +14,14 @@
     "url": "git+https://github.com/federicobergantinos/DAP_2024.git"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.21.0",
+    "@react-native-google-signin/google-signin": "^11.0.0",
     "@react-native-masked-view/masked-view": "0.2.9",
-    "@react-navigation/bottom-tabs": "^6.3.1",
-    "@react-navigation/compat": "^5.3.20",
-    "@react-navigation/drawer": "6.4.1",
-    "@react-navigation/native": "^6.0.10",
-    "@react-navigation/stack": "^6.2.1",
+    "@react-navigation/bottom-tabs": "^6.5.12",
+    "@react-navigation/drawer": "^6.6.7",
+    "@react-navigation/native": "^6.1.10",
+    "@react-navigation/stack": "^6.3.21",
+    "axios": "^1.6.7",
     "expo": "^49.0.0",
     "expo-app-loading": "~2.0.0",
     "expo-asset": "~8.10.1",
@@ -29,6 +31,7 @@
     "expo-linear-gradient": "~12.3.0",
     "expo-modules-core": "~1.5.12",
     "expo-splash-screen": "~0.20.5",
+    "expo-status-bar": "~1.6.0",
     "galio-framework": "^0.8.0",
     "prop-types": "^15.7.2",
     "react": "18.2.0",
@@ -43,6 +46,7 @@
     "react-native-screens": "~3.22.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.20.0",
     "babel-preset-expo": "^9.3.0"
   }
 }
