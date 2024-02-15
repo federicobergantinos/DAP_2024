@@ -1,7 +1,9 @@
 export interface createAuthDTO {
-    name: string;
-    surname: string;
-    "email": string;
-    "photoUrl": string;
-    "googleToken": string;
+    token: string;
+}
+
+export interface Credentials {
+    id: number,
+    accessToken: string,
+    refreshToken: string
 }
