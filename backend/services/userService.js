@@ -3,14 +3,7 @@ const BadRequest = require("../Errors/BadRequest");
 const jwt = require("jsonwebtoken");
 
 const createUser = async (userData) => {
-
-    const existingUser = await User.findOne({
-        where: {
-            email: userData.email,
-        },
-    });
-
-    if (existingUser) {
+    if (await findUserByEmail(userData.email)) {
         throw new BadRequest("The user exists")
     }
     const newUser = await User.create(userData);
@@ -21,6 +14,12 @@ const createUser = async (userData) => {
 const isValidUser = async (userId) => {
     const existingUser = await User.findByPk(userId)
     return existingUser !== null
+}
+
+const findUserByEmail = async (email) => {
+    return User.findOne({
+        where: { email: email },
+    });
 }
 
 function getToken(newUser) {
@@ -34,5 +33,6 @@ function getToken(newUser) {
 
 module.exports = {
     createUser,
-    isValidUser
+    isValidUser,
+    findUserByEmail
 };

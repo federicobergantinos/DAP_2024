@@ -840,23 +840,7 @@
       "AuthUser": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "example": "name"
-          },
-          "surname": {
-            "type": "string",
-            "example": "surname"
-          },
-          "email": {
-            "type": "string",
-            "example": "email"
-          },
-          "photoUrl": {
-            "type": "string",
-            "example": "photoUrl"
-          },
-          "googleToken": {
+          "token": {
             "type": "string",
             "example": "token"
           }
@@ -941,16 +925,16 @@
       "AuthResponse": {
         "type": "object",
         "properties": {
-          "name": {
+          "id": {
             "type": "integer",
             "format": "int64",
             "example": "id"
           },
-          "surname": {
+          "accessToken": {
             "type": "string",
             "example": "accessToken"
           },
-          "email": {
+          "refreshToken": {
             "type": "string",
             "example": "refreshToken"
           }
