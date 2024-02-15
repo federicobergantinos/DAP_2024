@@ -15,6 +15,7 @@ import {Images, yummlyTheme} from '../constants';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import backendApi from '../api/backendGateway';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -25,6 +26,7 @@ const DismissKeyboard = ({children}) => (
 );
 
 const Login = () => {
+  const navigation = useNavigation()
   GoogleSignin.configure({
     webClientId:
         '445263022323-e0okjk06i01er8q0gcg51oensjp8h34o.apps.googleusercontent.com',
@@ -37,13 +39,15 @@ const Login = () => {
     try {
       const userInfo = await GoogleSignin.signIn();
       const {idToken, user} = userInfo
-      console.log("GOOGLE RESPONSE", userInfo)
-      const response = await backendApi.authUser.post({name: user.name, surname: user.familyName, email: user.email, photoUrl: user.photo, googleToken: idToken })
 
-      if(response.status === 201)
-        await AsyncStorage.setItem("user", JSON.stringify(response.data.accessToken));
+      const {response, statusCode} = await backendApi.authUser.authenticate({token: idToken })
 
-      console.log(AsyncStorage.getItem("user"));
+      if(statusCode === 201){
+        await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
+        await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken));
+        await AsyncStorage.setItem("userId", JSON.stringify(response.id));
+        navigation.navigate('Home')
+      }
     } catch (error) {
       // @ts-ignore
       console.error('CODE:' + error.code);

@@ -2,6 +2,7 @@ const {createUser, findUserByEmail} = require("../services/userService");
 const {createAuthTokens, loginUser} = require("../services/authService");
 const authenticate = async (req, res ) => {
     try {
+        console.log(req.body)
         const userData = await loginUser(req.body.token)
         let user = await findUserByEmail(userData.email)
 

@@ -2,9 +2,8 @@
   "name": "yummly-react-native",
   "version": "1.6.0",
   "description": "Yummly React Native",
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "npx expo start",
+    "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "eject": "npx expo prebuild"
@@ -35,7 +34,7 @@
     "galio-framework": "^0.8.0",
     "prop-types": "^15.7.2",
     "react": "18.2.0",
-    "react-native": "0.72.6",
+    "react-native": "0.72.10",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-image-crop-picker": "^0.40.2",
     "react-native-modal-dropdown": "1.0.2",

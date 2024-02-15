@@ -80,4 +80,62 @@ const Card = (props) => {
       </Block>
   );
 };
+
+Card.propTypes = {
+  item: PropTypes.object,
+  horizontal: PropTypes.bool,
+  full: PropTypes.bool,
+  ctaColor: PropTypes.string,
+  imageStyle: PropTypes.any,
+  ctaRight: PropTypes.bool
+};
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: theme.COLORS.WHITE,
+    marginVertical: theme.SIZES.BASE,
+    borderWidth: 0,
+    minHeight: 114,
+    marginBottom: 4,
+  },
+  cardTitle: {
+    // flex: 1,
+    // flexWrap: "wrap",
+    paddingBottom: 6
+  },
+  cardDescription: {
+    padding: theme.SIZES.BASE / 2
+  },
+  imageContainer: {
+    borderRadius: 3,
+    elevation: 1,
+    overflow: "hidden"
+  },
+  image: {
+    // borderRadius: 3,
+  },
+  horizontalImage: {
+    height: 122,
+    width: "auto"
+  },
+  horizontalStyles: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0
+  },
+  verticalStyles: {
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0
+  },
+  fullImage: {
+    height: 215
+  },
+  shadow: {
+    shadowColor: "#8898AA",
+    backgroundColor: '#FFF',
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 6,
+    shadowOpacity: 0.1,
+    elevation: 2
+  }
+});
 export default Card;
