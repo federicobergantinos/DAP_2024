@@ -24,5 +24,5 @@ RUN echo "POSTGRES_USER=\"${POSTGRES_USER}\"" >> .env
 RUN echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"" >> .env
 RUN echo "POSTGRES_HOST=\"${POSTGRES_HOST}\"" >> .env
 
-EXPOSE 80
+EXPOSE 8080
 CMD ["node", "index.js"]
