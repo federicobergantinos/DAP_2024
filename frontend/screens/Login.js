@@ -8,7 +8,6 @@ import {
   Keyboard
 } from "react-native";
 import { Block, Checkbox, Text } from "galio-framework";
-
 import { Button, Icon, Input } from "../components";
 import { Images, yummlyTheme } from "../constants";
 

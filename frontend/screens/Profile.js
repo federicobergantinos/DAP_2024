@@ -7,18 +7,19 @@ import {
   ImageBackground,
   Platform,
   TouchableOpacity,
-  Alert,
   Modal,
-  Pressable,
   View
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 import { Button } from "../components";
 import { Images, yummlyTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
+import { openImagePickerAsync, openCameraAsync } from '../components/ImagePicker.js';
 
 const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
+
+
 
 class Profile extends React.Component {
   constructor()
@@ -30,6 +31,7 @@ class Profile extends React.Component {
   }
   render() {
     return (
+      
       <Block flex style={styles.profile}>
         <Block flex>
           <ImageBackground
@@ -68,7 +70,7 @@ class Profile extends React.Component {
                       />
                       <TouchableOpacity
                         style={styles.containerInterno}
-                        onPress={() => { this.setState({ show: false }) }}
+                        onPress={() => { openImagePickerAsync /* VER PQ NO ANDA */ , this.setState({ show: false }) }}
                       >
                         <Text>Adjuntar Imagen</Text>
                       </TouchableOpacity>
@@ -80,10 +82,6 @@ class Profile extends React.Component {
                     <Text style={{ fontFamily: 'open-sans-regular' }} size={28} color="#32325D">
                       Matias Caliz
                     </Text>
-                    {/* TODO */}
-                    {/* <Text size={16} color="#32325D" style={{ marginTop: 10, fontFamily: 'open-sans-light' }}>
-                      San Francisco, USA
-                    </Text> */} 
                   </Block>
                   <Block
                     middle
@@ -131,12 +129,12 @@ class Profile extends React.Component {
                       small
                       color="transparent"
                       textStyle={{ color: "#5E72E4", fontSize: 14 }}
+                      onPress={() => { this.props.navigation.navigate('ProfileRecetasDrawer') }}
                     >
                       Ver más
                     </Button>
                   </Block>
-
-                  
+              
                   <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
                     <Block row space="between" style={{ flexWrap: "wrap" }}>
                       {Images.Viewed.map((img, imgIndex) => (
@@ -167,6 +165,7 @@ class Profile extends React.Component {
                       small
                       color="transparent"
                       textStyle={{ color: "#5E72E4", fontSize: 14 }}
+                      onPress={() => { this.props.navigation.navigate('ProfileFavoritosDrawer') }}
                     >
                       Ver más
                     </Button>
