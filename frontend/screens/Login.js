@@ -37,8 +37,9 @@ const Login = () => {
     try {
       const userInfo = await GoogleSignin.signIn();
       const {idToken, user} = userInfo
+      console.log("GOOGLE RESPONSE", userInfo)
       const response = await backendApi.authUser.post({name: user.name, surname: user.familyName, email: user.email, photoUrl: user.photo, googleToken: idToken })
-      console.log(response.data)
+
       if(response.status === 201)
         await AsyncStorage.setItem("user", JSON.stringify(response.data.accessToken));
 
