@@ -20,6 +20,15 @@ docker-rm:
 
 docker-rmi:
 	docker rmi $(IMAGE_NAME)
+	
+docker-compose-build-service:
+	docker-compose -f ../backend/docker-compose.yml build $(PROJECT)
+
+docker-compose-up:
+	docker-compose -f ../backend/docker-compose.yml up -d
+
+docker-compose-down:
+	docker-compose -f ../backend/docker-compose.yml down
 
 docker-clean: docker-stop docker-rm docker-rmi
 
@@ -39,7 +48,7 @@ ecr-tag-image:
 	docker tag $(IMAGE_NAME):latest $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest
 
 ecr-delete-image:
-	aws ecr batch-delete-image --repository-name $(PROJECT) --image-ids imageTag=latest --region $(AWS_REGION) --no-cli-pager
+	aws ecr batch-delete-image --repository-name $(PROJECT) --image-ids imageTag=latest --region $(AWS_REGION)
 
 ecr-push-image:
 	docker push $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest
@@ -61,6 +70,6 @@ cloudformation-delete-stack-service:
 	aws cloudformation delete-stack --stack-name $(PROJECT) --region $(AWS_REGION)
 		
 
-.PHONY: docker-build docker-run docker-stop docker-rm docker-rmi docker-clean docker-rebuild docker-shell 
+.PHONY: docker-build docker-run docker-stop docker-rm docker-rmi docker-clean docker-rebuild docker-shell docker-compose-up docker-compose-down
 .PHONY: ecr-create-repo ecr-login ecr-tag-image ecr-push-image ecr 
 .PHONY: cloudformation-create-stack cloudformation-delete-stack 
