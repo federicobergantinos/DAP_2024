@@ -1,259 +1,262 @@
-import React from "react";
-import {
-  StyleSheet,
-  Dimensions,
-  ScrollView,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
-  Image,
-  Animated,
-  Platform
-} from "react-native";
-
+import React, { useState } from "react";
+import {StyleSheet, Dimensions, ScrollView, TouchableWithoutFeedback, Image, Animated, Platform} from "react-native";
 import { Block, Text, Button, theme } from "galio-framework";
-import { Icon } from "../components";
 import yummlyTheme from "../constants/Theme";
-import Images from "../constants/Images";
 import { iPhoneX, HeaderHeight } from "../constants/utils";
+import { AirbnbRating } from "react-native-ratings";
+import PillContainer from "../components/PillContainer";
+import Icon from "../components/Icon";
+
+const tagsTranslations = {
+  RAPID_PREPARATION: 'Preparación rápida',
+  VEGETARIAN: 'Vegetariano',
+  VEGAN: 'Vegano',
+  GLUTEN_FREE: 'Libre de gluten',
+  IMMUNE_SYSTEM: 'Sistema inmunológico',
+  INTESTINAL_FLORA: 'Flora intestinal',
+  ANTI_INFLAMMATORY: 'Antiinflamatorio',
+  LOW_SODIUM: 'Bajo en sodio',
+  LOW_CARB: 'Bajo en carbohidratos',
+};
 
 const { height, width } = Dimensions.get("window");
+const recipe = {
+  "userId": 123,
+  "userName": "Juan Perez",
+  "userImage": "https://www.recetasnestle.com.ar/sites/default/files/2022-06/ingredientes-comida-de-mar-parrilla.jpg",
+  "title": "Delicious Recipe",
+  "description": "Esto es una breve descripción de la receta",
+  "media": [
+    "https://www.recetasnestle.com.ar/sites/default/files/2022-06/ingredientes-comida-de-mar-parrilla.jpg",
+    "https://static-cse.canva.com/blob/598703/Fotografiadecomida.jpg"
+  ],
+  "preparationTime": "60 minutos",
+  "servingCount": 4,
+  "ingredients": [
+    "ingredient1",
+    "ingredient2"
+  ],
+  "steps": [
+    "Step 1",
+    "Step 2"
+  ],
+  "tags": [
+    "VEGETARIAN",
+    "VEGAN"
+  ],
+  "calories": 500,
+  "proteins": 20.5,
+  "totalFats": 15.3,
+  "rating": 4
+};
 
-export default class Recipe extends React.Component {
-  state = {
-    selectedSize: null
-  };
+export default function Recipe(props) {
+  const [isStepsAvailable, setIsStepsAvailable] = useState(true)
+  const scrollX = new Animated.Value(0);
 
-  scrollX = new Animated.Value(0);
+  const buttonStyle1 = isStepsAvailable ? styles.buttonSelected : styles.buttonUnselected;
+  const buttonStyle2 = !isStepsAvailable ? styles.buttonSelected : styles.buttonUnselected;
+  const textColor1 = isStepsAvailable ? 'black' : 'gray';
+  const textColor2 = !isStepsAvailable ? 'black' : 'gray';
 
-  renderGallery = () => {
-    const { navigation, route } = this.props;
-    // const { params } = navigation && navigation.state;
-    // const recipe = params.recipe;
-    const recipe = route.params?.recipe;
-    const recipeImages = [
-      recipe.image,
-      recipe.image,
-      recipe.image,
-      recipe.image
-    ];
+  const renderGallery = () => {
+    const { navigation, route } = props;
+    const recipeImages = recipe.media
 
     return (
-      <ScrollView
-        horizontal={true}
-        pagingEnabled={true}
-        decelerationRate={0}
-        scrollEventThrottle={16}
-        showsHorizontalScrollIndicator={false}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }}}],
-          {useNativeDriver: false}
-          )}
-      >
-        {recipeImages.map((image, index) => (
-          <TouchableWithoutFeedback
-            key={`recipe-image-${index}`}
-            onPress={() =>
-              navigation.navigate("Gallery", { images: recipeImages, index })
-            }
-          >
-            <Image
-              resizeMode="cover"
-              source={{ uri: image }}
-              style={{ width, height: iPhoneX ? width + 32 : width }}
-            />
-          </TouchableWithoutFeedback>
-        ))}
-      </ScrollView>
+        <ScrollView
+            horizontal={true}
+            pagingEnabled={true}
+            decelerationRate={0}
+            scrollEventThrottle={16}
+            showsHorizontalScrollIndicator={false}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX }}}], { useNativeDriver: false })}
+        >
+          {recipeImages.map((image, index) => (
+              <TouchableWithoutFeedback
+                  key={`recipe-image-${index}`}
+                  onPress={() => navigation.navigate("Gallery", { images: recipeImages, index })}
+              >
+                <Image
+                    resizeMode="cover"
+                    source={{ uri: image }}
+                    style={{ width, height: iPhoneX ? width + 32 : width }}
+                />
+              </TouchableWithoutFeedback>
+          ))}
+        </ScrollView>
+    );
+  };
+  const toggleStepsAvailability = () => {
+    setIsStepsAvailable(!isStepsAvailable);
+  };
+
+  const renderProgress = () => {
+    const { navigation, route } = props;
+    const recipeImages = recipe.media
+
+    const position = Animated.divide(scrollX, width);
+
+    return (
+        <Block row>
+          {recipeImages.map((_, i) => {
+            const opacity = position.interpolate({
+              inputRange: [i - 1, i, i + 1],
+              outputRange: [0.5, 1, 0.5],
+              extrapolate: "clamp"
+            });
+
+            const dotWidth = position.interpolate({
+              inputRange: [i - 1, i, i + 1],
+              outputRange: [8, 18, 8],
+              extrapolate: "clamp"
+            });
+
+            return (
+                <Animated.View key={i} style={[styles.dots, { opacity, width: dotWidth }]} />
+            );
+          })}
+        </Block>
     );
   };
 
-  renderProgress = () => {
-    const { navigation, route } = this.props;
-    // const { params } = navigation && navigation.state;
-    // const recipe = params.recipe;
-    const recipe = route.params?.recipe;
-    const recipeImages = [
-      recipe.image,
-      recipe.image,
-      recipe.image,
-      recipe.image
-    ];
-
-    const position = Animated.divide(this.scrollX, width);
-
-    return (
-      <Block row>
-        {recipeImages.map((_, i) => {
-          const opacity = position.interpolate({
-            inputRange: [i - 1, i, i + 1],
-            outputRange: [0.5, 1, 0.5],
-            extrapolate: "clamp"
-          });
-
-          const width = position.interpolate({
-            inputRange: [i - 1, i, i + 1],
-            outputRange: [8, 18, 8],
-            extrapolate: "clamp"
-          });
-
-          return (
-            <Animated.View key={i} style={[styles.dots, { opacity, width }]} />
-          );
-        })}
-      </Block>
-    );
-  };
-
-  renderSize = label => {
-    const active = this.state.selectedSize === label;
-
-    return (
-      <TouchableHighlight
-        style={styles.sizeButton}
-        underlayColor={yummlyTheme.COLORS.PRICE_COLOR}
-        onPress={() => this.setState({ selectedSize: label })}
-      >
-        <Text style={{ fontFamily: 'open-sans-regular' }} color={active ? theme.COLORS.PRIMARY : yummlyTheme.COLORS.TEXT}>{label}</Text>
-      </TouchableHighlight>
-    );
-  };
-
-  render() {
-    const { selectedSize } = this.state;
-    const { navigation, route } = this.props;
-    // const { params } = navigation && navigation.state;
-    // const recipe = params.recipe;
-    const recipe = route.params?.recipe;
-
-    return (
+  return (
       <Block flex style={styles.recipe}>
         <Block flex style={{ position: "relative" }}>
-          {this.renderGallery()}
+          {renderGallery()}
+          <Block flex flexDirection={'row'} style={{alignItems: 'center', justifyContent: 'flex-start', position:'absolute', top: 130, right: 20, gap: 10}}>
+            <Icon family='MaterialIcons' name="edit" size={30} color={yummlyTheme.COLORS.WHITE} />
+            <Icon family='MaterialIcons' name="share" size={30} color={yummlyTheme.COLORS.WHITE} />
+            <Icon family='MaterialIcons' name="favorite-border" size={30} color={yummlyTheme.COLORS.WHITE} />
+          </Block>
           <Block center style={styles.dotsContainer}>
-            {this.renderProgress()}
+            {renderProgress()}
           </Block>
         </Block>
         <Block flex style={styles.options}>
           <ScrollView vertical={true} showsVerticalScrollIndicator={false}>
             <Block
-              style={{
-                paddingHorizontal: theme.SIZES.BASE,
-                paddingTop: theme.SIZES.BASE * 2
-              }}
+                style={{
+                  paddingHorizontal: theme.SIZES.BASE,
+                  paddingTop: theme.SIZES.BASE * 2
+                }}
             >
-              <Text  size={28} style={{ paddingBottom: 24, fontFamily: 'open-sans-regular' }} color={yummlyTheme.COLORS.TEXT}>
+              <Text  size={28} style={{ paddingBottom: 3, fontFamily: 'open-sans-regular' }} color={yummlyTheme.COLORS.TEXT}>
                 {recipe.title}
               </Text>
-              <Block row space="between">
-                <Block row>
+              <Text  size={18} style={{ paddingBottom: 10, fontFamily: 'open-sans-regular' }} color={yummlyTheme.COLORS.MUTED}>
+                {recipe.description}
+              </Text>
+              <Block row>
+                <AirbnbRating
+                    count={5}
+                    defaultRating={1}
+                    isDisabled={true}
+                    selectedColor={yummlyTheme.COLORS.GRADIENT_START}
+                    size={20}
+                    showRating={false}
+                    style={{ paddingVertical: 10, width: 100}}
+                />
+              </Block>
+              <Block flex flexDirection="row" flexWrap="wrap" style={{paddingTop:10, paddingBottom:10, gap: 5}}>
+                {recipe.tags.map((tag, index) => (
+                    <PillContainer key={index}>{tagsTranslations[tag]} </PillContainer>
+                ))}
+              </Block>
+              <Block flex flexDirection="row" style={{ justifyContent: 'flex-start', gap: -50 }}>
+                <Block flex flexDirection="row" style={{ alignItems: 'center', justifyContent: 'flex-start', gap: 5 }}>
+                  <Icon family='MaterialIcons' name="access-time" size={30} color={yummlyTheme.COLORS.MUTED} />
+                  <Text color={yummlyTheme.COLORS.MUTED}>{recipe.preparationTime}</Text>
+                </Block>
+                <Block flex flexDirection="row" style={{ alignItems: 'center', justifyContent: 'flex-start', gap: 5 }}>
+                  <Icon family='MaterialIcons' name="people" size={30} color={yummlyTheme.COLORS.MUTED} />
+                  <Text color={yummlyTheme.COLORS.MUTED}>{recipe.servingCount}</Text>
+                </Block>
+              </Block>
+              <Block style={{ paddingTop: theme.SIZES.BASE }}>
+                <Block flex style={{ width: '100%', borderWidth:1, borderColor:theme.COLORS.GREY, paddingBottom: theme.SIZES.BASE }}>
+                  <Block flex flexDirection="row" style={{padding:0, margin:0, gap: 0}}>
+                    <Button
+                        disabled={isStepsAvailable}
+                        shadowless borderless
+                        style={[styles.buttonTab, buttonStyle1]}
+                        onPress={toggleStepsAvailability}>
+                      <Text size={20} color={textColor1}>Pasos</Text>
+                    </Button>
+                    <Button
+                        disabled={!isStepsAvailable}
+                        shadowless borderless
+                        style={[styles.buttonTab, buttonStyle2]}
+                        onPress={toggleStepsAvailability}
+                    >
+                      <Text size={20} color={textColor2}>Ingredientes</Text>
+                    </Button>
+                  </Block>
+                  <Text  size={15} style={{paddingTop: 10, paddingHorizontal:10, fontFamily: 'open-sans-regular' }} color={yummlyTheme.COLORS.TEXT}>
+                    {isStepsAvailable ? (
+                        recipe.steps.map((step, index) => (
+                            <Text key={index}>
+                              {index+1 + ". " + step}
+                              {"\n"}
+                            </Text>
+                        ))
+                    ) : (
+                        recipe.ingredients.map((ingredient, index) => (
+                            <Text key={index}>
+                              {index+1 + ". " + ingredient}
+                              {"\n"}
+                            </Text>
+                        ))
+                    )}
+                  </Text>
+                </Block>
+                <Block style={{marginTop: 15, fontFamily: 'open-sans-regular' }} >
+                  <Text  size={15} style={{ fontWeight:'bold', paddingBottom: 3, fontFamily: 'open-sans-regular' }} color={yummlyTheme.COLORS.TEXT}>
+                    Calorias: {recipe.calories}
+                  </Text>
+                  <Text  size={15} style={{ fontWeight:'bold', paddingBottom: 3, fontFamily: 'open-sans-regular' }} color={yummlyTheme.COLORS.TEXT}>
+                    Proteinas: {recipe.proteins}
+                  </Text>
+                  <Text  size={15} style={{ fontWeight:'bold', paddingBottom: 3, fontFamily: 'open-sans-regular' }} color={yummlyTheme.COLORS.TEXT}>
+                    Grasas totales: {recipe.totalFats}
+                  </Text>
+                </Block>
+              </Block>
+              <Block flex flexDirection="row" style={{ alignItems: 'center', justifyContent: 'flex-start'}}>
                   <Image
-                    source={Images.ProfilePicture }
-                    style={styles.avatar}
+                      src={recipe.userImage}
+                      style={styles.avatar}
                   />
-                  <Block style={{ marginTop: 2 }}>
-                    <Text style={{ fontFamily: 'open-sans-regular' }} size={14} color={yummlyTheme.COLORS.TEXT}>Jessica Jones</Text>
-                    <Text style={{ fontFamily: 'open-sans-light' }} size={14} color={yummlyTheme.COLORS.TEXT} style={{ fontWeight: '100' }}>
-                      Pro Seller
-                    </Text>
-                  </Block>
-                </Block>
-                <Text style={{ fontFamily: 'open-sans-bold' }} size={18} color={yummlyTheme.COLORS.TEXT}>
-                  $899
-                </Text>
-              </Block>
-            </Block>
-            <Block style={{ padding: theme.SIZES.BASE }}>
-              <Text style={{ fontFamily: 'open-sans-regular' }} size={16} color={yummlyTheme.COLORS.TEXT}>Size</Text>
-              <Block card style={{ marginTop: 16 }}>
-                <Block row>
-                  <Block
-                    flex
-                    middle
-                    style={[
-                      styles.size,
-                      styles.roundTopLeft,
-                      selectedSize === "XS" ? styles.active : null
-                    ]}
-                  >
-                    {this.renderSize("XS")}
-                  </Block>
-                  <Block
-                    flex
-                    middle
-                    style={[
-                      styles.size,
-                      selectedSize === "S" ? styles.active : null
-                    ]}
-                  >
-                    {this.renderSize("S")}
-                  </Block>
-                  <Block
-                    flex
-                    middle
-                    style={[
-                      styles.size,
-                      styles.roundTopRight,
-                      selectedSize === "M" ? styles.active : null
-                    ]}
-                  >
-                    {this.renderSize("M")}
-                  </Block>
-                </Block>
-                <Block row>
-                  <Block
-                    flex
-                    middle
-                    style={[
-                      styles.size,
-                      styles.roundBottomLeft,
-                      selectedSize === "L" ? styles.active : null
-                    ]}
-                  >
-                    {this.renderSize("L")}
-                  </Block>
-                  <Block
-                    flex
-                    middle
-                    style={[
-                      styles.size,
-                      { borderBottomWidth: 0 },
-                      selectedSize === "XL" ? styles.active : null
-                    ]}
-                  >
-                    {this.renderSize("XL")}
-                  </Block>
-                  <Block
-                    flex
-                    middle
-                    style={[
-                      styles.size,
-                      styles.roundBottomRight,
-                      selectedSize === "2XL" ? styles.active : null
-                    ]}
-                  >
-                    {this.renderSize("2XL")}
-                  </Block>
-                </Block>
-              </Block>
-              <Button
-                shadowless
-                style={styles.addToCart}
-                color={yummlyTheme.COLORS.PRIMARY}
-                onPress={() => navigation.navigate("Cart")}
 
-              >
-                <Text style={{ fontFamily: 'open-sans-bold' }} color={yummlyTheme.COLORS.WHITE}>ADD TO CART</Text>
-              </Button>
+                    <Text style={{fontFamily: 'open-sans-regular', height:40 }} size={14} color={yummlyTheme.COLORS.TEXT}>{recipe.userName}</Text>
+
+
+              </Block>
             </Block>
           </ScrollView>
         </Block>
       </Block>
-    );
-  }
+  );
 }
 
 const styles = StyleSheet.create({
   recipe: {
     marginTop: Platform.OS === "android" ? -HeaderHeight : 0
+  },
+  buttonSelected: {
+    borderBottomWidth: 0,
+    backgroundColor: 'white'
+  },
+  buttonUnselected: {
+    backgroundColor: theme.COLORS.GREY
+  },
+  buttonTab: {
+    width:'50%',
+    padding: 0,
+    margin: 0,
+    backgroundColor: 'white',
+    elevation: 0,
+    borderRadius: 0
   },
   options: {
     position: "relative",
@@ -264,7 +267,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 13,
     backgroundColor: theme.COLORS.WHITE,
     shadowColor: "black",
-    backgroundColor: '#FFF',
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 8,
     shadowOpacity: 0.2
@@ -280,7 +282,6 @@ const styles = StyleSheet.create({
     bottom: theme.SIZES.BASE,
     left: 0,
     right: 0,
-    bottom: height / 10
   },
   addToCart: {
     width: width - theme.SIZES.BASE * 4,

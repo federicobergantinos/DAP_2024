@@ -9,6 +9,7 @@ import {
 import { Block, Text, theme } from "galio-framework";
 
 import { yummlyTheme } from "../constants";
+import {Rating} from "react-native-ratings";
 const Card = (props) => {
   const navigation = useNavigation();
   const {
