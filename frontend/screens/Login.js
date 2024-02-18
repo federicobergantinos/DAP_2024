@@ -38,10 +38,10 @@ const Login = () => {
   });
 
   const isLoggedUser = () => { return AsyncStorage.getItem("token") !== null && AsyncStorage.getItem("refresh") !== null && AsyncStorage.getItem("userId") !== null}
-  /*useEffect(() => {
+  useEffect(() => {
     if(isLoggedUser())
       navigation.navigate('Home')
-  }, []);*/
+  }, []);
 
 
   const authenticate = async () => {
