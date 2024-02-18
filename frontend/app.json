@@ -28,7 +28,9 @@
     "description": "Yummly",
     "android": {
       "package": "com.yummly.yummlyreactnative",
-      "permissions": ["INTERNET"]
+      "permissions": [
+        "INTERNET"
+      ]
     },
     "extra": {
       "eas": {
