@@ -20,6 +20,4 @@ const RecipeTags = sequelize.define('recipeTags', {
     }
 });
 
-
-
-module.exports =  RecipeTags 
+module.exports = RecipeTags

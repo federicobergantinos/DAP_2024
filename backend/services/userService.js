@@ -1,6 +1,8 @@
 const User = require("../entities/user");
 const BadRequest = require("../Errors/BadRequest");
 const jwt = require("jsonwebtoken");
+const {Recipe} = require("../entities/associateModels");
+const NotFound = require("../Errors/NotFound");
 
 const createUser = async (userData) => {
     if (await findUserByEmail(userData.email)) {
@@ -14,6 +16,15 @@ const createUser = async (userData) => {
 const isValidUser = async (userId) => {
     const existingUser = await User.findByPk(userId)
     return existingUser !== null
+}
+
+const findUserById = async (userId) => {
+    const user = await User.findByPk(userId)
+    if(user === null) {
+        throw new NotFound('User not found')
+    }
+
+    return user
 }
 
 const findUserByEmail = async (email) => {
@@ -34,5 +45,6 @@ function getToken(newUser) {
 module.exports = {
     createUser,
     isValidUser,
+    findUserById,
     findUserByEmail
 };

@@ -1,4 +1,5 @@
-const {createRecipe, getRecipes} = require("../services/recipeService");
+const {createRecipe, getRecipes, getRecipe} = require("../services/recipeService");
+const {findUserById} = require("../services/userService");
 const create = async (req, res ) => {
     try {
 
@@ -19,9 +20,7 @@ const create = async (req, res ) => {
 
 const getAll = async (req, res) => {
     try {
-
         const recipes = await getRecipes(req.query)
-
         const response = recipes.map(recipe => {
 
             const { id, title, media } = recipe;
@@ -44,7 +43,33 @@ const getAll = async (req, res) => {
     }
 }
 
+const getById = async (req, res) => {
+    try {
+        const { recipeId } = req.params;
+        console.log(recipeId)
+
+        const recipe = await getRecipe(recipeId)
+        const user = await findUserById(recipe.userId)
+
+        recipe.username = user.name +" " + user.surname
+        recipe.userImage = user.photoUrl
+        const data = recipe.media.map(m => m.data);
+        res.status(200).json({
+            ...recipe,
+            username: user.name + " " + user.surname,
+            userImage: user.photoUrl,
+            media: data
+        })
+    } catch (error) {
+        console.error(`getResources: ${error}`);
+        res.status(error.code || 500).json({
+            msg: error.message || "An exception has ocurred",
+        });
+    }
+}
+
 module.exports = {
     create,
-    getAll
+    getAll,
+    getById
 };
