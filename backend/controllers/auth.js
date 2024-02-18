@@ -1,14 +1,22 @@
-const {createUser} = require("../services/userService");
-const signUp = async (req, res ) => {
+const {createUser, findUserByEmail} = require("../services/userService");
+const {createAuthTokens, loginUser} = require("../services/authService");
+const authenticate = async (req, res ) => {
     try {
+        console.log(req.body)
+        const userData = await loginUser(req.body.token)
+        let user = await findUserByEmail(userData.email)
 
-        const newUser = await createUser(req.body)
+        if (!user) {
+            user = await createUser(userData)
+        }
+
+        const tokens = createAuthTokens(user)
 
         res.status(201).json(
             {
-                id: newUser.id,
-                accessToken: newUser.accessToken,
-                refreshToken: newUser.refreshToken
+                id: user.id,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken
             }
         );
     } catch (error) {
@@ -20,5 +28,5 @@ const signUp = async (req, res ) => {
 };
 
 module.exports = {
-    signUp,
+    authenticate,
 };

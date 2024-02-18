@@ -12,13 +12,44 @@ Resources:
       ExecutionRoleArn: arn:aws:iam::371815123890:role/InfraBase-ExecutionRole-37sMbNnfBodD  
       TaskRoleArn: arn:aws:iam::371815123890:role/InfraBase-TaskRole-OlWl6JdyH1Q9           
       ContainerDefinitions:
-        - Name: Yummly
-          Image: 371815123890.dkr.ecr.us-east-1.amazonaws.com/yummly-serving:latest
-          Memory: 512
-          Cpu: 256
+        - Name: yummly-db
+          Image: postgres
           Essential: true
+          Memory: 256
+          Cpu: 128
+          Environment:
+            - Name: POSTGRES_PASSWORD
+              Value: base1234
+            - Name: POSTGRES_DB
+              Value: daidb
+          PortMappings:
+            - ContainerPort: 5432
+          LogConfiguration:                       
+            LogDriver: awslogs
+            Options:
+              awslogs-group: Logs       
+              awslogs-region: us-east-1           
+              awslogs-stream-prefix: YummlyDB
+        - Name: yummly-app
+          Image: 371815123890.dkr.ecr.us-east-1.amazonaws.com/yummly-serving:latest
+          Essential: true
+          Memory: 256
+          Cpu: 128
           PortMappings:
             - ContainerPort: 8080
+          Environment:
+            - Name: CODE
+              Value: superSecret
+            - Name: POSTGRES_DB
+              Value: daidb
+            - Name: POSTGRES_USER
+              Value: postgres
+            - Name: POSTGRES_PASSWORD
+              Value: base1234
+            - Name: POSTGRES_HOST
+              Value: localhost
+            - Name: POSTGRES_PORT
+              Value: 5432
           LogConfiguration:                       
             LogDriver: awslogs
             Options:
@@ -28,19 +59,20 @@ Resources:
 
   # ECS Service
   YummlyECSService:
-    Type: AWS::ECS::Service
     DependsOn: 
-      - YummlyALBListener
+      - YummlyALB
+      - YummlyALBTargetGroup
+    Type: AWS::ECS::Service
     Properties:
       Cluster: InfraBase-ECSCluster-LGxtNiUvnwOO
       LaunchType: FARGATE
       PlatformVersion: '1.3.0'
       DesiredCount: 1
-      TaskDefinition: !Ref YummlyECSTaskDefinition
       LoadBalancers:
-        - ContainerName: Yummly
+        - ContainerName: yummly-app
           ContainerPort: 8080
           TargetGroupArn: !Ref YummlyALBTargetGroup
+      TaskDefinition: !Ref YummlyECSTaskDefinition
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -52,7 +84,6 @@ Resources:
             - sg-03076ea8a1a229cee
       DeploymentController: 
         Type: ECS
-      HealthCheckGracePeriodSeconds: 60
       ServiceConnectConfiguration:
         Enabled: false
 
@@ -69,6 +100,19 @@ Resources:
         - sg-0c659425934fb655b
         - sg-03076ea8a1a229cee
 
+  # ALB Target Group
+  YummlyALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn: 
+      - YummlyALB
+    Properties:
+      Port: 8080
+      Protocol: HTTP
+      TargetType: ip
+      HealthCheckPath: /ping
+      HealthCheckProtocol: HTTP
+      VpcId: vpc-0abd5e319f3b8bb9e
+
   # Listener
   YummlyALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -83,18 +127,4 @@ Resources:
       Port: 443        
       Protocol: HTTPS
       Certificates:
-        - CertificateArn: arn:aws:acm:us-east-1:371815123890:certificate/880823b2-936a-4194-9060-28e2dfa7341a
-
-  # ALB Target Group
-  YummlyALBTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    DependsOn: YummlyALB
-    Properties:
-      Port: 8080
-      Protocol: HTTP
-      TargetType: ip
-      HealthCheckPath: /api/v1/ping
-      HealthCheckProtocol: HTTP
-      VpcId: vpc-0abd5e319f3b8bb9e
-
-  
+        - CertificateArn: arn:aws:acm:us-east-1:371815123890:certificate/cbcf4f53-a658-4b95-b4e2-7c54ee84d289

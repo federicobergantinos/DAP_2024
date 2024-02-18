@@ -7,10 +7,16 @@ AWS_REGION=us-east-1
 
 # Docker
 docker-build:
-	docker build -t $(IMAGE_NAME) ../backend/
+	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest ../backend/ --push
 
 docker-run:
-	docker run --env-file ../backend/.env --name $(CONTAINER_NAME) -it --rm -p 8080:8080 $(IMAGE_NAME)
+	docker run --env-file ../backend/.env --name $(CONTAINER_NAME) -it --rm -p 8080:8080 $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest 
+
+docker-pull:
+	docker pull $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest
+
+docker-run-yummly:
+	make ecr-login && make docker-pull && make docker-run
 
 docker-stop:
 	docker stop $(CONTAINER_NAME)
@@ -20,6 +26,15 @@ docker-rm:
 
 docker-rmi:
 	docker rmi $(IMAGE_NAME)
+	
+docker-compose-build-service:
+	docker-compose -f ../backend/docker-compose.yml build $(PROJECT)
+
+docker-compose-up:
+	docker-compose -f ../backend/docker-compose.yml up -d
+
+docker-compose-down:
+	docker-compose -f ../backend/docker-compose.yml down
 
 docker-clean: docker-stop docker-rm docker-rmi
 
@@ -39,7 +54,7 @@ ecr-tag-image:
 	docker tag $(IMAGE_NAME):latest $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest
 
 ecr-delete-image:
-	aws ecr batch-delete-image --repository-name $(PROJECT) --image-ids imageTag=latest --region $(AWS_REGION) --no-cli-pager
+	aws ecr batch-delete-image --repository-name $(PROJECT) --image-ids imageTag=latest --region $(AWS_REGION)
 
 ecr-push-image:
 	docker push $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest
@@ -61,6 +76,6 @@ cloudformation-delete-stack-service:
 	aws cloudformation delete-stack --stack-name $(PROJECT) --region $(AWS_REGION)
 		
 
-.PHONY: docker-build docker-run docker-stop docker-rm docker-rmi docker-clean docker-rebuild docker-shell 
+.PHONY: docker-build docker-run docker-stop docker-rm docker-rmi docker-clean docker-rebuild docker-shell docker-compose-up docker-compose-down docker-run-yummly
 .PHONY: ecr-create-repo ecr-login ecr-tag-image ecr-push-image ecr 
 .PHONY: cloudformation-create-stack cloudformation-delete-stack 
