@@ -16,7 +16,7 @@ docker-run:
 	docker-compose up --build
 
 docker-ngrok:
-	docker run -it -e NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN} ngrok/ngrok:latest http host.docker.internal:8080
+	docker run -it -e NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN} ngrok/ngrok:latest http 0.0.0.0:8080
 
 
 .PHONY: docker-run-ddbb docker-run-backend docker-build docker-run

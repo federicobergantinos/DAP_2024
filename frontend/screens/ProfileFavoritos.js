@@ -26,7 +26,6 @@ class ProfileFavoritos extends React.Component {
                 <Block flex>
                     <ImageBackground
                         source={Images.Background}
-                        style={styles.profileContainer}
                         imageStyle={styles.profileBackground}
                     >
                         <ScrollView
@@ -54,14 +53,6 @@ class ProfileFavoritos extends React.Component {
                                         <Text bold size={16} color="#525F7F" style={{ marginTop: 3 }}>
                                             Mis Favoritos
                                         </Text>
-                                        <Button
-                                            small
-                                            color="transparent"
-                                            textStyle={{ color: "#5E72E4", fontSize: 14 }}
-                                            onPress={() => { this.props.navigation.navigate('Profile') }}
-                                        >
-                                            Volver
-                                        </Button>
                                     </Block>
 
                                     <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
@@ -100,12 +91,6 @@ const styles = StyleSheet.create({
         marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
         flex: 1
     },
-    profileContainer: {
-        width: width,
-        height: height,
-        padding: 0,
-        zIndex: 1
-    },
     profileBackground: {
         width: width,
         height: height / 1.5,
@@ -114,7 +99,7 @@ const styles = StyleSheet.create({
     profileCard: {
         padding: theme.SIZES.BASE,
         marginHorizontal: theme.SIZES.BASE,
-        marginTop: 65,
+        marginTop: 100,
         borderTopLeftRadius: 6,
         borderTopRightRadius: 6,
         backgroundColor: theme.COLORS.WHITE,
