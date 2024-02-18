@@ -3,7 +3,11 @@ import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import {yummlyTheme} from "../constants";
 
 
-const LoadingScreen = () => {
+const LoadingScreen = ({ visible }) => {
+
+    if (!visible) {
+        return null;
+    }
     return (
         <View style={styles.container}>
             <View style={styles.overlay} />
@@ -16,13 +20,14 @@ const LoadingScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 1000,
     },
     overlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscurecido con transparencia
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     spinnerContainer: {
         position: 'absolute',
