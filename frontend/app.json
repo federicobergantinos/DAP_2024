@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Yummly React Native",
-    "slug": "yummly-react-native",
+    "name": "Yummly",
+    "slug": "yummly",
     "privacy": "public",
     "platforms": [
       "ios",
@@ -23,11 +23,19 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.k24956.yummlyreactnative"
+      "bundleIdentifier": "com.yummly.yummlyreactnative"
     },
-    "description": "Yummly React Native",
+    "description": "Yummly",
     "android": {
-      "package": "com.k24956.yummlyreactnative"
+      "package": "com.yummly.yummlyreactnative",
+      "permissions": [
+        "INTERNET"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "46a14906-b6b6-4d26-8b7f-14dafda9040e"
+      }
     }
   }
 }

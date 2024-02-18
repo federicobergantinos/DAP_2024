@@ -1,13 +1,22 @@
-const {response} = require("express");
-const signUp = async (req, res = response) => {
+const {createUser, findUserByEmail} = require("../services/userService");
+const {createAuthTokens, loginUser} = require("../services/authService");
+const authenticate = async (req, res ) => {
     try {
-        const { googleToken } = req.params;
-        //hacer signUp
+        console.log(req.body)
+        const userData = await loginUser(req.body.token)
+        let user = await findUserByEmail(userData.email)
+
+        if (!user) {
+            user = await createUser(userData)
+        }
+
+        const tokens = createAuthTokens(user)
 
         res.status(201).json(
             {
-                "accessToken": googleToken,
-                "refreshToken": "refresh"
+                id: user.id,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken
             }
         );
     } catch (error) {
@@ -19,5 +28,5 @@ const signUp = async (req, res = response) => {
 };
 
 module.exports = {
-    signUp,
+    authenticate,
 };

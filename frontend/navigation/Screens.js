@@ -31,19 +31,20 @@ function SettingsStack(props) {
         headerShown: "screen",
       }}
     >
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header title="Settings" scene={scene} navigation={navigation} />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
+    <Stack.Screen
+      name="Settings"
+      component={SettingsScreen}
+      options={{
+        header: ({ navigation, scene }) => (
+          <Header title="Settings" scene={scene} navigation={navigation} />
+        ),
+        cardStyle: { backgroundColor: "#F8F9FE" },
+      }}
+    />
     </Stack.Navigator>
   );
 }
+
 
 
 function ProfileStack(props) {
@@ -121,6 +122,67 @@ function ProfileFavoritosStack(props) {
   );
 }
 
+function ProfileRecetasStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="ProfileRecetas"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="ProfileRecetas"
+        component={ProfileRecetas}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              Header
+              title="Profile"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileFavoritosStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="ProfileFavoritos"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="ProfileFavoritos"
+        component={ProfileFavoritos}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              Header
+              title="Profile"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+
 function HomeStack(props) {
   return (
     <Stack.Navigator
@@ -129,6 +191,13 @@ function HomeStack(props) {
         headerShown: "screen",
       }}
     >
+      <Stack.Screen
+        name="LoginDrawer"
+        component={Login}
+        options={{
+            headerShown: false,
+        }}
+      />
       <Stack.Screen
         name="Home"
         component={Home}
@@ -193,6 +262,37 @@ function HomeStack(props) {
   );
 }
 
+function CreateRecipeStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="CreateRecipe"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="CreateRecipe"
+        component={CreateRecipe}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              back
+              transparent
+              white
+              title="Crear Receta"
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: true,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function AppStack(props) {
   return (
     <Drawer.Navigator
@@ -221,7 +321,7 @@ function AppStack(props) {
           fontWeight: "normal",
         },
       }}
-      initialRouteName="LoginDrawer"
+      initialRouteName="HomeDrawer"
     >
       <Drawer.Screen
         name="HomeDrawer"
@@ -261,6 +361,13 @@ function AppStack(props) {
       <Drawer.Screen
         name="LoginDrawer"
         component={Login}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="CreateRecipeDrawer"
+        component={CreateRecipeStack}
         options={{
           headerShown: false,
         }}
