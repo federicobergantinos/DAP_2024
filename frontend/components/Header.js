@@ -1,8 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions, Keyboard } from 'react-native';
 import { Block, NavBar, theme } from 'galio-framework';
-import { useNavigation } from '@react-navigation/native';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native'; // Importa useNavigation de '@react-navigation/native'
 
 import Icon from './Icon';
 import Input from './Input';
@@ -13,48 +12,48 @@ const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
 const ProfileButton = ({ isWhite, style }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // Usa useNavigation para obtener el objeto de navegación
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('ProfileDrawer')}>
-      <Icon
-        family="Feather"
-        size={20}
-        name="user"
-        color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-      />
-    </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('ProfileDrawer')}>
+        <Icon
+            family="Feather"
+            size={20}
+            name="user"
+            color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
+        />
+      </TouchableOpacity>
   );
 };
 
 const SettingsButton = ({ isWhite, style }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // Usa useNavigation para obtener el objeto de navegación
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('SettingsDrawer')}>
-      <Icon
-        family="Feather"
-        size={20}
-        name="settings"
-        color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-      />
-    </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('SettingsDrawer')}>
+        <Icon
+            family="Feather"
+            size={20}
+            name="settings"
+            color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
+        />
+      </TouchableOpacity>
   );
 };
 
-const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColor, search, tabs, tabIndex, ...props }) => {
-  const navigation = useNavigation();
+const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColor, tabs, tabIndex }) => {
+  const navigation = useNavigation(); // Usa useNavigation para obtener el objeto de navegación
 
   const renderLeft = () => {
-    return back ? () => navigation.dispatch(CommonActions.goBack()) : () => navigation.navigate('HomeDrawer');
+    return (back ? navigation.goBack() : navigation.navigate('HomeDrawer'));
   };
 
   const renderRight = () => {
     if (title === 'Title') {
       return [
-        <ProfileButton key='profile-title' isWhite={white} />,
-        <SettingsButton key='settings-title' isWhite={white} />
+        <ProfileButton key='profile-title' style={{ marginRight: 16 }} />,
+        <SettingsButton key='settings-title' />,
       ];
     }
-    
+
     switch (title) {
       case 'Home':
       case 'Profile':
@@ -62,48 +61,46 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
       case 'Search':
       case 'Settings':
         return ([
-          <ProfileButton key='profile-title' isWhite={white} />,
-          <SettingsButton key='settings-title' isWhite={white} />
+          <ProfileButton key='profile-title' style={{ marginRight: 16 }} />,
+          <SettingsButton key='settings-title' />,
         ]);
       default:
-        return null;
+        break;
     }
   };
 
   const renderSearch = () => {
     return (
-      <Input
-        right
-        color="black"
-        style={styles.search}
-        placeholder="Qué estás buscando?"
-        placeholderTextColor={'#8898AA'}
-        onFocus={() => {Keyboard.dismiss(); navigation.navigate('Search');}}
-        iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="search-zoom-in" family="YummlyExtra" />}
-      />
+        <Input
+            right
+            color="black"
+            style={styles.search}
+            placeholder="Que estas buscando?"
+            placeholderTextColor={'#8898AA'}
+            onFocus={() => { Keyboard.dismiss(); navigation.navigate('Search'); }}
+            iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="search-zoom-in" family="YummlyExtra" />}
+        />
     );
   };
 
   const renderTabs = () => {
-    const defaultTab = tabs && tabs[0] && tabs[0].id;
-    
     if (!tabs) return null;
 
     return (
-      <Tabs
-        data={tabs || []}
-        initialIndex={tabIndex || defaultTab}
-        onChange={id => navigation.setParams({ tabId: id })} />
+        <Tabs
+            data={tabs || []}
+            initialIndex={tabIndex || (tabs[0] && tabs[0].id)}
+            onChange={(id) => navigation.setParams({ tabId: id })} />
     );
   };
 
   const renderHeader = () => {
-    if (search || tabs) {
+    if (tabs) {
       return (
-        <Block center>
-          {search ? renderSearch() : null}
-          {tabs ? renderTabs() : null}
-        </Block>
+          <Block center>
+            {renderSearch()}
+            {renderTabs()}
+          </Block>
       );
     }
   };
@@ -116,39 +113,37 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
 
   const navbarStyles = [
     styles.navbar,
-    bgColor && { backgroundColor: bgColor }
+    bgColor && { backgroundColor: bgColor },
   ];
 
   return (
-    <Block style={headerStyles}>
-      <NavBar
-        back={false}
-        title={title}
-        style={navbarStyles}
-        transparent={transparent}
-        right={renderRight()}
-        rightStyle={{ alignItems: 'center' }}
-        left={
-          <Icon 
-            name={back ? 'chevron-left' : "home"} family="Feather" 
-            size={20} onPress={renderLeft()}
-            color={iconColor || (white ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.ICON)}
-            style={{ marginTop: 2 }}
-          />
-        }
-        leftStyle={{ flex: 0.35 }}
-        titleStyle={[
-          styles.title,
-          { color: yummlyTheme.COLORS[white ? 'WHITE' : 'HEADER'] },
-          titleColor && { color: titleColor }
-        ]}
-        {...props}
-      />
-      {renderHeader()}
-    </Block>
+      <Block style={headerStyles}>
+        <NavBar
+            back={false}
+            title={title}
+            style={navbarStyles}
+            transparent={transparent}
+            right={renderRight()}
+            rightStyle={{ alignItems: 'center' }}
+            left={
+              <Icon
+                  name={back ? 'chevron-left' : "home"} family="Feather"
+                  size={20} onPress={renderLeft}
+                  color={iconColor || (white ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.ICON)}
+                  style={{ marginTop: 2 }}
+              />
+            }
+            leftStyle={{ flex: 0.35 }}
+            titleStyle={[
+              styles.title,
+              { color: yummlyTheme.COLORS[white ? 'WHITE' : 'HEADER'] },
+              titleColor && { color: titleColor }
+            ]}
+        />
+        {renderHeader()}
+      </Block>
   );
 };
-
 
 const styles = StyleSheet.create({
   button: {
@@ -174,22 +169,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     elevation: 3,
   },
-  notify: {
-    backgroundColor: yummlyTheme.COLORS.LABEL,
-    borderRadius: 4,
-    height: theme.SIZES.BASE / 2,
-    width: theme.SIZES.BASE / 2,
-    position: 'absolute',
-    top: 9,
-    right: 12,
-  },
-  header: {
-    backgroundColor: theme.COLORS.WHITE,
-  },
-  divider: {
-    borderRightWidth: 0.3,
-    borderRightColor: theme.COLORS.ICON,
-  },
   search: {
     height: 48,
     width: width - 32,
@@ -197,19 +176,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     borderColor: yummlyTheme.COLORS.BORDER
-  },
-  tab: {
-    backgroundColor: theme.COLORS.TRANSPARENT,
-    width: width * 0.35,
-    borderRadius: 0,
-    borderWidth: 0,
-    height: 24,
-    elevation: 0,
-  },
-  tabTitle: {
-    lineHeight: 19,
-    fontWeight: '400',
-    color: yummlyTheme.COLORS.HEADER
   },
 });
 
