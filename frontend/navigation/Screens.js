@@ -22,23 +22,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 const { width } = Dimensions.get("screen");
 const Stack = createStackNavigator();
 
-function SettingsStack(props) {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        mode: "card",
-        headerShown: "screen",
-      }}
-    >
-    </Stack.Navigator>
-  );
-}
-
-
-
-
-
-
 function HomeStack(props) {
   return (
     <Stack.Navigator
@@ -197,37 +180,6 @@ function HomeStack(props) {
     </Stack.Navigator>
   );
 }
-
-// function CreateRecipeStack(props) {
-//   return (
-//     <Stack.Navigator
-//       initialRouteName="CreateRecipe"
-//       screenOptions={{
-//         mode: "card",
-//         headerShown: "screen",
-//       }}
-//     >
-//       <Stack.Screen
-//         name="CreateRecipe"
-//         component={CreateRecipe}
-//         options={{
-//           header: ({ navigation, scene }) => (
-//             <Header
-//               back
-//               transparent
-//               white
-//               title="Crear Receta"
-//               navigation={navigation}
-//               scene={scene}
-//             />
-//           ),
-//           cardStyle: { backgroundColor: "#FFFFFF" },
-//           headerTransparent: true,
-//         }}
-//       />
-//     </Stack.Navigator>
-//   );
-// }
 
 export default function OnboardingStack(props) {
   return (
