@@ -3,11 +3,8 @@ import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import {yummlyTheme} from "../constants";
 
 
-const LoadingScreen = ({ visible }) => {
-
-    if (!visible) {
-        return null;
-    }
+const LoadingScreen = ({visible}) => {
+    if (!visible) return null;
     return (
         <View style={styles.container}>
             <View style={styles.overlay} />

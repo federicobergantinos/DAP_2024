@@ -28,7 +28,8 @@ const DismissKeyboard = ({children}) => (
 
 const Login = () => {
   const navigation = useNavigation()
-  const [isLoading, setIsLoading] = useState(false)
+  const isLoggedUser = () => { return AsyncStorage.getItem("token") !== null && AsyncStorage.getItem("refresh") !== null && AsyncStorage.getItem("userId") !== null}
+  const [isLoading, setIsLoading] = useState(isLoggedUser)
   GoogleSignin.configure({
     webClientId:
         '445263022323-e0okjk06i01er8q0gcg51oensjp8h34o.apps.googleusercontent.com',
@@ -37,10 +38,11 @@ const Login = () => {
     scopes: ['profile', 'email'],
   });
 
-  const isLoggedUser = () => { return AsyncStorage.getItem("token") !== null && AsyncStorage.getItem("refresh") !== null && AsyncStorage.getItem("userId") !== null}
+
   useEffect(() => {
     if(isLoggedUser())
-      navigation.navigate('Home')
+      navigation.replace('Home')
+    setIsLoading(false)
   }, []);
 
 
@@ -56,7 +58,7 @@ const Login = () => {
         await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
         await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken));
         await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-        navigation.navigate('Home')
+        navigation.replace('Home')
       }
     } catch (error) {
       console.error('CODE:' + error.code);

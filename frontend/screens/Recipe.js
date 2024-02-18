@@ -55,7 +55,7 @@ const recipe = {
 const { height, width } = Dimensions.get("window");
 
 
-const getAsyncRecipe = async (recipeId, setRecipe, setLoading) => {
+const getAsyncRecipe = async (recipeId) => {
   const {response, statusCode} = await backendApi.recipesGateway.getRecipeById(recipeId)
   console.log("STATUS:",statusCode);
   console.log("RESPONSE:",response);
@@ -94,7 +94,7 @@ export default function Recipe(props) {
   const textColor2 = !isStepsAvailable ? 'black' : 'gray';
 
   const renderGallery = () => {
-    const { navigation, route } = props;
+    const { navigation } = props;
     const recipeImages = recipe.media
 
     return (
@@ -155,7 +155,7 @@ export default function Recipe(props) {
 
   if(loading) {
     return(
-        LoadingScreen()
+        <LoadingScreen visible={loading}/>
     )
   } else{
     return (
