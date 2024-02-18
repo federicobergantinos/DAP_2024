@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   ImageBackground,
@@ -6,7 +6,7 @@ import {
   StatusBar,
   TouchableWithoutFeedback,
   Keyboard,
-  Image,
+  Image, View,
 } from 'react-native';
 import {Block, Text} from 'galio-framework';
 
@@ -16,6 +16,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import backendApi from '../api/backendGateway';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from '@react-navigation/native';
+import LoadingScreen from "../components/LoadingScreen";
 
 const {width, height} = Dimensions.get('screen');
 
@@ -27,6 +28,8 @@ const DismissKeyboard = ({children}) => (
 
 const Login = () => {
   const navigation = useNavigation()
+  const isLoggedUser = () => { return AsyncStorage.getItem("token") !== null && AsyncStorage.getItem("refresh") !== null && AsyncStorage.getItem("userId") !== null}
+  const [isLoading, setIsLoading] = useState(isLoggedUser)
   GoogleSignin.configure({
     webClientId:
     '445263022323-e0okjk06i01er8q0gcg51oensjp8h34o.apps.googleusercontent.com',
@@ -37,93 +40,103 @@ const Login = () => {
     scopes: ['profile', 'email'],
   });
 
+
+  useEffect(() => {
+    if(isLoggedUser())
+      navigation.replace('Home')
+    setIsLoading(false)
+  }, []);
+
+
   const authenticate = async () => {
     try {
+      setIsLoading(true)
       const userInfo = await GoogleSignin.signIn();
       const {idToken, user} = userInfo
 
       console.log(idToken)
       const {response, statusCode} = await backendApi.authUser.authenticate({token: idToken })
-
-      if(statusCode === 201){
-        console.log(idToken)
+      setIsLoading(false)
+      if(statusCode === 201) {
         await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
         await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken));
         await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-        navigation.navigate('Home')
+        navigation.replace('Home')
       }
     } catch (error) {
-      // @ts-ignore
       console.error('CODE:' + error.code);
-      // @ts-ignore
       console.error('MESSAGE:' + error.message);
-      // @ts-ignore
       console.error('STACK:' + error.stack);
     }
   };
+
   return (
-      <DismissKeyboard>
-        <Block flex style={{justifyContent: 'flex-end', marginTop: 'auto'}}>
-          <StatusBar hidden />
-          <ImageBackground
-              source={Images.LoginBackground}
-              style={{width, height, zIndex: 1}}>
-            <Block
-                style={{
-                  width,
-                  height: height * 0.8,
-                  justifyContent: 'flex-end',
-                  marginBottom: 20,
-                }}
-                middle>
-              <Block style={styles.loginContainer}>
-                <Block flex space="between">
-                  <Block flex={1} middle style={styles.socialConnect}>
-                    <Block flex={0.6} middle>
-                      <Text color="#8898AA" size={16}>
-                        Login & Sign Up
-                      </Text>
-                    </Block>
-                    <Block flex={0.4} row style={{marginBottom: 18}}>
-                      <Button
-                          style={{...styles.socialButtons}}
-                          onPress={authenticate}>
-                        <Block
-                            row
-                            style={{
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                            }}>
-                          <Image
-                              source={require('../assets/imgs/g_icon.png')}
+      <View style={{ flex: 1 }}>
+        <DismissKeyboard>
+          <Block flex style={{justifyContent: 'flex-end', marginTop: 'auto'}}>
+            <StatusBar hidden />
+            <ImageBackground
+                source={Images.LoginBackground}
+                style={{width, height, zIndex: 1}}>
+              <Block
+                  style={{
+                    width,
+                    height: height * 0.8,
+                    justifyContent: 'flex-end',
+                    marginBottom: 20,
+                  }}
+                  middle>
+                <Block style={styles.loginContainer}>
+
+                  <Block flex space="between">
+                    <Block flex={1} middle style={styles.socialConnect}>
+                      <Block flex={0.6} middle>
+                        <Text color="#8898AA" size={16}>
+                          Login & Sign Up
+                        </Text>
+                      </Block>
+                      <Block flex={0.4} row style={{marginBottom: 18}}>
+                        <Button
+                            style={{...styles.socialButtons}}
+                            onPress={authenticate}>
+                          <Block
+                              row
                               style={{
-                                height: 30,
-                                width: 30,
-                                marginTop: 2,
-                                marginRight: 5,
-                              }}
-                          />
-                          <Text style={styles.socialTextButtons}>
-                            Continue with Google
-                          </Text>
-                        </Block>
-                      </Button>
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}>
+                            <Image
+                                source={require('../assets/imgs/g_icon.png')}
+                                style={{
+                                  height: 30,
+                                  width: 30,
+                                  marginTop: 2,
+                                  marginRight: 5,
+                                }}
+                            />
+                            <Text style={styles.socialTextButtons}>
+                              Continue with Google
+                            </Text>
+                          </Block>
+                        </Button>
+                      </Block>
                     </Block>
                   </Block>
                 </Block>
               </Block>
-            </Block>
-          </ImageBackground>
-        </Block>
-      </DismissKeyboard>
+            </ImageBackground>
+          </Block>
+        </DismissKeyboard>
+        <LoadingScreen visible = {isLoading}/>
+      </View>
   );
 };
 
 
 const styles = StyleSheet.create({
   loginContainer: {
-    width: width * 0.9,
-    height: height < 812 ? height * 0.3 : height * 0.2,
+    width: width * 0.8,
+    height: height < 812 ? height * 0.2 : height * 0.1,
     backgroundColor: '#F4F5F7',
     borderRadius: 4,
     shadowColor: yummlyTheme.COLORS.BLACK,
