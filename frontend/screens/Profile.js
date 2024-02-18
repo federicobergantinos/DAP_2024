@@ -34,7 +34,7 @@ class Profile extends React.Component {
       <Block flex style={styles.profile}>
         <Block flex>
           <ImageBackground
-            source={Images.ProfileBackground}
+            source={Images.Background}
             style={styles.profileContainer}
             imageStyle={styles.profileBackground}
           >
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   },
   profileBackground: {
     width: width,
-    height: height / 2,
+    height: height / 1.5,
     top: height / 10
   },
   profileCard: {
