@@ -1,7 +1,7 @@
 import React from 'react';
-import { withNavigation } from '@react-navigation/compat';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions, Keyboard } from 'react-native';
 import { Block, NavBar, theme } from 'galio-framework';
+import { useNavigation } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 
 import Icon from './Icon';
@@ -12,62 +12,49 @@ import yummlyTheme from '../constants/Theme';
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
 
-const ProfileButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('ProfileDrawer')}>
-    <Icon
-      family="Feather"
-      size={20}
-      name="user"
-      color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-    />
-  </TouchableOpacity>
-);
+const ProfileButton = ({ isWhite, style }) => {
+  const navigation = useNavigation();
+  return (
+    <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('ProfileDrawer')}>
+      <Icon
+        family="Feather"
+        size={20}
+        name="user"
+        color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
+      />
+    </TouchableOpacity>
+  );
+};
 
-const SettingsButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('SettingsDrawer')}>
-    <Icon
-      family="Feather"
-      size={20}
-      name="settings"
-      color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-    />
-  </TouchableOpacity>
-);
+const SettingsButton = ({ isWhite, style }) => {
+  const navigation = useNavigation();
+  return (
+    <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('SettingsDrawer')}>
+      <Icon
+        family="Feather"
+        size={20}
+        name="settings"
+        color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
+      />
+    </TouchableOpacity>
+  );
+};
 
-const HomeButton = ({isWhite, style, navigation}) => (
-  <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('HomeDrawer')}>
-    <Icon
-      family="Feather"
-      size={20}
-      name="home"
-      color={yummlyTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
-    />
-  </TouchableOpacity>
-);
+const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColor, search, tabs, tabIndex, ...props }) => {
+  const navigation = useNavigation();
 
+  const renderLeft = () => {
+    return back ? () => navigation.dispatch(CommonActions.goBack()) : () => navigation.navigate('HomeDrawer');
+  };
 
-class Header extends React.Component {
-  handleLeftPress = () => {
-    const { back, navigation, scene } = this.props;
-    return (back ? navigation.dispatch(CommonActions.goBack()) : navigation.openDrawer());
-  }
-
-  renderLeft = () => {
-    const { back, white, navigation } = this.props;
-    console.log(back)
-    return(back ? navigation.dispatch(CommonActions.goBack()) : <HomeButton key='home-title' navigation={navigation} isWhite={white} />);
-  }
-  renderRight = () => {
-    const { white, title, navigation } = this.props;
-    // const { routeName } = navigation.state;
-
+  const renderRight = () => {
     if (title === 'Title') {
       return [
-        <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />,
-        <SettingsButton key='settings-title' navigation={navigation} isWhite={white} />
-      ]
+        <ProfileButton key='profile-title' isWhite={white} />,
+        <SettingsButton key='settings-title' isWhite={white} />
+      ];
     }
-    
+
     switch (title) {
       case 'Home':
       case 'Profile':
@@ -75,31 +62,31 @@ class Header extends React.Component {
       case 'Search':
       case 'Settings':
         return ([
-          <ProfileButton key='profile-title' navigation={navigation} isWhite={white} />,
-          <SettingsButton key='settings-title' navigation={navigation} isWhite={white} />
+          <ProfileButton key='profile-title' isWhite={white} />,
+          <SettingsButton key='settings-title' isWhite={white} />
         ]);
       default:
-        break;
+        return null;
     }
-  }
-  renderSearch = () => {
-    const { navigation } = this.props;
+  };
+
+  const renderSearch = () => {
     return (
       <Input
         right
         color="black"
         style={styles.search}
-        placeholder="Que estas buscando?"
+        placeholder="Qué estás buscando?"
         placeholderTextColor={'#8898AA'}
-        onFocus={() => {Keyboard.dismiss(); navigation.navigate('Search');}}
+        onFocus={() => { Keyboard.dismiss(); navigation.navigate('Search'); }}
         iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="search-zoom-in" family="YummlyExtra" />}
       />
     );
-  }
-  renderTabs = () => {
-    const { tabs, tabIndex, navigation } = this.props;
+  };
+
+  const renderTabs = () => {
     const defaultTab = tabs && tabs[0] && tabs[0].id;
-    
+
     if (!tabs) return null;
 
     return (
@@ -107,58 +94,61 @@ class Header extends React.Component {
         data={tabs || []}
         initialIndex={tabIndex || defaultTab}
         onChange={id => navigation.setParams({ tabId: id })} />
-    )
-  }
-  renderHeader = () => {
-    const { search, tabs } = this.props;
+    );
+  };
+
+  const renderHeader = () => {
     if (search || tabs) {
       return (
         <Block center>
-          {search ? this.renderSearch() : null}
-          {tabs ? this.renderTabs() : null}
+          {search ? renderSearch() : null}
+          {tabs ? renderTabs() : null}
         </Block>
       );
     }
-  }
-  render() {
-    const { back, title, white, transparent, bgColor, iconColor, titleColor, navigation, ...props } = this.props;
-    const noShadow = ['Search', 'Profile'].includes(title);
-    const headerStyles = [
-      !noShadow ? styles.shadow : null,
-      transparent ? { backgroundColor: 'rgba(0,0,0,0)' } : null,
-    ];
+  };
 
-    const navbarStyles = [
-      styles.navbar,
-      bgColor && { backgroundColor: bgColor }
-    ];
+  const noShadow = ['Search', 'Profile'].includes(title);
+  const headerStyles = [
+    !noShadow ? styles.shadow : null,
+    transparent ? { backgroundColor: 'rgba(0,0,0,0)' } : null,
+  ];
 
-    return (
-      <Block style={headerStyles}>
-        <NavBar
-          back={false}
-          title={title}
-          style={navbarStyles}
-          transparent={transparent}
-          right={this.renderRight()}
-          rightStyle={{ alignItems: 'center' }}
-          onLeftPress={this.handleLeftPress}
-          left={
-            <HomeButton key='home-title' navigation={navigation} isWhite={white} />
-          }
-          leftStyle={{ flex: 0.4 }}
-          titleStyle={[
-            styles.title,
-            { color: yummlyTheme.COLORS[white ? 'WHITE' : 'HEADER'] },
-            titleColor && { color: titleColor }
-          ]}
-          {...props}
-        />
-        {this.renderHeader()}
-      </Block>
-    );
-  }
-}
+  const navbarStyles = [
+    styles.navbar,
+    bgColor && { backgroundColor: bgColor }
+  ];
+
+  return (
+    <Block style={headerStyles}>
+      <NavBar
+        back={false}
+        title={title}
+        style={navbarStyles}
+        transparent={transparent}
+        right={renderRight()}
+        rightStyle={{ alignItems: 'center' }}
+        left={
+          <Icon
+            name={back ? 'chevron-left' : "home"} family="Feather"
+            size={20} onPress={renderLeft()}
+            color={iconColor || (white ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.ICON)}
+            style={{ marginTop: 2 }}
+          />
+        }
+        leftStyle={{ flex: 0.35 }}
+        titleStyle={[
+          styles.title,
+          { color: yummlyTheme.COLORS[white ? 'WHITE' : 'HEADER'] },
+          titleColor && { color: titleColor }
+        ]}
+        {...props}
+      />
+      {renderHeader()}
+    </Block>
+  );
+};
+
 
 const styles = StyleSheet.create({
   button: {
@@ -223,4 +213,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(Header);
+export default Header;

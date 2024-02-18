@@ -73,7 +73,7 @@ const Home = () => {
       />
     );
   };
-  
+
   
   return (
     <Block flex center style={styles.home}>

@@ -60,16 +60,15 @@ function ProfileStack(props) {
         component={Profile}
         options={{
           header: ({ navigation, scene }) => (
-            <Header
-              transparent
-              white
+            <Header 
               title="Profile"
+              back
+              black
               navigation={navigation}
               scene={scene}
             />
           ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          cardStyle: { backgroundColor: "#F8F9FE" },
         }}
       />
     </Stack.Navigator>
@@ -90,16 +89,9 @@ function ProfileRecetasStack(props) {
         component={ProfileRecetas}
         options={{
           header: ({ navigation, scene }) => (
-            <Header
-              transparent
-              white
-              title="Profile"
-              navigation={navigation}
-              scene={scene}
-            />
+            <Header title="Profile" scene={scene} navigation={navigation} />
           ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          cardStyle: { backgroundColor: "#F8F9FE" },
         }}
       />
     </Stack.Navigator>
@@ -120,16 +112,9 @@ function ProfileFavoritosStack(props) {
         component={ProfileFavoritos}
         options={{
           header: ({ navigation, scene }) => (
-            <Header
-              transparent
-              white
-              title="Profile"
-              navigation={navigation}
-              scene={scene}
-            />
+            <Header title="Profile" scene={scene} navigation={navigation} />
           ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          cardStyle: { backgroundColor: "#F8F9FE" },
         }}
       />
     </Stack.Navigator>

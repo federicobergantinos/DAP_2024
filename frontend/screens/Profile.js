@@ -11,7 +11,7 @@ import {
   View
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
-import { Button } from "../components";
+import { Button, Header } from "../components";
 import { Images, yummlyTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
 import { openImagePickerAsync, openCameraAsync } from '../components/ImagePicker.js';
@@ -31,7 +31,6 @@ class Profile extends React.Component {
   }
   render() {
     return (
-      
       <Block flex style={styles.profile}>
         <Block flex>
           <ImageBackground
@@ -39,6 +38,7 @@ class Profile extends React.Component {
             style={styles.profileContainer}
             imageStyle={styles.profileBackground}
           >
+
             <ScrollView
               showsVerticalScrollIndicator={false}
               style={{ width, marginTop: "25%" }}
@@ -54,8 +54,9 @@ class Profile extends React.Component {
                     style={styles.container}
                     onPress={()=>{this.setState({show:true})}}
                   >
-                    <Text>Editar Perfil</Text>
+                    <Text>Adjuntar Imagen</Text>
                   </TouchableOpacity>
+                  
                 </Block>
                 <Modal
                   transparent={true}
@@ -198,21 +199,20 @@ class Profile extends React.Component {
 const styles = StyleSheet.create({
   profile: {
     marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
-    // marginBottom: -HeaderHeight * 2,
     flex: 1
   },
   profileContainer: {
     width: width,
-    height: height,
+    height: height - height / 10,
     padding: 0,
     zIndex: 1
   },
   profileBackground: {
     width: width,
-    height: height / 2
+    height: height / 2,
+    top: height / 10
   },
   profileCard: {
-    // position: "relative",
     padding: theme.SIZES.BASE,
     marginHorizontal: theme.SIZES.BASE,
     marginTop: 65,
