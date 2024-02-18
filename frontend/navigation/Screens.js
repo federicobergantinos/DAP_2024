@@ -9,7 +9,8 @@ import Home from "../screens/Home";
 // Notifications
 import Recipe from "../screens/Recipe";
 import Profile from "../screens/Profile";
-import CreateRecipe from "../screens/CreateRecipe";
+import ProfileFavoritos from "../screens/ProfileFavoritos";
+import ProfileRecetas from "../screens/ProfileRecetas";
 import React from "react";
 import Login from "../screens/Login";
 import Search from "../screens/Search";
@@ -19,10 +20,8 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 
 const { width } = Dimensions.get("screen");
-
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-
 
 function SettingsStack(props) {
   return (
@@ -35,6 +34,8 @@ function SettingsStack(props) {
     </Stack.Navigator>
   );
 }
+
+
 
 function ProfileStack(props) {
   return (
@@ -50,22 +51,127 @@ function ProfileStack(props) {
         component={Profile}
         options={{
           header: ({ navigation, scene }) => (
-            <Header
-              transparent
-              white
-              back
+            <Header 
               title="Profile"
+              back
+              black
               navigation={navigation}
               scene={scene}
             />
           ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          cardStyle: { backgroundColor: "#F8F9FE" },
         }}
       />
     </Stack.Navigator>
   );
 }
+
+function ProfileRecetasStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="ProfileRecetas"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="ProfileRecetas"
+        component={ProfileRecetas}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Profile" scene={scene} navigation={navigation} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" },
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileFavoritosStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="ProfileFavoritos"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="ProfileFavoritos"
+        component={ProfileFavoritos}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Profile" scene={scene} navigation={navigation} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" },
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileRecetasStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="ProfileRecetas"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="ProfileRecetas"
+        component={ProfileRecetas}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              Header
+              title="Profile"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileFavoritosStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="ProfileFavoritos"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="ProfileFavoritos"
+        component={ProfileFavoritos}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              Header
+              title="Profile"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 
 function HomeStack(props) {
   return (
@@ -222,75 +328,6 @@ function CreateRecipeStack(props) {
     </Stack.Navigator>
   );
 }
-
-// function AppStack(props) {
-//   return (
-//     <Drawer.Navigator
-//       style={{ flex: 1 }}
-//       drawerStyle={{
-//         backgroundColor: "white",
-//         width: width * 0.8,
-//       }}
-//       screenOptions={{
-//         activeTintcolor: "white",
-//         inactiveTintColor: "#000",
-//         activeBackgroundColor: "transparent",
-//         itemStyle: {
-//           width: width * 0.75,
-//           backgroundColor: "transparent",
-//           paddingVertical: 16,
-//           paddingHorizonal: 12,
-//           justifyContent: "center",
-//           alignContent: "center",
-//           alignItems: "center",
-//           overflow: "hidden",
-//         },
-//         labelStyle: {
-//           fontSize: 18,
-//           marginLeft: 12,
-//           fontWeight: "normal",
-//         },
-//       }}
-//       initialRouteName="LoginDrawer"
-//     >
-//       <Drawer.Screen
-//         name="Home"
-//         component={HomeStack}
-//         options={{
-//           headerShown: false,
-//         }}
-//       />
-//       <Drawer.Screen
-//         name="ProfileDrawer"
-//         component={ProfileStack}
-//         options={{
-//           headerShown: false,
-//         }}
-//       />
-//       <Drawer.Screen
-//         name="SettingsDrawer"
-//         component={SettingsStack}
-//         options={{
-//           headerShown: false,
-//         }}
-//       />
-//       <Drawer.Screen
-//         name="LoginDrawer"
-//         component={Login}
-//         options={{
-//           headerShown: false,
-//         }}
-//       />
-//       <Drawer.Screen
-//         name="CreateRecipeDrawer"
-//         component={CreateRecipeStack}
-//         options={{
-//           headerShown: false,
-//         }}
-//       />
-//     </Drawer.Navigator>
-//   );
-// }
 
 export default function OnboardingStack(props) {
   return (
