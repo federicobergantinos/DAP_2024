@@ -54,8 +54,9 @@ class Profile extends React.Component {
                     style={styles.container}
                     onPress={()=>{this.setState({show:true})}}
                   >
-                    <Text>Editar Perfil</Text>
+                    <Text>Adjuntar Imagen</Text>
                   </TouchableOpacity>
+                  
                 </Block>
                 <Modal
                   transparent={true}
