@@ -63,15 +63,15 @@ function ProfileStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              transparent
-              white
+              Header
               title="Profile"
+              back
               navigation={navigation}
               scene={scene}
             />
           ),
           cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          headerTransparent: false,
         }}
       />
     </Stack.Navigator>
@@ -93,9 +93,9 @@ function ProfileRecetasStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
+              Header
               title="Profile"
-              search
-              tabs={tabs.tags}
+              back
               navigation={navigation}
               scene={scene}
             />
@@ -123,20 +123,21 @@ function ProfileFavoritosStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              transparent
-              white
+              Header
               title="Profile"
+              back
               navigation={navigation}
               scene={scene}
             />
           ),
           cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          headerTransparent: false,
         }}
       />
     </Stack.Navigator>
   );
 }
+
 
 function HomeStack(props) {
   return (

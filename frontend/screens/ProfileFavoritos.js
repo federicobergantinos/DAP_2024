@@ -97,8 +97,6 @@ class ProfileFavoritos extends React.Component {
 
 const styles = StyleSheet.create({
     profile: {
-        marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
-        // marginBottom: -HeaderHeight * 2,
         flex: 1
     },
     profileContainer: {
@@ -112,7 +110,6 @@ const styles = StyleSheet.create({
         height: height / 2
     },
     profileCard: {
-        // position: "relative",
         padding: theme.SIZES.BASE,
         marginHorizontal: theme.SIZES.BASE,
         marginTop: 65,
