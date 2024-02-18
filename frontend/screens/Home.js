@@ -1,54 +1,68 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Dimensions, FlatList, View, ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  View,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity
+} from "react-native";
 import { Block, theme } from "galio-framework";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Card } from "../components";
 import recipes from "../constants/recipes";
-const { width } = Dimensions.get("screen");
 
-const ITEMS_PER_PAGE = 6; 
+const { width } = Dimensions.get("screen");
+const ITEMS_PER_PAGE = 6;
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedTag, setSelectedTag] = useState(null); // Nuevo estado para el tag seleccionado
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [allItemsLoaded, setAllItemsLoaded] = useState(false);
 
   const navigation = useNavigation();
   const route = useRoute();
   const tabId = route.params?.tabId;
-  
+
   useEffect(() => {
-    // Establece el tag seleccionado basado en el parámetro recibido
     setSelectedTag(tabId);
   }, [tabId]);
-  
+
   useEffect(() => {
-    // Filtra las recetas cada vez que cambia el tag seleccionado
     filterRecipesByTag();
+    setAllItemsLoaded(false);
   }, [selectedTag]);
 
   const filterRecipesByTag = () => {
-    const filteredData = selectedTag
+    const filteredData = selectedTag === "all" ? recipes : selectedTag
       ? recipes.filter(recipe => recipe.tags.includes(selectedTag))
-      : recipes; // Filtra las recetas basándose en el tag seleccionado
+      : recipes;
 
     setData(filteredData.slice(0, ITEMS_PER_PAGE));
-    setCurrentPage(0); // Resetea la paginación
+    setCurrentPage(0);
+    setAllItemsLoaded(filteredData.length <= ITEMS_PER_PAGE);
   };
-  
+
   const loadMoreItems = () => {
-    if (loading) return;
+    if (loading || allItemsLoaded) return;
 
     setLoading(true);
     const nextPage = currentPage + 1;
-    const nextSetOfItems = recipes.slice(nextPage * ITEMS_PER_PAGE, (nextPage + 1) * ITEMS_PER_PAGE);
+    const newItems = selectedTag === "all" ? recipes : recipes.filter(recipe => selectedTag ? recipe.tags.includes(selectedTag) : true);
+    const nextSetOfItems = newItems.slice(nextPage * ITEMS_PER_PAGE, (nextPage + 1) * ITEMS_PER_PAGE);
 
     setTimeout(() => {
-      if (nextSetOfItems.length > 0) {
-        setData([...data, ...nextSetOfItems]);
-        setCurrentPage(nextPage);
-      }
+      setData(prevData => {
+        const updatedData = [...prevData, ...nextSetOfItems];
+        if (nextSetOfItems.length === 0 || updatedData.length === newItems.length) {
+          setAllItemsLoaded(true);
+        }
+        return updatedData;
+      });
+      setCurrentPage(nextPage);
       setLoading(false);
     }, 1500);
   };
@@ -64,8 +78,6 @@ const Home = () => {
 
   const renderRecipe = ({ item, index }) => {
     const marginRight = (index % 2 === 0) ? theme.SIZES.BASE : 0;
-
-
     return (
       <Card
         item={item}
@@ -74,7 +86,6 @@ const Home = () => {
     );
   };
 
-  
   return (
     <Block flex center style={styles.home}>
       <FlatList
@@ -86,7 +97,7 @@ const Home = () => {
         onEndReached={loadMoreItems}
         onEndReachedThreshold={0.1}
         ListFooterComponent={renderFooter}
-        numColumns={2} 
+        numColumns={2}
       />
       <TouchableOpacity
         onPress={() => navigation.navigate('CreateRecipe')}
@@ -95,7 +106,7 @@ const Home = () => {
         <Text style={styles.fabIcon}>+</Text>
       </TouchableOpacity>
     </Block>
-  );  
+  );
 };
 
 const styles = StyleSheet.create({
