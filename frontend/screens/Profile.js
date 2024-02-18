@@ -197,18 +197,19 @@ class Profile extends React.Component {
 
 const styles = StyleSheet.create({
   profile: {
+    marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
     flex: 1
   },
   profileContainer: {
     width: width,
-    height: height,
+    height: height - height / 10,
     padding: 0,
     zIndex: 1
   },
   profileBackground: {
     width: width,
     height: height / 2,
-    
+    top: height / 10
   },
   profileCard: {
     padding: theme.SIZES.BASE,

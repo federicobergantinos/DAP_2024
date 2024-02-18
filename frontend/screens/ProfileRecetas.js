@@ -98,6 +98,7 @@ class ProfileRecetas extends React.Component {
 
 const styles = StyleSheet.create({
     profile: {
+        marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
         flex: 1
     },
     profileContainer: {
@@ -108,7 +109,8 @@ const styles = StyleSheet.create({
     },
     profileBackground: {
         width: width,
-        height: height / 2
+        height: height / 2,
+        top: height / 10
     },
     profileCard: {
         padding: theme.SIZES.BASE,
