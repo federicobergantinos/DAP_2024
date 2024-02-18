@@ -59,7 +59,7 @@ class ProfileRecetas extends React.Component {
                                             small
                                             color="transparent"
                                             textStyle={{ color: "#5E72E4", fontSize: 14 }}
-                                            onPress={() => { this.props.navigation.navigate('ProfileDrawer') }}
+                                            onPress={() => { this.props.navigation.navigate('Profile') }}
                                         >
                                             Volver
                                         </Button>

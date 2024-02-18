@@ -11,17 +11,16 @@ import Recipe from "../screens/Recipe";
 import Profile from "../screens/Profile";
 import ProfileFavoritos from "../screens/ProfileFavoritos";
 import ProfileRecetas from "../screens/ProfileRecetas";
+import CreateRecipe from "../screens/CreateRecipe";
 import React from "react";
 import Login from "../screens/Login";
 import Search from "../screens/Search";
 // settings
 import SettingsScreen from "../screens/Settings";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 
 const { width } = Dimensions.get("screen");
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
 
 function SettingsStack(props) {
   return (
@@ -37,140 +36,7 @@ function SettingsStack(props) {
 
 
 
-function ProfileStack(props) {
-  return (
-    <Stack.Navigator
-      initialRouteName="Profile"
-      screenOptions={{
-        mode: "card",
-        headerShown: "screen",
-      }}
-    >
-      <Stack.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header 
-              title="Profile"
-              back
-              black
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
 
-function ProfileRecetasStack(props) {
-  return (
-    <Stack.Navigator
-      initialRouteName="ProfileRecetas"
-      screenOptions={{
-        mode: "card",
-        headerShown: "screen",
-      }}
-    >
-      <Stack.Screen
-        name="ProfileRecetas"
-        component={ProfileRecetas}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header title="Profile" scene={scene} navigation={navigation} />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
-
-function ProfileFavoritosStack(props) {
-  return (
-    <Stack.Navigator
-      initialRouteName="ProfileFavoritos"
-      screenOptions={{
-        mode: "card",
-        headerShown: "screen",
-      }}
-    >
-      <Stack.Screen
-        name="ProfileFavoritos"
-        component={ProfileFavoritos}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header title="Profile" scene={scene} navigation={navigation} />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
-
-function ProfileRecetasStack(props) {
-  return (
-    <Stack.Navigator
-      initialRouteName="ProfileRecetas"
-      screenOptions={{
-        mode: "card",
-        headerShown: "screen",
-      }}
-    >
-      <Stack.Screen
-        name="ProfileRecetas"
-        component={ProfileRecetas}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              Header
-              title="Profile"
-              back
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
-
-function ProfileFavoritosStack(props) {
-  return (
-    <Stack.Navigator
-      initialRouteName="ProfileFavoritos"
-      screenOptions={{
-        mode: "card",
-        headerShown: "screen",
-      }}
-    >
-      <Stack.Screen
-        name="ProfileFavoritos"
-        component={ProfileFavoritos}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              Header
-              title="Profile"
-              back
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
 
 
 function HomeStack(props) {
@@ -182,7 +48,7 @@ function HomeStack(props) {
       }}
     >
       <Stack.Screen
-        name="LoginDrawer"
+        name="Login"
         component={Login}
         options={{
             headerShown: false,
@@ -294,40 +160,74 @@ function HomeStack(props) {
           cardStyle: { backgroundColor: "#F8F9FE" },
         }}
       />
-    </Stack.Navigator>
-  );
-}
-
-function CreateRecipeStack(props) {
-  return (
-    <Stack.Navigator
-      initialRouteName="CreateRecipe"
-      screenOptions={{
-        mode: "card",
-        headerShown: "screen",
-      }}
-    >
       <Stack.Screen
-        name="CreateRecipe"
-        component={CreateRecipe}
+        name="ProfileFavoritos"
+        component={ProfileFavoritos}
         options={{
           header: ({ navigation, scene }) => (
             <Header
+              Header
+              title="Profile"
               back
-              transparent
-              white
-              title="Crear Receta"
               navigation={navigation}
               scene={scene}
             />
           ),
           cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          headerTransparent: false,
+        }}
+      />
+      <Stack.Screen
+        name="ProfileRecetas"
+        component={ProfileRecetas}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              Header
+              title="Profile"
+              back
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: false,
         }}
       />
     </Stack.Navigator>
   );
 }
+
+// function CreateRecipeStack(props) {
+//   return (
+//     <Stack.Navigator
+//       initialRouteName="CreateRecipe"
+//       screenOptions={{
+//         mode: "card",
+//         headerShown: "screen",
+//       }}
+//     >
+//       <Stack.Screen
+//         name="CreateRecipe"
+//         component={CreateRecipe}
+//         options={{
+//           header: ({ navigation, scene }) => (
+//             <Header
+//               back
+//               transparent
+//               white
+//               title="Crear Receta"
+//               navigation={navigation}
+//               scene={scene}
+//             />
+//           ),
+//           cardStyle: { backgroundColor: "#FFFFFF" },
+//           headerTransparent: true,
+//         }}
+//       />
+//     </Stack.Navigator>
+//   );
+// }
 
 export default function OnboardingStack(props) {
   return (
