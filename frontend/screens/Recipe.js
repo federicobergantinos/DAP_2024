@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {StyleSheet, Dimensions, ScrollView, TouchableWithoutFeedback, Image, Animated, Platform} from "react-native";
 import { Block, Text, Button, theme } from "galio-framework";
 import yummlyTheme from "../constants/Theme";
@@ -6,6 +6,9 @@ import { iPhoneX, HeaderHeight } from "../constants/utils";
 import { AirbnbRating } from "react-native-ratings";
 import PillContainer from "../components/PillContainer";
 import Icon from "../components/Icon";
+import backendApi from '../api/backendGateway';
+import LoadingScreen from "../components/LoadingScreen";
+import {RecipeDTO} from "../api/RecipeDTO";
 
 const tagsTranslations = {
   RAPID_PREPARATION: 'Preparación rápida',
@@ -19,7 +22,6 @@ const tagsTranslations = {
   LOW_CARB: 'Bajo en carbohidratos',
 };
 
-const { height, width } = Dimensions.get("window");
 const recipe = {
   "userId": 123,
   "userName": "Juan Perez",
@@ -50,9 +52,41 @@ const recipe = {
   "rating": 4
 };
 
+const { height, width } = Dimensions.get("window");
+
+
+const getAsyncRecipe = async (recipeId, setRecipe, setLoading) => {
+  const {response, statusCode} = await backendApi.recipesGateway.getRecipeById(recipeId)
+  console.log("STATUS:",statusCode);
+  console.log("RESPONSE:",response);
+  if(statusCode != 200) {
+    //TODO Debe tirar error
+  }
+  return response
+}
 export default function Recipe(props) {
+  const { route } = props;
   const [isStepsAvailable, setIsStepsAvailable] = useState(true)
   const scrollX = new Animated.Value(0);
+  const [loading, setLoading] = useState(true);
+  const [recipe, setRecipe] = useState(undefined)
+
+  useEffect(() => {
+    const fetchRecipe = async () => {
+      try {
+        const fetchedRecipe = await getAsyncRecipe(route.params.recipeId)
+        setRecipe(fetchedRecipe);
+        setLoading(false);
+        console.log(recipe)
+      } catch (error) {
+        console.error('Error al obtener la receta:', error);
+
+      }
+    };
+
+    fetchRecipe();
+  }, []);
+
 
   const buttonStyle1 = isStepsAvailable ? styles.buttonSelected : styles.buttonUnselected;
   const buttonStyle2 = !isStepsAvailable ? styles.buttonSelected : styles.buttonUnselected;
@@ -92,7 +126,6 @@ export default function Recipe(props) {
   };
 
   const renderProgress = () => {
-    const { navigation, route } = props;
     const recipeImages = recipe.media
 
     const position = Animated.divide(scrollX, width);
@@ -120,7 +153,12 @@ export default function Recipe(props) {
     );
   };
 
-  return (
+  if(loading) {
+    return(
+        LoadingScreen()
+    )
+  } else{
+    return (
       <Block flex style={styles.recipe}>
         <Block flex style={{ position: "relative" }}>
           {renderGallery()}
@@ -227,16 +265,14 @@ export default function Recipe(props) {
                       src={recipe.userImage}
                       style={styles.avatar}
                   />
-
                     <Text style={{fontFamily: 'open-sans-regular', height:40 }} size={14} color={yummlyTheme.COLORS.TEXT}>{recipe.userName}</Text>
-
-
               </Block>
             </Block>
           </ScrollView>
         </Block>
       </Block>
-  );
+   );
+  }
 }
 
 const styles = StyleSheet.create({

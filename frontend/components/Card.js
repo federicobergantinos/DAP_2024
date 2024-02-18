@@ -36,14 +36,14 @@ const Card = (props) => {
   return (
       <Block row={horizontal} card flex style={cardContainer}>
         <TouchableWithoutFeedback
-            onPress={() => navigation.navigate("Recipe", { recipe: item })}
+            onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
         >
           <Block flex style={imgContainer}>
             <Image source={{ uri: item.image }} style={imageStyles} />
           </Block>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
-            onPress={() => navigation.navigate("Recipe", { recipe: item })}
+            onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
         >
           <Block flex space="between" style={styles.cardDescription}>
             <Block flex>
