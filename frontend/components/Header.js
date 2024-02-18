@@ -44,7 +44,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
   const navigation = useNavigation();
 
   const renderLeft = () => {
-    return back ? () => navigation.dispatch(CommonActions.goBack()) : () => navigation.navigate('HomeDrawer');
+    return back ? () => navigation.dispatch(CommonActions.goBack()) : () => navigation.navigate('Home');
   };
 
   const renderRight = () => {
