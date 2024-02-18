@@ -272,7 +272,7 @@ class CreateRecipe extends React.Component {
             center
             textStyle={{ color: yummlyTheme.COLORS.BLACK }} 
             style={styles.buttonStyle}
-            onPress={() => this.props.navigation.navigate('HomeDrawer')}
+            onPress={() => this.props.navigation.navigate('Home')}
           >
             Cancelar
           </Button>
@@ -280,7 +280,7 @@ class CreateRecipe extends React.Component {
             center
             textStyle={{ color: yummlyTheme.COLORS.BLACK }} 
             style={styles.buttonStyle}
-            onPress={() => this.props.navigation.navigate('HomeDrawer')}
+            onPress={() => this.props.navigation.navigate('Home')}
           >
             Confirmar
           </Button>

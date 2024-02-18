@@ -20,5 +20,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-*ios/
-*android/
+*web/
+*dist/
+*.expo/
+*Pods/
+*build/
+*Yummly*/
+frontend/android/app/src

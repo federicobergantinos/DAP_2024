@@ -32,9 +32,11 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(isLoggedUser)
   GoogleSignin.configure({
     webClientId:
-        '445263022323-e0okjk06i01er8q0gcg51oensjp8h34o.apps.googleusercontent.com',
+    '445263022323-e0okjk06i01er8q0gcg51oensjp8h34o.apps.googleusercontent.com',
     androidClientId:
-        '445263022323-iej9nrjnjk5gr7h1l9cuq9g9l8mbfr6b.apps.googleusercontent.com',
+    '445263022323-iej9nrjnjk5gr7h1l9cuq9g9l8mbfr6b.apps.googleusercontent.com',
+    iosClientId:
+    '445263022323-u2nac6qhp2rupfsgc26gkbriup8n7ho5.apps.googleusercontent.com',
     scopes: ['profile', 'email'],
   });
 
@@ -52,6 +54,7 @@ const Login = () => {
       const userInfo = await GoogleSignin.signIn();
       const {idToken, user} = userInfo
 
+      console.log(idToken)
       const {response, statusCode} = await backendApi.authUser.authenticate({token: idToken })
       setIsLoading(false)
       if(statusCode === 201) {
@@ -128,6 +131,7 @@ const Login = () => {
       </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   loginContainer: {

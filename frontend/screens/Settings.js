@@ -32,7 +32,7 @@ export default class Settings extends React.Component {
         );
       case "button":
         return (
-          <Block style={styles.rows}>
+          <Block >
             <TouchableOpacity onPress={() => (item.id !== 'Payment' && item.id !== 'gift') && navigate(item.id)}>
               <Block row middle space="between" style={{ paddingTop: 7 }}>
                 <Text style={{ fontFamily: 'open-sans-regular' }} size={14} color="#525F7F">{item.title}</Text>

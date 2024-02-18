@@ -1,84 +1,67 @@
 import React from "react";
-import { useNavigation } from '@react-navigation/native';
 import PropTypes from "prop-types";
-import {
-  StyleSheet,
-  Image,
-  TouchableWithoutFeedback
-} from "react-native";
+import { StyleSheet, Image, TouchableWithoutFeedback } from "react-native";
 import { Block, Text, theme } from "galio-framework";
-
+import { useNavigation } from '@react-navigation/native'; // Importa useNavigation
 import { yummlyTheme } from "../constants";
-import {Rating} from "react-native-ratings";
-const Card = (props) => {
-  const navigation = useNavigation();
-  const {
-    item,
-    horizontal,
-    full,
-    style,
-    ctaColor,
-    imageStyle,
-    ctaRight
-  } = props;
 
-  const imageStyles = [
-    full ? styles.fullImage : styles.horizontalImage,
-    imageStyle
-  ];
+const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight }) => {
+  const navigation = useNavigation(); // Usa el hook useNavigation
+
+  const imageStyles = [full ? styles.fullImage : styles.horizontalImage, imageStyle];
   const cardContainer = [styles.card, styles.shadow, style];
   const imgContainer = [
     styles.imageContainer,
     horizontal ? styles.horizontalStyles : styles.verticalStyles,
-    styles.shadow
+    styles.shadow,
   ];
 
   return (
-      <Block row={horizontal} card flex style={cardContainer}>
-        <TouchableWithoutFeedback
-            onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
-        >
-          <Block flex style={imgContainer}>
-            <Image source={{ uri: item.image }} style={imageStyles} />
+    <Block row={horizontal} card flex style={cardContainer}>
+      <TouchableWithoutFeedback
+        onPress={() => navigation.navigate("Recipe", { recipe: item })}
+      >
+        <Block flex style={imgContainer}>
+          <Image source={{ uri: item.image }} style={imageStyles} />
+        </Block>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback
+        onPress={() => navigation.navigate("Recipe", { recipe: item })}
+      >
+        <Block flex space="between" style={styles.cardDescription}>
+          <Block flex>
+            <Text
+              style={{ fontFamily: 'open-sans-regular' }}
+              size={14}
+              style={styles.cardTitle}
+              color={yummlyTheme.COLORS.TEXT}
+            >
+              {item.title}
+            </Text>
+            {item.body ? (
+              <Block flex left>
+                <Text style={{ fontFamily: 'open-sans-regular' }} size={12} color={yummlyTheme.COLORS.TEXT}>
+                  {item.body}
+                </Text>
+              </Block>
+            ) : (
+              <Block />
+            )}
           </Block>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-            onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
-        >
-          <Block flex space="between" style={styles.cardDescription}>
-            <Block flex>
-              <Text
-                  style={{ fontFamily: 'open-sans-regular' }}
-                  size={14}
-                  style={styles.cardTitle}
-                  color={yummlyTheme.COLORS.TEXT}
-              >
-                {item.title}
-              </Text>
-              {item.body ? (
-                  <Block flex left>
-                    <Text style={{ fontFamily: 'open-sans-regular' }} size={12} color={yummlyTheme.COLORS.TEXT}>
-                      {item.body}
-                    </Text>
-                  </Block>
-              ) : (
-                  <Block />
-              )}
-            </Block>
-            <Block right={ctaRight ? true : false}>
-              <Text
-                  style={{ fontFamily: 'open-sans-bold' }}
-                  size={12}
-                  muted={!ctaColor}
-                  color={ctaColor || yummlyTheme.COLORS.ACTIVE}
-                  bold
-              >
-                Ver receta
-              </Text>
-            </Block>
+          <Block right={ctaRight ? true : false}>
+            <Text
+              style={{ fontFamily: 'open-sans-bold' }}
+              size={12}
+              muted={!ctaColor}
+              color={ctaColor || yummlyTheme.COLORS.ACTIVE}
+              bold
+            >
+              Ver receta
+            </Text>
           </Block>
-        </TouchableWithoutFeedback>
-      </Block>
+        </Block>
+      </TouchableWithoutFeedback>
+    </Block>
   );
 };
 
@@ -88,8 +71,9 @@ Card.propTypes = {
   full: PropTypes.bool,
   ctaColor: PropTypes.string,
   imageStyle: PropTypes.any,
-  ctaRight: PropTypes.bool
+  ctaRight: PropTypes.bool,
 };
+
 
 const styles = StyleSheet.create({
   card: {
@@ -139,4 +123,5 @@ const styles = StyleSheet.create({
     elevation: 2
   }
 });
+
 export default Card;

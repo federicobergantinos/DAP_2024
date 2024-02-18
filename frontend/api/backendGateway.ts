@@ -3,7 +3,7 @@ import {createAuthDTO, Credentials} from "./authDTO";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {RecipeDTO} from "./RecipeDTO";
 
-const olympusApi = axios.create({ baseURL: "http://192.168.0.5:8080" });
+const olympusApi = axios.create({ baseURL: "https://b2b8-152-168-141-171.ngrok-free.app" });
 const recipeBaseUrl = "/v1/recipes"
 
 olympusApi.interceptors.request.use((config) => {
