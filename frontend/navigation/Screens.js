@@ -16,7 +16,7 @@ import React from "react";
 import Login from "../screens/Login";
 import Search from "../screens/Search";
 // settings
-import SettingsScreen from "../screens/Settings";
+import Settings from "../screens/Settings";
 import { createStackNavigator } from "@react-navigation/stack";
 
 const { width } = Dimensions.get("screen");
@@ -100,19 +100,13 @@ function HomeStack(props) {
       <Stack.Screen
         name="CreateRecipe"
         component={CreateRecipe}
+        
         options={{
           header: ({ navigation, scene }) => (
-            <Header
-              back
-              transparent
-              white
-              title="Crear Receta"
-              navigation={navigation}
-              scene={scene}
-            />
+            <Header title="Crear receta" back scene={scene} navigation={navigation} />
           ),
           cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          headerTransparent: false,
         }}
       />
       <Stack.Screen
@@ -122,23 +116,21 @@ function HomeStack(props) {
           header: ({ navigation, scene }) => (
             <Header
               transparent
-              white
               back
-              title="Profile"
+              title="Perfil"
               navigation={navigation}
               scene={scene}
             />
           ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: true,
+          cardStyle: { backgroundColor: "#FFFFFF" }
         }}
       />
       <Stack.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={Settings}
         options={{
           header: ({ navigation, scene }) => (
-            <Header title="Settings" scene={scene} navigation={navigation} />
+            <Header title="Configuracion" back scene={scene} navigation={navigation} />
           ),
           cardStyle: { backgroundColor: "#F8F9FE" },
         }}
@@ -149,8 +141,7 @@ function HomeStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              Header
-              title="Profile"
+              title="Favoritos"
               back
               navigation={navigation}
               scene={scene}
@@ -166,8 +157,7 @@ function HomeStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              Header
-              title="Profile"
+              title="Recetas"
               back
               navigation={navigation}
               scene={scene}

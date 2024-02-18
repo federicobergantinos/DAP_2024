@@ -14,14 +14,12 @@ import { Block, Text, theme } from "galio-framework";
 import { Button, Header } from "../components";
 import { Images, yummlyTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
-import { openImagePickerAsync, openCameraAsync } from '../components/ImagePicker.js';
+import { openImagePickerAsync } from '../components/ImagePicker.js';
 
 const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
 
-
-
-class Profile extends React.Component {
+export default class Profile extends React.Component {
   constructor()
   {
     super();
@@ -35,7 +33,6 @@ class Profile extends React.Component {
         <Block flex>
           <ImageBackground
             source={Images.Background}
-            style={styles.profileContainer}
             imageStyle={styles.profileBackground}
           >
 
@@ -71,7 +68,7 @@ class Profile extends React.Component {
                       />
                       <TouchableOpacity
                         style={styles.containerInterno}
-                        onPress={() => { openImagePickerAsync /* VER PQ NO ANDA */ , this.setState({ show: false }) }}
+                        onPress={() => { openImagePickerAsync(), this.setState({ show: false }) }}
                       >
                         <Text>Adjuntar Imagen</Text>
                       </TouchableOpacity>
@@ -201,12 +198,6 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
     flex: 1
   },
-  profileContainer: {
-    width: width,
-    height: height - height / 10,
-    padding: 0,
-    zIndex: 1
-  },
   profileBackground: {
     width: width,
     height: height / 1.5,
@@ -215,7 +206,7 @@ const styles = StyleSheet.create({
   profileCard: {
     padding: theme.SIZES.BASE,
     marginHorizontal: theme.SIZES.BASE,
-    marginTop: 65,
+    marginTop: 100,
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,
     backgroundColor: theme.COLORS.WHITE,
@@ -288,5 +279,3 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
 });
-
-export default Profile;
