@@ -1,6 +1,8 @@
 const {Media, Tag, Recipe, RecipeTags, User} = require("../entities/associateModels");
 const BadRequest = require("../Errors/BadRequest");
 const {isValidUser} = require("./userService");
+const NotFound = require("../Errors/NotFound");
+const {getAssociateTags} = require("../entities/recipeTags");
 
 const createRecipe = async (recipeData) => {
 
@@ -53,7 +55,42 @@ const getRecipes = async (queryData) => {
     return recipes
 }
 
+const getRecipe = async (recipeId) => {
+    const recipe = await Recipe.findByPk(recipeId, {
+        include: [{
+            model: Media,
+            as: 'media',
+            attributes: ['data']
+        }]
+    })
+    console.log(recipeId)
+    if(recipe === null) {
+        throw new NotFound('Recipe not found')
+    }
+
+    const recipeTags = await RecipeTags.findAll({
+        where: { recipeId },
+        attributes: ['tagId']
+    });
+    const tagIds = recipeTags.map(recipeTag => recipeTag.tagId);
+    const tags = await Tag.findAll({
+        where: { id: tagIds },
+        attributes: ['title']
+    });
+
+    console.log(tags)
+
+    recipe.steps = recipe.steps.split('|')
+    recipe.ingredients = recipe.ingredients.split('|')
+    recipe.dataValues.tags = tags.map(t => t.title)
+
+    return recipe.dataValues
+}
+
+
+
 module.exports = {
     createRecipe,
-    getRecipes
+    getRecipes,
+    getRecipe
 };

@@ -4,14 +4,14 @@ const { User, Recipe, Media, Tag, Classification, RecipeTags} = require("../../e
 
 const dbConnection = async () => {
     try {
-        await User.sync({ force: true });
-        await Recipe.sync({ force: true });
-        await Media.sync({ force: true });
-        await Tag.sync({ force: true });
-        await Classification.sync({ force: true });
-        await RecipeTags.sync({ force: true });
+        await User.sync();
+        await Recipe.sync();
+        await Media.sync();
+        await Tag.sync();
+        await Classification.sync();
+        await RecipeTags.sync();
 
-        await Tag.bulkCreate([
+        /*await Tag.bulkCreate([
             {title: 'RAPID_PREPARATION'},
             {title: 'VEGETARIAN'},
             {title: 'VEGAN'},
@@ -21,7 +21,7 @@ const dbConnection = async () => {
             {title: 'ANTI_INFLAMMATORY'},
             {title: 'LOW_SODIUM'},
             {title: 'LOW_CARB'}
-        ])
+        ])*/
         await sequelize.authenticate();
 
         console.log("Database online");
