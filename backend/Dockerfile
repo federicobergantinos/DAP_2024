@@ -1,28 +1,35 @@
 # production environment
 FROM node:16
+
 WORKDIR /app
-COPY package*.json ./
+
+# Instala psql
+USER root
+RUN apt-get update && apt-get install -y postgresql-client
+
+# Copia del código fuente
+COPY . .
 RUN npm install
 
-COPY . .
+# Hacer el script ejecutable
+RUN chmod +x wait-for-postgres.sh
 
+# Asegúrate de que las variables de entorno se pasen correctamente
 ARG CODE
-ENV CODE="superSecret"
 ARG POSTGRES_DB
-ENV POSTGRES_DB="5432"
 ARG POSTGRES_USER
-ENV POSTGRES_USER="postgres"
 ARG POSTGRES_PASSWORD
-ENV POSTGRES_PASSWORD="testing"
 ARG POSTGRES_HOST
-ENV POSTGRES_HOST="localhost"
 
-RUN touch .env \
-RUN echo "CODE=\"${CODE}\"" >> .env
-RUN echo "POSTGRES_DB=\"${POSTGRES_DB}\"" >> .env
-RUN echo "POSTGRES_USER=\"${POSTGRES_USER}\"" >> .env
-RUN echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"" >> .env
-RUN echo "POSTGRES_HOST=\"${POSTGRES_HOST}\"" >> .env
+# Creación del archivo .env
+RUN echo "CODE=${CODE}" >> .env \
+ && echo "POSTGRES_DB=${POSTGRES_DB}" >> .env \
+ && echo "POSTGRES_USER=${POSTGRES_USER}" >> .env \
+ && echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> .env \
+ && echo "POSTGRES_HOST=${POSTGRES_HOST}" >> .env
 
+# Exponer el puerto
 EXPOSE 8080
-CMD ["node", "index.js"]
+
+# Configurar el script como punto de entrada
+ENTRYPOINT ["/app/wait-for-postgres.sh"]

@@ -7,10 +7,16 @@ AWS_REGION=us-east-1
 
 # Docker
 docker-build:
-	docker build -t $(IMAGE_NAME) ../backend/
+	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest ../backend/ --push
 
 docker-run:
-	docker run --env-file ../backend/.env --name $(CONTAINER_NAME) -it --rm -p 8080:8080 $(IMAGE_NAME)
+	docker run --env-file ../backend/.env --name $(CONTAINER_NAME) -it --rm -p 8080:8080 $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest 
+
+docker-pull:
+	docker pull $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(PROJECT):latest
+
+docker-run-yummly:
+	make ecr-login && make docker-pull && make docker-run
 
 docker-stop:
 	docker stop $(CONTAINER_NAME)
@@ -70,6 +76,6 @@ cloudformation-delete-stack-service:
 	aws cloudformation delete-stack --stack-name $(PROJECT) --region $(AWS_REGION)
 		
 
-.PHONY: docker-build docker-run docker-stop docker-rm docker-rmi docker-clean docker-rebuild docker-shell docker-compose-up docker-compose-down
+.PHONY: docker-build docker-run docker-stop docker-rm docker-rmi docker-clean docker-rebuild docker-shell docker-compose-up docker-compose-down docker-run-yummly
 .PHONY: ecr-create-repo ecr-login ecr-tag-image ecr-push-image ecr 
 .PHONY: cloudformation-create-stack cloudformation-delete-stack 
