@@ -130,7 +130,7 @@ class Profile extends React.Component {
                       small
                       color="transparent"
                       textStyle={{ color: "#5E72E4", fontSize: 14 }}
-                      onPress={() => { this.props.navigation.navigate('ProfileRecetasDrawer') }}
+                      onPress={() => { this.props.navigation.navigate('ProfileRecetas') }}
                     >
                       Ver más
                     </Button>
@@ -166,7 +166,7 @@ class Profile extends React.Component {
                       small
                       color="transparent"
                       textStyle={{ color: "#5E72E4", fontSize: 14 }}
-                      onPress={() => { this.props.navigation.navigate('ProfileFavoritosDrawer') }}
+                      onPress={() => { this.props.navigation.navigate('ProfileFavoritos') }}
                     >
                       Ver más
                     </Button>

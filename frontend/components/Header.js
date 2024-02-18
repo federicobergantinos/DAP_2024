@@ -15,7 +15,7 @@ const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 
 const ProfileButton = ({ isWhite, style }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('ProfileDrawer')}>
+    <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Profile')}>
       <Icon
         family="Feather"
         size={20}
@@ -29,7 +29,7 @@ const ProfileButton = ({ isWhite, style }) => {
 const SettingsButton = ({ isWhite, style }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('SettingsDrawer')}>
+    <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Settings')}>
       <Icon
         family="Feather"
         size={20}
