@@ -46,6 +46,8 @@ function SettingsStack(props) {
   );
 }
 
+
+
 function ProfileStack(props) {
   return (
     <Stack.Navigator
@@ -58,6 +60,66 @@ function ProfileStack(props) {
       <Stack.Screen
         name="Profile"
         component={Profile}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              transparent
+              white
+              title="Profile"
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: true,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileRecetasStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="ProfileRecetas"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="ProfileRecetas"
+        component={ProfileRecetas}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              title="Profile"
+              search
+              tabs={tabs.tags}
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileFavoritosStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="ProfileFavoritos"
+      screenOptions={{
+        mode: "card",
+        headerShown: "screen",
+      }}
+    >
+      <Stack.Screen
+        name="ProfileFavoritos"
+        component={ProfileFavoritos}
         options={{
           header: ({ navigation, scene }) => (
             <Header
@@ -226,6 +288,20 @@ function AppStack(props) {
       <Drawer.Screen
         name="ProfileDrawer"
         component={ProfileStack}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="ProfileRecetasDrawer"
+        component={ProfileRecetasStack}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="ProfileFavoritosDrawer"
+        component={ProfileFavoritosStack}
         options={{
           headerShown: false,
         }}
