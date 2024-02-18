@@ -59,7 +59,7 @@ function HomeStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              title=""
+              title="Recipe"
               back
               white
               transparent

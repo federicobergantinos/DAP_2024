@@ -1,13 +1,14 @@
-import React from 'react';
-import { TouchableOpacity, StyleSheet, Platform, Dimensions, Keyboard } from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {TouchableOpacity, StyleSheet, Platform, Dimensions, Keyboard, View, Share} from 'react-native';
 import { Block, NavBar, theme } from 'galio-framework';
-import { useNavigation } from '@react-navigation/native';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native'; // Importa useNavigation de '@react-navigation/native'
 
 import Icon from './Icon';
 import Input from './Input';
 import Tabs from './Tabs';
 import yummlyTheme from '../constants/Theme';
+import RecipeContext from "../navigation/RecipeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
@@ -40,8 +41,68 @@ const SettingsButton = ({ isWhite, style }) => {
   );
 };
 
+const getUserId = async () => {
+  return await AsyncStorage.getItem("userId");
+}
+
+
+
 const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColor, search, tabs, tabIndex, ...props }) => {
   const navigation = useNavigation();
+  const { recipe } = useContext(RecipeContext)
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [isOwner, setIsOwner] = useState(false);
+
+  useEffect(() => {
+    const checkOwner = async () => {
+      const userId = await getUserId();
+      setIsOwner(userId.toString() === recipe.userId.toString());
+    };
+
+    checkOwner().then(renderRight());
+
+  }, [recipe]);
+  const handleFavorite = () => {
+    console.log(recipe)
+    setIsFavorite(!isFavorite)
+  }
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        title: 'Compartir por',
+        message: `${recipe.title}: ${recipe.description}`,
+      });
+    } catch (error) {
+      console.error('Error al compartir:', error.message);
+    }
+  };
+
+
+  const RenderEditButton = () => {
+    if(!isOwner) return null;
+    return (
+        <TouchableOpacity style={{ paddingHorizontal:5}} >
+          <Icon family='MaterialIcons' name='edit' size={25} color={yummlyTheme.COLORS.WHITE} />
+        </TouchableOpacity>
+    )
+  }
+
+  const RenderFavoriteButton = () => {
+    return (
+        <TouchableOpacity style={{ paddingHorizontal:5, marginRight:20}} onPress={handleFavorite}>
+          <Icon family='MaterialIcons' name={isFavorite ? 'favorite' : 'favorite-border'} size={25} color={yummlyTheme.COLORS.WHITE} />
+        </TouchableOpacity>
+    )
+  }
+
+  const RenderShareButton = () => {
+    return (
+        <TouchableOpacity style={{ paddingHorizontal:5}} onPress={handleShare} >
+          <Icon family='MaterialIcons' name="share" size={25} color={yummlyTheme.COLORS.WHITE} />
+        </TouchableOpacity>
+    )
+  }
 
   const renderLeft = () => {
     return back ? () => navigation.dispatch(CommonActions.goBack()) : () => navigation.navigate('Home');
@@ -54,11 +115,17 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
         <SettingsButton key='settings-title' isWhite={white} />
       ];
     }
+    if(title === 'Recipe') {
+      return ([
+          <RenderEditButton isOwner={isOwner}/>,
+          <RenderShareButton/>,
+          <RenderFavoriteButton/>
+      ])
+    }
 
     switch (title) {
       case 'Home':
       case 'Profile':
-      case 'Recipe':
       case 'Search':
       case 'Settings':
         return ([
@@ -83,6 +150,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
       />
     );
   };
+
 
   const renderTabs = () => {
     const defaultTab = tabs && tabs[0] && tabs[0].id;
@@ -123,7 +191,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
     <Block style={headerStyles}>
       <NavBar
         back={false}
-        title={title}
+        title={title!=='Recipe'? title: '' }
         style={navbarStyles}
         transparent={transparent}
         right={renderRight()}
@@ -131,7 +199,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
         left={
           <Icon
             name={back ? 'chevron-left' : "home"} family="Feather"
-            size={20} onPress={renderLeft()}
+            size={25} onPress={renderLeft()}
             color={iconColor || (white ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.ICON)}
             style={{ marginTop: 2 }}
           />

@@ -1,5 +1,13 @@
-import React, {useEffect, useState} from "react";
-import {StyleSheet, Dimensions, ScrollView, TouchableWithoutFeedback, Image, Animated, Platform} from "react-native";
+import React, {useContext, useEffect, useState} from "react";
+import {
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Image,
+  Animated,
+  Platform,
+} from "react-native";
 import { Block, Text, Button, theme } from "galio-framework";
 import yummlyTheme from "../constants/Theme";
 import { iPhoneX, HeaderHeight } from "../constants/utils";
@@ -8,7 +16,8 @@ import PillContainer from "../components/PillContainer";
 import Icon from "../components/Icon";
 import backendApi from '../api/backendGateway';
 import LoadingScreen from "../components/LoadingScreen";
-import {RecipeDTO} from "../api/RecipeDTO";
+import {useNavigation} from "@react-navigation/native";
+import RecipeContext from "../navigation/RecipeContext";
 
 const tagsTranslations = {
   RAPID_PREPARATION: 'Preparación rápida',
@@ -66,10 +75,11 @@ const getAsyncRecipe = async (recipeId) => {
 }
 export default function Recipe(props) {
   const { route } = props;
+  const navigation = useNavigation();
   const [isStepsAvailable, setIsStepsAvailable] = useState(true)
   const scrollX = new Animated.Value(0);
   const [loading, setLoading] = useState(true);
-  const [recipe, setRecipe] = useState(undefined)
+  const { recipe, setRecipe } = useContext(RecipeContext);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -77,13 +87,11 @@ export default function Recipe(props) {
         const fetchedRecipe = await getAsyncRecipe(route.params.recipeId)
         setRecipe(fetchedRecipe);
         setLoading(false);
-        console.log(recipe)
       } catch (error) {
-        console.error('Error al obtener la receta:', error);
-
+        console.error('Error al obtener la receta');
+        navigation.replace('Home')
       }
     };
-
     fetchRecipe();
   }, []);
 
@@ -162,11 +170,6 @@ export default function Recipe(props) {
       <Block flex style={styles.recipe}>
         <Block flex style={{ position: "relative" }}>
           {renderGallery()}
-          <Block flex flexDirection={'row'} style={{alignItems: 'center', justifyContent: 'flex-start', position:'absolute', top: 130, right: 20, gap: 10}}>
-            <Icon family='MaterialIcons' name="edit" size={30} color={yummlyTheme.COLORS.WHITE} />
-            <Icon family='MaterialIcons' name="share" size={30} color={yummlyTheme.COLORS.WHITE} />
-            <Icon family='MaterialIcons' name="favorite-border" size={30} color={yummlyTheme.COLORS.WHITE} />
-          </Block>
           <Block center style={styles.dotsContainer}>
             {renderProgress()}
           </Block>
