@@ -1,5 +1,6 @@
 export default tabs = {
   tags: [
+    { id: 'all', title: 'All' },
     { id: 'vegetariana', title: 'Vegetariana' },
     { id: 'rapida', title: 'Rapida Preparación' },
     { id: 'vegana', title: 'Vegana' },

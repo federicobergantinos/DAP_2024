@@ -3,7 +3,7 @@ export default [
     "id": 1,
     "title": 'Paella Vegetariana',
     "image": 'https://s3.abcstatics.com/media/gurmesevilla/2012/01/comida-rapida-casera.jpg',
-    "tags": [ 'vegetariana', 'rapida', 'vegana', 'celiacas', 'inmune', 'antiinflamatoria', 'flora']
+    "tags": [ 'vegetariana']
   },
   {
     "id": 1,
@@ -39,7 +39,7 @@ export default [
     "id": 1,
     "title": 'Sopa de Maní Tradicional',
     "image": 'https://www.laylita.com/recetas/wp-content/uploads/2023/08/Receta-de-la-sopa-de-mani.jpg',
-    "tags": [ 'vegetariana', 'rapida', 'vegana', 'celiacas', 'inmune', 'antiinflamatoria', 'flora']
+    "tags": [ 'rapida', 'vegana', 'celiacas', 'inmune', 'antiinflamatoria', 'flora']
   },
   {
     "id": 1,
@@ -75,7 +75,7 @@ export default [
     "id": 1,
     "title": 'Ceviche Peruano de Pescado',
     "image": 'https://img.europapress.es/fotoweb/fotonoticia_20180117114451_1200.jpg',
-    "tags": [ 'vegetariana', 'rapida', 'vegana', 'celiacas', 'inmune', 'antiinflamatoria', 'flora']
+    "tags": [ 'rapida', 'vegana', 'celiacas', 'inmune', 'antiinflamatoria', 'flora']
   },
   {
     "id": 1,
