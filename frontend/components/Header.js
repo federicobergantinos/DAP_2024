@@ -57,13 +57,19 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
 
     switch (title) {
       case 'Home':
-      case 'Profile':
-      case 'Recipe':
-      case 'Search':
-      case 'Settings':
         return ([
           <ProfileButton key='profile-title' isWhite={white} />,
           <SettingsButton key='settings-title' isWhite={white} />
+        ]);
+      case 'Perfil':
+        return ([
+          <SettingsButton key='settings-title' isWhite={white} />
+        ]);
+      case 'Recipe':
+      case 'Search':
+      case 'Configuracion':
+        return ([
+          <ProfileButton key='profile-title' isWhite={white} />
         ]);
       default:
         return null;
@@ -108,7 +114,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
     }
   };
 
-  const noShadow = ['Search', 'Profile'].includes(title);
+  const noShadow = ['Search', 'Perfil'].includes(title);
   const headerStyles = [
     !noShadow ? styles.shadow : null,
     transparent ? { backgroundColor: 'rgba(0,0,0,0)' } : null,

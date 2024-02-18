@@ -333,7 +333,6 @@ class CreateRecipe extends React.Component {
         <Block flex>
           <ImageBackground
             source={Images.Background}
-            style={styles.Container}
             imageStyle={styles.Background}
           >
           <Block style={{marginTop: Platform.OS === "android" ? HeaderHeight + 100 : 100}} />
@@ -355,12 +354,6 @@ class CreateRecipe extends React.Component {
 const styles = StyleSheet.create({
   CreateRecipe: {
     marginTop: 0,
-  },
-  Container: {
-    width: width,
-    height: height,
-    padding: 0,
-    zIndex: 1
   },
   Background: {
     width: width,
