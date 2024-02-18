@@ -32,16 +32,6 @@ function SettingsStack(props) {
         headerShown: "screen",
       }}
     >
-    <Stack.Screen
-      name="Settings"
-      component={SettingsScreen}
-      options={{
-        header: ({ navigation, scene }) => (
-          <Header title="Settings" scene={scene} navigation={navigation} />
-        ),
-        cardStyle: { backgroundColor: "#F8F9FE" },
-      }}
-    />
     </Stack.Navigator>
   );
 }
@@ -63,6 +53,7 @@ function ProfileStack(props) {
             <Header
               transparent
               white
+              back
               title="Profile"
               navigation={navigation}
               scene={scene}
@@ -151,6 +142,52 @@ function HomeStack(props) {
           cardStyle: { backgroundColor: "#F8F9FE" },
         }}
       />
+      <Stack.Screen
+        name="CreateRecipe"
+        component={CreateRecipe}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              back
+              transparent
+              white
+              title="Crear Receta"
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header
+              transparent
+              white
+              back
+              title="Profile"
+              navigation={navigation}
+              scene={scene}
+            />
+          ),
+          cardStyle: { backgroundColor: "#FFFFFF" },
+          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Settings" scene={scene} navigation={navigation} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" },
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -186,74 +223,74 @@ function CreateRecipeStack(props) {
   );
 }
 
-function AppStack(props) {
-  return (
-    <Drawer.Navigator
-      style={{ flex: 1 }}
-      drawerStyle={{
-        backgroundColor: "white",
-        width: width * 0.8,
-      }}
-      screenOptions={{
-        activeTintcolor: "white",
-        inactiveTintColor: "#000",
-        activeBackgroundColor: "transparent",
-        itemStyle: {
-          width: width * 0.75,
-          backgroundColor: "transparent",
-          paddingVertical: 16,
-          paddingHorizonal: 12,
-          justifyContent: "center",
-          alignContent: "center",
-          alignItems: "center",
-          overflow: "hidden",
-        },
-        labelStyle: {
-          fontSize: 18,
-          marginLeft: 12,
-          fontWeight: "normal",
-        },
-      }}
-      initialRouteName="HomeDrawer"
-    >
-      <Drawer.Screen
-        name="HomeDrawer"
-        component={HomeStack}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="ProfileDrawer"
-        component={ProfileStack}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="SettingsDrawer"
-        component={SettingsStack}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="LoginDrawer"
-        component={Login}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="CreateRecipeDrawer"
-        component={CreateRecipeStack}
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Drawer.Navigator>
-  );
-}
+// function AppStack(props) {
+//   return (
+//     <Drawer.Navigator
+//       style={{ flex: 1 }}
+//       drawerStyle={{
+//         backgroundColor: "white",
+//         width: width * 0.8,
+//       }}
+//       screenOptions={{
+//         activeTintcolor: "white",
+//         inactiveTintColor: "#000",
+//         activeBackgroundColor: "transparent",
+//         itemStyle: {
+//           width: width * 0.75,
+//           backgroundColor: "transparent",
+//           paddingVertical: 16,
+//           paddingHorizonal: 12,
+//           justifyContent: "center",
+//           alignContent: "center",
+//           alignItems: "center",
+//           overflow: "hidden",
+//         },
+//         labelStyle: {
+//           fontSize: 18,
+//           marginLeft: 12,
+//           fontWeight: "normal",
+//         },
+//       }}
+//       initialRouteName="LoginDrawer"
+//     >
+//       <Drawer.Screen
+//         name="Home"
+//         component={HomeStack}
+//         options={{
+//           headerShown: false,
+//         }}
+//       />
+//       <Drawer.Screen
+//         name="ProfileDrawer"
+//         component={ProfileStack}
+//         options={{
+//           headerShown: false,
+//         }}
+//       />
+//       <Drawer.Screen
+//         name="SettingsDrawer"
+//         component={SettingsStack}
+//         options={{
+//           headerShown: false,
+//         }}
+//       />
+//       <Drawer.Screen
+//         name="LoginDrawer"
+//         component={Login}
+//         options={{
+//           headerShown: false,
+//         }}
+//       />
+//       <Drawer.Screen
+//         name="CreateRecipeDrawer"
+//         component={CreateRecipeStack}
+//         options={{
+//           headerShown: false,
+//         }}
+//       />
+//     </Drawer.Navigator>
+//   );
+// }
 
 export default function OnboardingStack(props) {
   return (
@@ -263,7 +300,7 @@ export default function OnboardingStack(props) {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="App" component={AppStack} />
+      <Stack.Screen name="App" component={HomeStack} />
     </Stack.Navigator>
   );
 }

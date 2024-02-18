@@ -88,7 +88,7 @@ const Home = () => {
         numColumns={2} 
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate('CreateRecipeDrawer')}
+        onPress={() => navigation.navigate('CreateRecipe')}
         style={styles.fab}
       >
         <Text style={styles.fabIcon}>+</Text>

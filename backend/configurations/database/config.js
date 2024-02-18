@@ -10,18 +10,19 @@ const dbConnection = async () => {
         await Tag.sync();
         await Classification.sync();
         await RecipeTags.sync();
+        // await sequelize.sync({force: true});
 
-        /*await Tag.bulkCreate([
-            {title: 'RAPID_PREPARATION'},
-            {title: 'VEGETARIAN'},
-            {title: 'VEGAN'},
-            {title: 'GLUTEN_FREE'},
-            {title: 'IMMUNE_SYSTEM'},
-            {title: 'INTESTINAL_FLORA'},
-            {title: 'ANTI_INFLAMMATORY'},
-            {title: 'LOW_SODIUM'},
-            {title: 'LOW_CARB'}
-        ])*/
+        // await Tag.bulkCreate([
+        //     {title: 'RAPID_PREPARATION'},
+        //     {title: 'VEGETARIAN'},
+        //     {title: 'VEGAN'},
+        //     {title: 'GLUTEN_FREE'},
+        //     {title: 'IMMUNE_SYSTEM'},
+        //     {title: 'INTESTINAL_FLORA'},
+        //     {title: 'ANTI_INFLAMMATORY'},
+        //     {title: 'LOW_SODIUM'},
+        //     {title: 'LOW_CARB'}
+        // ])
         await sequelize.authenticate();
 
         console.log("Database online");

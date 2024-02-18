@@ -42,6 +42,7 @@ const Login = () => {
       const userInfo = await GoogleSignin.signIn();
       const {idToken, user} = userInfo
 
+      console.log(idToken)
       const {response, statusCode} = await backendApi.authUser.authenticate({token: idToken })
 
       if(statusCode === 201){

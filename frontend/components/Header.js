@@ -14,7 +14,7 @@ const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 
 const ProfileButton = ({ isWhite, style }) => {
   const navigation = useNavigation(); // Usa useNavigation para obtener el objeto de navegación
   return (
-      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('ProfileDrawer')}>
+      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Profile')}>
         <Icon
             family="Feather"
             size={20}
@@ -28,7 +28,7 @@ const ProfileButton = ({ isWhite, style }) => {
 const SettingsButton = ({ isWhite, style }) => {
   const navigation = useNavigation(); // Usa useNavigation para obtener el objeto de navegación
   return (
-      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('SettingsDrawer')}>
+      <TouchableOpacity style={[styles.button, style]} onPress={() => navigation.navigate('Settings')}>
         <Icon
             family="Feather"
             size={20}
@@ -43,7 +43,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
   const navigation = useNavigation(); // Usa useNavigation para obtener el objeto de navegación
 
   const renderLeft = () => {
-    return (back ? navigation.goBack() : navigation.navigate('HomeDrawer'));
+    return (back ? navigation.goBack() : navigation.navigate('Home'));
   };
 
   const renderRight = () => {
