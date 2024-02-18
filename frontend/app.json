@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Yummly",
-    "slug": "yummly",
+    "slug": "yummly-react-native",
     "privacy": "public",
     "platforms": [
       "ios",
