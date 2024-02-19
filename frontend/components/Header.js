@@ -9,6 +9,7 @@ import Tabs from './Tabs';
 import yummlyTheme from '../constants/Theme';
 import RecipeContext from "../navigation/RecipeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import backendGateway from "../api/backendGateway";
 
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
@@ -52,19 +53,37 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
   const { recipe } = useContext(RecipeContext)
   const [isFavorite, setIsFavorite] = useState(false)
   const [isOwner, setIsOwner] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(false);
 
   useEffect(() => {
     const checkOwner = async () => {
       const userId = await getUserId();
+      setCurrentUserId(userId)
       setIsOwner(userId.toString() === recipe.userId.toString());
     };
 
     checkOwner().then(renderRight());
 
   }, [recipe]);
-  const handleFavorite = () => {
-    console.log(recipe)
-    setIsFavorite(!isFavorite)
+  const handleFavorite = async () => {
+    const likeOrDislike = async (like) => {
+      try {
+        setIsFavorite(like);
+        const { statusCode } = like ? await backendGateway.users.like(currentUserId, recipe.id) : await backendGateway.users.dislike(currentUserId, recipe.id);
+        if (statusCode !== 204) {
+          setIsFavorite(!like);
+        }
+      } catch (error) {
+        console.error('No se pudo agregar a favoritos');
+        setIsFavorite(!like);
+      }
+    };
+
+    if (isFavorite) {
+      likeOrDislike(false);
+    } else {
+      likeOrDislike(true);
+    }
   }
 
   const handleShare = async () => {
