@@ -2,8 +2,10 @@ import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {createAuthDTO, Credentials} from "./authDTO";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {RecipeDTO} from "./RecipeDTO";
+import {RecipesDTO} from "./RecipesDTO";
+import {RecipesSearchDTO} from "./RecipesSearchDTO";
 
-const olympusApi = axios.create({ baseURL: "http://192.168.0.5:8080" });
+const olympusApi = axios.create({ baseURL: "http://192.168.1.112:8080" });
 const recipeBaseUrl = "/v1/recipes"
 const usersBaseUrl = "/v1/users"
 
@@ -31,7 +33,15 @@ const authUser = {
 };
 
 const recipesGateway = {
-    getRecipeById:(id: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + '/' + id)
+    getRecipeById:(id: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + '/' + id),
+    getAll: (page = 0, tag): Promise<{ response: RecipesDTO; statusCode: number }> => {
+        const url = tag ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}` : `${recipeBaseUrl}/?page=${page}&limit=10`;
+        return requests.get(url);
+    },
+    searchRecipes: (searchTerm = '', page = 0, limit = 10): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
+      const url = `${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${(searchTerm)}`;
+      return requests.get(url);
+    },
 }
 
 const users = {

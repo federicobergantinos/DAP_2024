@@ -22,7 +22,7 @@ const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight })
         onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
       >
         <Block flex style={imgContainer}>
-          <Image source={{ uri: item.image }} style={imageStyles} />
+          <Image source={{ uri: item.media }} style={imageStyles} />
         </Block>
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback
@@ -38,10 +38,10 @@ const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight })
             >
               {item.title}
             </Text>
-            {item.body ? (
+            {item.description ? (
               <Block flex left>
                 <Text style={{ fontFamily: 'open-sans-regular' }} size={12} color={yummlyTheme.COLORS.TEXT}>
-                  {item.body}
+                  {item.description}
                 </Text>
               </Block>
             ) : (

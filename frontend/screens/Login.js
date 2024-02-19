@@ -53,8 +53,6 @@ const Login = () => {
       setIsLoading(true)
       const userInfo = await GoogleSignin.signIn();
       const {idToken, user} = userInfo
-
-      console.log(idToken)
       const {response, statusCode} = await backendApi.authUser.authenticate({token: idToken })
       setIsLoading(false)
       if(statusCode === 201) {

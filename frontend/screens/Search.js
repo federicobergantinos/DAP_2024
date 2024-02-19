@@ -2,25 +2,73 @@ import React from "react";
 import {
   Animated,
   Dimensions,
-  ScrollView,
+  FlatList, // Cambiado de ScrollView a FlatList
   StyleSheet,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  View,
+  ActivityIndicator,
 } from "react-native";
 import { Block, Text, Input, theme } from "galio-framework";
+import { Icon, Card } from "../components/";
+import backendApi from "../api/backendGateway"; // Asegúrate de tener esta API configurada para buscar recetas
 
 const { width } = Dimensions.get("screen");
-
-import { recipes, categories, yummlyTheme } from "../constants/";
-import { Icon, Card } from "../components/";
+const ITEMS_PER_PAGE = 6; // Define cuántos elementos quieres cargar por página
 
 export default class Search extends React.Component {
   state = {
     results: [],
     search: "",
-    active: false
+    active: false,
+    currentPage: 0,
+    loading: false,
+    allItemsLoaded: false,
   };
 
   animatedValue = new Animated.Value(0);
+
+  // Actualizado para manejar la carga de datos
+  componentDidMount() {
+    this.fetchSearchResults();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.search !== this.state.search || prevState.currentPage !== this.state.currentPage) {
+      this.fetchSearchResults();
+    }
+  }
+
+  fetchSearchResults = async () => {
+    const { search, currentPage } = this.state;
+    if (this.state.loading || this.state.allItemsLoaded) return;
+
+    this.setState({ loading: true });
+    try {
+        const { response, statusCode } = await backendApi.recipesGateway.searchRecipes(search, currentPage, ITEMS_PER_PAGE);
+        if (response && response.length > 0) {
+            this.setState(prevState => ({
+                results: currentPage === 0 ? response : [...prevState.results, ...response],
+                allItemsLoaded: response.length < ITEMS_PER_PAGE,
+            }));
+        } else {
+            this.setState({ allItemsLoaded: true });
+        }
+    } catch (error) {
+        console.error("Error fetching search results:", error);
+    } finally {
+        this.setState({ loading: false });
+    }
+};
+
+  handleSearchChange = search => {
+    this.setState({ search, currentPage: 0, allItemsLoaded: false }); // Resetea la paginación con cada nueva búsqueda
+  };
+
+  loadMoreItems = () => {
+    if (!this.state.loading && !this.state.allItemsLoaded) {
+      this.setState(prevState => ({ currentPage: prevState.currentPage + 1 }));
+    }
+  };
 
   animate() {
     this.animatedValue.setValue(0);
@@ -31,14 +79,6 @@ export default class Search extends React.Component {
       useNativeDriver: true
     }).start();
   }
-
-  handleSearchChange = search => {
-    const results = recipes.filter(
-      item => search && item.title.toLowerCase().includes(search)
-    );
-    this.setState({ results, search });
-    this.animate();
-  };
 
   renderSearch = () => {
     const { search } = this.state;
@@ -78,20 +118,6 @@ export default class Search extends React.Component {
     );
   };
 
-  renderNotFound = () => {
-    return (
-      <Block style={styles.notfound}>
-        <Text style={{ fontFamily: 'open-sans-regular' }} size={18} color={yummlyTheme.COLORS.TEXT}>
-          We didn’t find "<Text bold>{this.state.search}</Text>" in our store.
-        </Text>
-
-        <Text size={18} style={{ marginTop: theme.SIZES.BASE, fontFamily: 'open-sans-regular' }} color={yummlyTheme.COLORS.TEXT}>
-          You can see more products from other categories.
-        </Text>
-      </Block>
-    );
-  };
-
   renderResult = result => {
     const opacity = this.animatedValue.interpolate({
       inputRange: [0, 1],
@@ -109,23 +135,12 @@ export default class Search extends React.Component {
     );
   };
 
-  renderResults = () => {
-    const { results, search } = this.state;
-
-    if (results.length === 0 && search) {
-      return (
-        <Block style={{ width: width - 40 }}>
-          {this.renderNotFound()}
-          <Text style={{ fontFamily: 'open-sans-regular' }} size={18} color={yummlyTheme.COLORS.TEXT}>Daily Deals</Text>
-          {this.renderDeals()}
-        </Block>
-      );
-    }
-
+  renderFooter = () => {
+    if (!this.state.loading) return null;
     return (
-      <Block style={{ paddingTop: theme.SIZES.BASE * 2 }}>
-        {results.map(result => this.renderResult(result))}
-      </Block>
+      <View style={{ paddingVertical: 20 }}>
+        <ActivityIndicator animating size="large" />
+      </View>
     );
   };
 
@@ -135,9 +150,15 @@ export default class Search extends React.Component {
         <Block center style={styles.header}>
           {this.renderSearch()}
         </Block>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {this.renderResults()}
-        </ScrollView>
+        <FlatList
+          data={this.state.results}
+          renderItem={({ item }) => this.renderResult(item)}
+          keyExtractor={item => item.id.toString()} 
+          showsVerticalScrollIndicator={false}
+          onEndReached={this.loadMoreItems}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={this.renderFooter}
+        />
       </Block>
     );
   }
@@ -171,13 +192,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     elevation: 2,
     zIndex: 2
-  },
-  notfound: {
-    marginVertical: theme.SIZES.BASE * 2
-  },
-  suggestion: {
-    height: theme.SIZES.BASE * 1.5,
-    marginBottom: theme.SIZES.BASE
   },
   result: {
     backgroundColor: theme.COLORS.WHITE,

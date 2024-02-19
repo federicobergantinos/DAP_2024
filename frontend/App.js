@@ -12,14 +12,11 @@ import { enableScreens } from "react-native-screens";
 enableScreens();
 
 import Screens from "./navigation/Screens";
-import { Images, recipes, yummlyTheme } from "./constants";
-import {RecipeProvider} from "./navigation/RecipeContext";
+import { yummlyTheme } from "./constants";
+import { RecipeProvider } from "./navigation/RecipeContext";
 
 const assetImages = [
 ];
-
-// cache product images
-recipes.map((article) => assetImages.push(article.image));
 
 function cacheImages(images) {
   return images.map((image) => {

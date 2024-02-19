@@ -16,7 +16,6 @@ export const openImagePickerAsync = async () => {
 
   // Acceder a la URI de la imagen seleccionada a través del arreglo `assets`
   const imageUri = pickerResult.assets ? pickerResult.assets[0].uri : null;
-  console.log(imageUri);
   return imageUri; // Devolver la URI de la imagen seleccionada
 };
 
@@ -35,6 +34,5 @@ export const openCameraAsync = async () => {
 
   // Acceder a la URI de la imagen capturada a través del arreglo `assets`
   const imageUri = pickerResult.assets ? pickerResult.assets[0].uri : null;
-  console.log(imageUri);
   return imageUri; // Devolver la URI de la imagen capturada
 };

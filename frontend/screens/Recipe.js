@@ -84,6 +84,7 @@ export default function Recipe(props) {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
+        console.log(route.params.recipeId)
         const fetchedRecipe = await getAsyncRecipe(route.params.recipeId)
         setRecipe(fetchedRecipe);
         setLoading(false);
