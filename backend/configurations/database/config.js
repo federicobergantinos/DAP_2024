@@ -1,6 +1,6 @@
 const sequelize = require('../database/sequelizeConnection');
 const { Favorite, User, Recipe, Media, Tag, Classification, RecipeTags} = require("../../entities/associateModels");
-const { populateTags, populateRecipes } = require('./initialData'); 
+const { populateTags, populateRecipes, populateUser } = require('./initialData'); 
 
 const dbConnection = async () => {
     try {
@@ -20,6 +20,7 @@ const dbConnection = async () => {
         // Poblar la base de datos con datos iniciales
         await populateTags();
         await populateRecipes();
+        await populateUser();
 
         console.log("Database online");
     } catch (error) {
