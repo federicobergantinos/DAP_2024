@@ -12,6 +12,11 @@ const Tags = sequelize.define('tags', {
         allowNull: false,
         unique: true
     },
+    key: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
 })
 
 module.exports = Tags;

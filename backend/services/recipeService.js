@@ -2,7 +2,7 @@ const {Media, Tag, Recipe, RecipeTags, User} = require("../entities/associateMod
 const BadRequest = require("../Errors/BadRequest");
 const {isValidUser} = require("./userService");
 const NotFound = require("../Errors/NotFound");
-const {getAssociateTags} = require("../entities/recipeTags");
+const { Op } = require('sequelize');
 
 const createRecipe = async (recipeData) => {
 
@@ -42,18 +42,75 @@ const createRecipe = async (recipeData) => {
 };
 
 const getRecipes = async (queryData) => {
+    // Inicializa las opciones de inclusión con relaciones que siempre se incluirán
+    let includeOptions = [
+        {
+            model: Media,
+            as: 'media',
+            attributes: ['data'],
+        },
+        {
+            model: Tag,
+            as: 'tags',
+            through: { attributes: [] },
+        },
+    ];
+
+    // Si se proporcionó un tag, ajusta la consulta para filtrar por ese tag
+    if (queryData.tag) {
+        includeOptions.push({
+            model: Tag,
+            as: 'tags',
+            where: { key: queryData.tag },
+            required: true, // Asegura que solo se retornen recetas que tengan el tag especificado
+        });
+    }
+
+    // Realiza la consulta con las opciones de inclusión
     const recipes = await Recipe.findAll({
         limit: queryData.limit,
         offset: queryData.offset,
-        include: [{
-            model: Media,
-            as: 'media',
-            attributes: ['data']
-        }]
+        include: includeOptions,
     });
 
-    return recipes
-}
+    return recipes;
+};
+
+const searchRecipes = async ({ searchTerm, limit, offset }) => {
+    const recipes = await Recipe.findAll({
+      where: {
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${searchTerm}%` } },
+          { ingredients: { [Op.iLike]: `%${searchTerm}%` } },
+        ]
+      },
+      limit,
+      offset,
+      include: [
+        {
+          model: Media,
+          as: 'media',
+          attributes: ['data'], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
+          limit: 1, // Intenta limitar a 1 el resultado de media directamente en la consulta
+        }
+      ],
+    });
+  
+    return recipes.map(recipe => {
+      // Asumiendo que `media` es un array, incluso si limitas los resultados en la consulta
+      const firstImage = recipe.media.length > 0 ? recipe.media[0].data : null;
+  
+      return {
+        id: recipe.id,
+        title: recipe.title,
+        media: firstImage, // Solo devuelve la primera imagen
+        // Otros campos necesarios...
+      };
+    });
+  };
+  
+
+
 
 const getRecipe = async (recipeId) => {
     const recipe = await Recipe.findByPk(recipeId, {
@@ -92,5 +149,6 @@ const getRecipe = async (recipeId) => {
 module.exports = {
     createRecipe,
     getRecipes,
-    getRecipe
+    getRecipe,
+    searchRecipes
 };

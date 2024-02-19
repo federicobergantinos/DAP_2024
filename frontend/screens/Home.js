@@ -11,7 +11,7 @@ import {
 import { Block, theme } from "galio-framework";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Card } from "../components";
-import recipes from "../constants/recipes";
+import backendApi from "../api/backendGateway";
 
 const { width } = Dimensions.get("screen");
 const ITEMS_PER_PAGE = 6;
@@ -22,6 +22,8 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [selectedTag, setSelectedTag] = useState(null);
   const [allItemsLoaded, setAllItemsLoaded] = useState(false);
+  const [endReachedThreshold, setEndReachedThreshold] = useState(0.1); // Valor inicial
+
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -29,42 +31,42 @@ const Home = () => {
 
   useEffect(() => {
     setSelectedTag(tabId);
+    // Resetea los estados para manejar el nuevo tag
+    setData([]);
+    setCurrentPage(0);
+    setAllItemsLoaded(false);
+    // Asegúrate de llamar a fetchRecipes aquí si es necesario para cargar inmediatamente después de cambiar el tag
   }, [tabId]);
 
   useEffect(() => {
-    filterRecipesByTag();
-    setAllItemsLoaded(false);
-  }, [selectedTag]);
+    fetchRecipes();
+  }, [selectedTag, currentPage]);
 
-  const filterRecipesByTag = () => {
-    const filteredData = selectedTag === "all" ? recipes : selectedTag
-      ? recipes.filter(recipe => recipe.tags.includes(selectedTag))
-      : recipes;
-
-    setData(filteredData.slice(0, ITEMS_PER_PAGE));
-    setCurrentPage(0);
-    setAllItemsLoaded(filteredData.length <= ITEMS_PER_PAGE);
-  };
-
-  const loadMoreItems = () => {
+  const fetchRecipes = async () => {
     if (loading || allItemsLoaded) return;
 
     setLoading(true);
-    const nextPage = currentPage + 1;
-    const newItems = selectedTag === "all" ? recipes : recipes.filter(recipe => selectedTag ? recipe.tags.includes(selectedTag) : true);
-    const nextSetOfItems = newItems.slice(nextPage * ITEMS_PER_PAGE, (nextPage + 1) * ITEMS_PER_PAGE);
+    try {
+      const page = currentPage;
+      const tag = selectedTag !== "ALL" ? selectedTag : undefined;
+      const { response: recipes } = await backendApi.recipesGateway.getAll(page, tag);
 
-    setTimeout(() => {
-      setData(prevData => {
-        const updatedData = [...prevData, ...nextSetOfItems];
-        if (nextSetOfItems.length === 0 || updatedData.length === newItems.length) {
-          setAllItemsLoaded(true);
-        }
-        return updatedData;
-      });
-      setCurrentPage(nextPage);
+      if (recipes.length > 0) {
+        setData(prevData => [...prevData, ...recipes]);
+      } else {
+        setAllItemsLoaded(true);
+      }
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
+  };
+
+  const loadMoreItems = () => {
+    if (!loading && !allItemsLoaded) {
+      setCurrentPage(currentPage + 1); // Prepara para cargar la siguiente página
+    }
   };
 
   const renderFooter = () => {
@@ -95,7 +97,7 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.recipes}
         onEndReached={loadMoreItems}
-        onEndReachedThreshold={0.1}
+        onEndReachedThreshold={0.3}
         ListFooterComponent={renderFooter}
         numColumns={2}
       />

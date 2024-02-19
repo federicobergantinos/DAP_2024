@@ -22,7 +22,7 @@ const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight })
         onPress={() => navigation.navigate("Recipe", { recipe: item })}
       >
         <Block flex style={imgContainer}>
-          <Image source={{ uri: item.image }} style={imageStyles} />
+          <Image source={{ uri: item.media }} style={imageStyles} />
         </Block>
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback
