@@ -62,6 +62,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
       setIsOwner(userId.toString() === recipe.userId.toString());
     };
 
+    setIsFavorite(recipe.isFavorite)
     checkOwner().then(renderRight());
 
   }, [recipe]);
