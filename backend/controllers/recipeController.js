@@ -1,5 +1,6 @@
 const {createRecipe, getRecipes, getRecipe} = require("../services/recipeService");
 const {findUserById} = require("../services/userService");
+const {isFavorite} = require("../services/favoriteService");
 const create = async (req, res ) => {
     try {
 
@@ -46,19 +47,19 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
     try {
         const { recipeId } = req.params;
-        console.log(recipeId)
 
         const recipe = await getRecipe(recipeId)
         const user = await findUserById(recipe.userId)
-
-        recipe.username = user.name +" " + user.surname
+        const isValidFavorite = await isFavorite(user.id, recipeId)
+        recipe.username = user.name + " " + user.surname
         recipe.userImage = user.photoUrl
         const data = recipe.media.map(m => m.data);
         res.status(200).json({
             ...recipe,
             username: user.name + " " + user.surname,
             userImage: user.photoUrl,
-            media: data
+            media: data,
+            isFavorite: isValidFavorite
         })
     } catch (error) {
         console.error(`getResources: ${error}`);

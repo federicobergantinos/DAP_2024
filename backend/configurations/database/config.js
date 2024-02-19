@@ -1,16 +1,11 @@
 const sequelize = require('../database/sequelizeConnection');
 
-const { User, Recipe, Media, Tag, Classification, RecipeTags} = require("../../entities/associateModels");
+const { Favorite, User, Recipe, Media, Tag, Classification, RecipeTags} = require("../../entities/associateModels");
 
 const dbConnection = async () => {
     try {
-        await User.sync();
-        await Recipe.sync();
-        await Media.sync();
-        await Tag.sync();
-        await Classification.sync();
-        await RecipeTags.sync();
-        // await sequelize.sync({force: true});
+
+        await sequelize.sync({alter: true});
 
         // await Tag.bulkCreate([
         //     {title: 'RAPID_PREPARATION'},
