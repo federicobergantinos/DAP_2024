@@ -3,15 +3,15 @@ const { Tag } = require("../../../entities/associateModels");
 const populateTags = async () => {
     const tags = [
         {title: 'All', key: "ALL"},
-        {title: 'Vegetariana', key: "VEGETARIANA"},
-        {title: 'Rapida Preparacion', key: "RAPIDA_PREPARACION"},
-        {title: 'Vegana', key: "VEGANA"},
-        {title: 'Aptas celiacas', key: "APTAS_CELIACAS"},
-        {title: 'Sistema inmune', key: "SISTEMAS_INMUNE"},
-        {title: 'Flora intestinal', key: "FLORA_INTESTINAL"},
-        {title: 'Antiinflamatoria', key: "ANTIINFLAMATORIA"},
-        {title: 'Baja en carbohidratos', key: "BAJA_CARBOHIDRATOS"},
-        {title: 'Baja en sodio', key: "BAJA_SODIO"}
+        {title: 'Vegetariana', key: "VEGETARIAN"},
+        {title: 'Rapida Preparacion', key: "RAPID_PREPARATION"},
+        {title: 'Vegana', key: "VEGAN"},
+        {title: 'Aptas celiacas', key: "GLUTEN_FREE"},
+        {title: 'Sistema inmune', key: "IMMUNE_SYSTEM"},
+        {title: 'Flora intestinal', key: "INTESTINAL_FLORA"},
+        {title: 'Antiinflamatoria', key: "ANTI_INFLAMMATORY"},
+        {title: 'Baja en carbohidratos', key: "LOW_CARB"},
+        {title: 'Baja en sodio', key: "LOW_SODIUM"}
     ];
 
     try {

@@ -19,8 +19,8 @@ const dbConnection = async () => {
 
         // Poblar la base de datos con datos iniciales
         await populateTags();
-        await populateRecipes();
         await populateUser();
+        await populateRecipes();
 
         console.log("Database online");
     } catch (error) {

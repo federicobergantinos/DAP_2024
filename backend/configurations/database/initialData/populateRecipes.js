@@ -1,10 +1,17 @@
-const { Recipe, Media, Tag, RecipeTags } = require("../../../entities/associateModels");
+const { Recipe, Media, Tag, RecipeTags, User } = require("../../../entities/associateModels");
 const { recipesData }  = require("./recipesData");
 
 const populateRecipes = async () => {
     try {
         for (const recipeData of recipesData) {
-            const { title, description, preparationTime, servingCount, ingredients, steps, calories, totalFats, proteins, image, tags } = recipeData;
+            const { title, description, preparationTime, servingCount, ingredients, steps, calories, totalFats, proteins, image, tags, userId } = recipeData;
+
+            // Buscar el usuario por userId
+            const user = await User.findByPk(userId);
+            if (!user) {
+                console.log(`User with id ${userId} not found.`);
+                continue; // Saltar esta receta si el usuario no se encuentra
+            }
 
             // Crear la receta (sin incluir la imagen directamente aquí)
             const recipe = await Recipe.create({
@@ -16,7 +23,8 @@ const populateRecipes = async () => {
                 steps,
                 calories,
                 totalFats,
-                proteins
+                proteins,
+                userId: user.id 
             });
             
             // Crear registro de Media para la imagen y asociarlo con la receta
@@ -45,6 +53,7 @@ const populateRecipes = async () => {
                 });
             }
         }
+
 
         console.log("Recipes table has been populated with initial data.");
     } catch (error) {
