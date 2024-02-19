@@ -1,6 +1,6 @@
 const recipesData = [
     {
-      title: 'Paella Vegetariana',
+      title: 'Paella VEGETARIAN',
       description: "description",
       preparationTime: "preparationTime",
       servingCount: 1,
@@ -10,7 +10,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://s3.abcstatics.com/media/gurmesevilla/2012/01/comida-rapida-casera.jpg',
-      tags: [ 'VEGANA', 'ANTIINFLAMATORIA']
+      tags: [ 'VEGAN', 'ANTI_INFLAMMATORY'],
+      userId: 1
     },
     {
       title: 'Tacos Veganos de Jackfruit',
@@ -23,7 +24,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://static-cse.canva.com/blob/598703/Fotografiadecomida.jpg',
-      tags: [ 'VEGANA', 'APTAS_CELIACAS']
+      tags: [ 'VEGAN', 'GLUTEN_FREE'],
+      userId: 2
     },
     {
       title: 'Café de Cebada con Especias',
@@ -36,7 +38,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://www.recetasnestle.com.ar/sites/default/files/2022-06/ingredientes-comida-de-mar-parrilla.jpg',
-      tags: [ 'SISTEMAS_INMUNE', 'ANTIINFLAMATORIA']
+      tags: [ 'IMMUNE_SYSTEM', 'ANTI_INFLAMMATORY'],
+      userId: 2
     },
     {
       title: 'Ensalada Mediterránea con Quinoa',
@@ -49,7 +52,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://www.elmueble.com/medio/2023/05/23/tacos_fcb4f631_00541381_230523124558_1500x2032.jpg',
-      tags: ['BAJA_CARBOHIDRATOS', 'BAJA_SODIO']
+      tags: ['LOW_CARB', 'BAJA_SODIO'],
+      userId: 2
     },
     {
       title: 'Bowl de Açaí y Frutas',
@@ -62,7 +66,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://cdn.aarp.net/content/dam/aarp/health/caregiving/2018/03/1140-nutrients-food-loved-ones-caregiving-esp.jpg',
-      tags: ['SISTEMAS_INMUNE', 'VEGETARIANA']
+      tags: ['IMMUNE_SYSTEM', 'VEGETARIAN'],
+      userId: 2
     },
     {
       title: 'Helado de Aguacate y Coco',
@@ -75,7 +80,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkGTV9ptpoJ1nv8SE8QJ_A4-pCjnd46axWiA&usqp=CAU',
-      tags: ['APTAS_CELIACAS', 'FLORA_INTESTINAL']
+      tags: ['GLUTEN_FREE', 'INTESTINAL_FLORA'],
+      userId: 2
     },
     {
       title: 'Sopa de Maní Tradicional',
@@ -88,7 +94,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://www.laylita.com/recetas/wp-content/uploads/2023/08/Receta-de-la-sopa-de-mani.jpg',
-      tags: [ 'VEGETARIANA', 'RAPIDA_PREPARACION']
+      tags: [ 'VEGETARIAN', 'RAPID_PREPARATION'],
+      userId: 2
     },
     {
       title: 'Carne Asada con Chimichurri',
@@ -101,8 +108,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://img.freepik.com/foto-gratis/primer-plano-carne-asada-salsa-verduras-patatas-fritas-plato-sobre-mesa_181624-35847.jpg',
-      "cta": 'Ver receta',
-      tags: ['VEGANA', 'APTAS_CELIACAS']
+      tags: ['VEGAN', 'GLUTEN_FREE'],
+      userId: 2
     },
     {
       title: 'Gazpacho Andaluz Refrescante',
@@ -115,7 +122,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_wulETjl6TbYZ3Z4M088Gn3BDvEPhVmYiTQ&usqp=CAU',
-      tags: [ 'SISTEMAS_INMUNE', 'FLORA_INTESTINAL']
+      tags: [ 'IMMUNE_SYSTEM', 'INTESTINAL_FLORA'],
+      userId: 2
     },
     {
       title: 'Curry Vegano de Lentejas',
@@ -128,7 +136,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4FR8wrs9_0hB3XpxnrggBXRjt1D6F2cLOqQ&usqp=CAU',
-      tags: ['ANTIINFLAMATORIA', 'BAJA_CARBOHIDRATOS']
+      tags: ['ANTI_INFLAMMATORY', 'LOW_CARB'],
+      userId: 2
     },
     {
       title: 'Tortilla Española Clásica',
@@ -141,7 +150,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://www.recetasnestle.com.co/sites/default/files/inline-images/comidas-fritas-plato-apanado-ensalada.jpg',
-      tags: ['BAJA_SODIO', 'VEGETARIANA']
+      tags: ['BAJA_SODIO', 'VEGETARIAN'],
+      userId: 2
     },
     {
       title: 'Empanadas de Carne Cortada a Cuchillo',
@@ -154,7 +164,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://www.gastronomiaycia.com/wp-content/uploads/2021/01/elplatoharvard_2-680x448.jpg',
-      tags: [ 'RAPIDA_PREPARACION', 'VEGANA']
+      tags: [ 'RAPID_PREPARATION', 'VEGAN'],
+      userId: 2
     },
     {
       title: 'Ceviche Peruano de Pescado',
@@ -167,7 +178,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://img.europapress.es/fotoweb/fotonoticia_20180117114451_1200.jpg',
-      tags: [ 'APTAS_CELIACAS', 'SISTEMAS_INMUNE']
+      tags: [ 'GLUTEN_FREE', 'IMMUNE_SYSTEM'],
+      userId: 2
     },
     {
       title: 'Pollo al Horno con Hierbas',
@@ -180,7 +192,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrgUcf2pA82UbEWGZy53h2SblBfjuh7HbSidmopFmeV8vxEGZmZWSJZ1YmcxNZN_Hdz9M&usqp=CAU',
-      tags: ['FLORA_INTESTINAL', 'ANTIINFLAMATORIA']
+      tags: ['INTESTINAL_FLORA', 'ANTI_INFLAMMATORY'],
+      userId: 2
     },
     {
       title: 'Risotto de Setas Silvestres',
@@ -193,7 +206,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://www.cocinacaserayfacil.net/wp-content/uploads/2020/04/Recetas-de-comidas-para-ni%C3%B1os.jpg',
-      tags: [ 'BAJA_CARBOHIDRATOS', 'BAJA_SODIO']
+      tags: [ 'LOW_CARB', 'BAJA_SODIO'],
+      userId: 2
     },
     {
       title: 'Crema de Calabaza y Zanahoria',
@@ -206,7 +220,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTm7KZl79yp8Hh8WOP8aRcoTYzaf3_xpXxEA&usqp=CAU',
-      tags: [ 'VEGETARIANA', 'RAPIDA_PREPARACION']
+      tags: [ 'VEGETARIAN', 'RAPID_PREPARATION'],
+      userId: 2
     },
     {
       title: 'Chiles en Nogada Estilo Gourmet',
@@ -219,7 +234,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLWNBIqTtuhQjtMtQZ0JZYECLVb0f4JokSg&usqp=CAU',
-      tags: [ 'RAPIDA_PREPARACION', 'BAJA_CARBOHIDRATOS']
+      tags: [ 'RAPID_PREPARATION', 'LOW_CARB'],
+      userId: 2
     },
     {
       title: 'Bacalao a la Vizcaína Tradicional',
@@ -232,7 +248,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://images.unsplash.com/photo-1539136788836-5699e78bfc75?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGxhdG8lMjBkZSUyMGNvbWlkYXxlbnwwfHwwfHx8MA%3D%3D',
-      tags: [ 'RAPIDA_PREPARACION', 'APTAS_CELIACAS']
+      tags: [ 'RAPID_PREPARATION', 'GLUTEN_FREE'],
+      userId: 2
     },
     {
       title: 'Salpicón de Marisco Fresco',
@@ -245,7 +262,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://cdn.pixabay.com/photo/2018/05/21/22/52/gourmet-food-3419926_1280.jpg',
-      tags: ['carbohidratos', 'sodio']
+      tags: ['LOW_CARB', 'LOW_SODIUM'],
+      userId: 2
     },
     {
       title: 'Tarta de Santiago Almendrada',
@@ -258,7 +276,8 @@ const recipesData = [
       totalFats: 1.0,
       proteins: 1.0,
       image: 'https://aprende.com/wp-content/uploads/2021/12/clases-online-de-chef.jpg',
-      tags: [ 'ANTIINFLAMATORIA', 'RAPIDA_PREPARACION']
+      tags: [ 'ANTI_INFLAMMATORY', 'RAPID_PREPARATION'],
+      userId: 2
     }
 ];
 

@@ -134,7 +134,7 @@ const Login = () => {
 const styles = StyleSheet.create({
   loginContainer: {
     width: width * 0.8,
-    height: height < 812 ? height * 0.2 : height * 0.1,
+    height: height * 0.2,
     backgroundColor: '#F4F5F7',
     borderRadius: 4,
     shadowColor: yummlyTheme.COLORS.BLACK,
