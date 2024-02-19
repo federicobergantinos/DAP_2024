@@ -1,13 +1,15 @@
-import React from 'react';
-import { TouchableOpacity, StyleSheet, Platform, Dimensions, Keyboard } from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {TouchableOpacity, StyleSheet, Platform, Dimensions, Keyboard, View, Share} from 'react-native';
 import { Block, NavBar, theme } from 'galio-framework';
-import { useNavigation } from '@react-navigation/native';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native'; // Importa useNavigation de '@react-navigation/native'
 
 import Icon from './Icon';
 import Input from './Input';
 import Tabs from './Tabs';
 import yummlyTheme from '../constants/Theme';
+import RecipeContext from "../navigation/RecipeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import backendGateway from "../api/backendGateway";
 
 const { height, width } = Dimensions.get('window');
 const iPhoneX = () => Platform.OS === 'ios' && (height === 812 || width === 812 || height === 896 || width === 896);
@@ -40,8 +42,87 @@ const SettingsButton = ({ isWhite, style }) => {
   );
 };
 
+const getUserId = async () => {
+  return await AsyncStorage.getItem("userId");
+}
+
+
+
 const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColor, search, tabs, tabIndex, ...props }) => {
   const navigation = useNavigation();
+  const { recipe } = useContext(RecipeContext)
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [isOwner, setIsOwner] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(false);
+
+  useEffect(() => {
+    const checkOwner = async () => {
+      const userId = await getUserId();
+      setCurrentUserId(userId)
+      setIsOwner(userId.toString() === recipe.userId.toString());
+    };
+
+    setIsFavorite(recipe? recipe.isFavorite: false)
+    checkOwner().then(renderRight());
+
+  }, [recipe]);
+  const handleFavorite = async () => {
+    const likeOrDislike = async (like) => {
+      try {
+        setIsFavorite(like);
+        const { statusCode } = like ? await backendGateway.users.like(currentUserId, recipe.id) : await backendGateway.users.dislike(currentUserId, recipe.id);
+        if (statusCode !== 204) {
+          setIsFavorite(!like);
+        }
+      } catch (error) {
+        console.error('No se pudo agregar a favoritos');
+        setIsFavorite(!like);
+      }
+    };
+
+    if (isFavorite) {
+      likeOrDislike(false);
+    } else {
+      likeOrDislike(true);
+    }
+  }
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        title: 'Compartir por',
+        message: `${recipe.title}: ${recipe.description}`,
+      });
+    } catch (error) {
+      console.error('Error al compartir:', error.message);
+    }
+  };
+
+
+  const RenderEditButton = () => {
+    if(!isOwner) return null;
+    return (
+        <TouchableOpacity style={{ paddingHorizontal:5}} >
+          <Icon family='MaterialIcons' name='edit' size={25} color={yummlyTheme.COLORS.WHITE} />
+        </TouchableOpacity>
+    )
+  }
+
+  const RenderFavoriteButton = () => {
+    return (
+        <TouchableOpacity style={{ paddingHorizontal:5, marginRight:20}} onPress={handleFavorite}>
+          <Icon family='MaterialIcons' name={isFavorite ? 'favorite' : 'favorite-border'} size={25} color={yummlyTheme.COLORS.WHITE} />
+        </TouchableOpacity>
+    )
+  }
+
+  const RenderShareButton = () => {
+    return (
+        <TouchableOpacity style={{ paddingHorizontal:5}} onPress={handleShare} >
+          <Icon family='MaterialIcons' name="share" size={25} color={yummlyTheme.COLORS.WHITE} />
+        </TouchableOpacity>
+    )
+  }
 
   const renderLeft = () => {
     return back ? () => navigation.dispatch(CommonActions.goBack()) : () => navigation.navigate('Home');
@@ -53,6 +134,13 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
         <ProfileButton key='profile-title' isWhite={white} />,
         <SettingsButton key='settings-title' isWhite={white} />
       ];
+    }
+    if(title === 'Recipe') {
+      return ([
+          <RenderEditButton isOwner={isOwner}/>,
+          <RenderShareButton/>,
+          <RenderFavoriteButton/>
+      ])
     }
 
     switch (title) {
@@ -89,6 +177,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
       />
     );
   };
+
 
   const renderTabs = () => {
     const defaultTab = tabs && tabs[0] && tabs[0].id;
@@ -129,7 +218,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
     <Block style={headerStyles}>
       <NavBar
         back={false}
-        title={title}
+        title={title!=='Recipe'? title: '' }
         style={navbarStyles}
         transparent={transparent}
         right={renderRight()}
@@ -137,7 +226,7 @@ const Header = ({ back, title, white, transparent, bgColor, iconColor, titleColo
         left={
           <Icon
             name={back ? 'chevron-left' : "home"} family="Feather"
-            size={20} onPress={renderLeft()}
+            size={25} onPress={renderLeft()}
             color={iconColor || (white ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.ICON)}
             style={{ marginTop: 2 }}
           />

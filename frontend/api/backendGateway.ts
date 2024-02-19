@@ -3,32 +3,17 @@ import {createAuthDTO, Credentials} from "./authDTO";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {RecipeDTO} from "./RecipeDTO";
 import {RecipesDTO} from "./RecipesDTO";
+import {RecipesSearchDTO} from "./RecipesSearchDTO";
 
 const olympusApi = axios.create({ baseURL: "http://192.168.1.112:8080" });
 const recipeBaseUrl = "/v1/recipes"
+const usersBaseUrl = "/v1/users"
 
 olympusApi.interceptors.request.use((config) => {
     return getAuthHeader(config)
 }, (error) => {
     return Promise.reject(error);
 });
-
-const getAuthHeader = async (config) => {
-    const token = await getToken()
-    if (token) {
-        config.headers.Authorization = token;
-    }
-    return config
-}
-const getToken = async (): Promise<string> => {
-    try {
-        const token = await AsyncStorage.getItem("token");
-        return token || "";
-    } catch (error) {
-        console.error("Error al obtener el token:", error);
-        return "";
-    }
-}
 
 const responseBodyWithStatusCode = (response: AxiosResponse) => ({
     response: response.data,
@@ -53,10 +38,32 @@ const recipesGateway = {
         const url = tag ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}` : `${recipeBaseUrl}/?page=${page}&limit=10`;
         return requests.get(url);
     },
-    searchRecipes: (searchTerm = '', page = 0, limit = 10): Promise<{ response: RecipesDTO; statusCode: number }> => {
+    searchRecipes: (searchTerm = '', page = 0, limit = 10): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
       const url = `${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${(searchTerm)}`;
       return requests.get(url);
     },
 }
 
-export default { authUser, recipesGateway };
+const users = {
+    like:(userId: number, recipeId: number): Promise<{ response: any; statusCode: number }> => requests.post(usersBaseUrl + '/' + userId + "/favorites", {recipeId: recipeId} ),
+    dislike: (userId: number, recipeId: number): Promise<{ response: any; statusCode: number }> => requests.delete(usersBaseUrl + '/' + userId + "/favorites/" + recipeId)
+}
+
+
+const getAuthHeader = async (config) => {
+    const token = await getToken()
+    if (token) {
+        config.headers.Authorization = token;
+    }
+    return config
+}
+const getToken = async (): Promise<string> => {
+    try {
+        const token = await AsyncStorage.getItem("token");
+        return token || "";
+    } catch (error) {
+        console.error("Error al obtener el token:", error);
+        return "";
+    }
+}
+export default { authUser, recipesGateway, users};

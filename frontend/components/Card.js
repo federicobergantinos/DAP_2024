@@ -19,14 +19,14 @@ const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight })
   return (
     <Block row={horizontal} card flex style={cardContainer}>
       <TouchableWithoutFeedback
-        onPress={() => navigation.navigate("Recipe", { recipe: item })}
+        onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
       >
         <Block flex style={imgContainer}>
           <Image source={{ uri: item.media }} style={imageStyles} />
         </Block>
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback
-        onPress={() => navigation.navigate("Recipe", { recipe: item })}
+        onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
       >
         <Block flex space="between" style={styles.cardDescription}>
           <Block flex>
@@ -38,10 +38,10 @@ const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight })
             >
               {item.title}
             </Text>
-            {item.body ? (
+            {item.description ? (
               <Block flex left>
                 <Text style={{ fontFamily: 'open-sans-regular' }} size={12} color={yummlyTheme.COLORS.TEXT}>
-                  {item.body}
+                  {item.description}
                 </Text>
               </Block>
             ) : (

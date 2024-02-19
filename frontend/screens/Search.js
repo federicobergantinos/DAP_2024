@@ -44,8 +44,7 @@ export default class Search extends React.Component {
 
     this.setState({ loading: true });
     try {
-        const response = await backendApi.recipesGateway.searchRecipes(search, currentPage, ITEMS_PER_PAGE);
-        console.log(response);
+        const { response, statusCode } = await backendApi.recipesGateway.searchRecipes(search, currentPage, ITEMS_PER_PAGE);
         if (response && response.length > 0) {
             this.setState(prevState => ({
                 results: currentPage === 0 ? response : [...prevState.results, ...response],
@@ -193,13 +192,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     elevation: 2,
     zIndex: 2
-  },
-  notfound: {
-    marginVertical: theme.SIZES.BASE * 2
-  },
-  suggestion: {
-    height: theme.SIZES.BASE * 1.5,
-    marginBottom: theme.SIZES.BASE
   },
   result: {
     backgroundColor: theme.COLORS.WHITE,

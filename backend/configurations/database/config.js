@@ -1,5 +1,5 @@
 const sequelize = require('../database/sequelizeConnection');
-const { User, Recipe, Media, Classification, RecipeTags, Tag } = require("../../entities/associateModels");
+const { Favorite, User, Recipe, Media, Tag, Classification, RecipeTags} = require("../../entities/associateModels");
 const { populateTags, populateRecipes } = require('./initialData'); 
 
 const dbConnection = async () => {

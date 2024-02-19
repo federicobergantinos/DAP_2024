@@ -12,7 +12,8 @@ import { enableScreens } from "react-native-screens";
 enableScreens();
 
 import Screens from "./navigation/Screens";
-import { Images, yummlyTheme } from "./constants";
+import { yummlyTheme } from "./constants";
+import { RecipeProvider } from "./navigation/RecipeContext";
 
 const assetImages = [
 ];
@@ -68,12 +69,14 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer onReady={onLayoutRootView}>
-      <GalioProvider theme={yummlyTheme}>
-        <Block flex>
-          <Screens />
-        </Block>
-      </GalioProvider>
-    </NavigationContainer>
+    <RecipeProvider>
+      <NavigationContainer onReady={onLayoutRootView}>
+        <GalioProvider theme={yummlyTheme}>
+          <Block flex>
+            <Screens />
+          </Block>
+        </GalioProvider>
+      </NavigationContainer>
+    </RecipeProvider>
   );
 }

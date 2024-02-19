@@ -103,8 +103,8 @@ const searchRecipes = async ({ searchTerm, limit, offset }) => {
       return {
         id: recipe.id,
         title: recipe.title,
-        media: firstImage, // Solo devuelve la primera imagen
-        // Otros campos necesarios...
+        media: firstImage,
+        description: recipe.description,
       };
     });
   };
