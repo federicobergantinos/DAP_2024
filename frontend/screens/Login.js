@@ -42,8 +42,8 @@ const Login = () => {
 
 
   useEffect(() => {
-    // if(isLoggedUser())
-    //   navigation.replace('Home')
+    if(isLoggedUser())
+      navigation.replace('Home')
     setIsLoading(false)
   }, []);
 
