@@ -99,8 +99,8 @@ android {
             keyPassword 'android'
         }
         release {
-            if (project.hasProperty('my-release-key.keystore')) {
-                storeFile file(my-release-key.keystore)
+            if (project.hasProperty('release.keystore')) {
+                storeFile file(release.keystore)
                 storePassword uade_dapi
                 keyAlias my-key-alias
                 keyPassword uade_dapi
