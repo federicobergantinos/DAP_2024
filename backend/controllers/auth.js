@@ -2,13 +2,12 @@ const { createUser, findUserByEmail } = require("../services/userService");
 const { createAuthTokens, loginUser, refreshToken} = require("../services/authService");
 const authenticate = async (req, res) => {
   try {
-    const userData = await loginUser(req.body.token, req.header['Authorization']);
+    const userData = await loginUser(req.body.token, req.headers['authorization']);
     let user = await findUserByEmail(userData.email);
 
     if (!user) {
       user = await createUser(userData);
     }
-
     const tokens = createAuthTokens(user);
 
     res.status(201).json({
@@ -26,15 +25,10 @@ const authenticate = async (req, res) => {
 
 const refresh = async (req, res) => {
   try {
-    const accessToken = req.header['Authorization']
+    const accessToken = req.headers['authorization']
     const refresh = req.body.refreshToken
 
     let user = await refreshToken(accessToken, refresh)
-
-    if (!user) {
-      user = await createUser(userData);
-    }
-
     const tokens = createAuthTokens(user);
 
     res.status(201).json({
