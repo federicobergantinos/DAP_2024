@@ -17,13 +17,13 @@ const createAuthTokens = (user) => {
 
 const loginUser = async (token, accessToken) => {
     console.log(accessToken)
-    if(accessToken !== undefined && accessToken !== null) {
+    /*if(accessToken !== undefined && accessToken !== null) {
         jwt.verify(accessToken, process.env.CODE, (err, decodedToken) => {
             if (err) {
                 throw Unauthorized('Error in token')
             }
         });
-    }
+    }*/
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,

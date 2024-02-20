@@ -49,14 +49,16 @@ const Login = () => {
   });
 
   const refreshToken = async () => {
-    const {response, statusCode } = await backendApi.authUser.refresh(AsyncStorage.getItem("refresh"))
 
+    const {response, statusCode} = await backendApi.authUser.refresh(AsyncStorage.getItem('refresh'))
     if (statusCode === 201) {
-      await AsyncStorage.setItem("token", JSON.stringify(response.accessToken),);
+      await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
       await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
       await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-      navigation.replace("Home");
       setIsLoading(false);
+      navigation.replace("Home");
+    } else {
+      await logOut()
     }
   }
 
@@ -84,18 +86,15 @@ const Login = () => {
       await AsyncStorage.setItem("userId", JSON.stringify(response.id));
       navigation.replace("Home");
       setIsLoading(false);
-    } else if ( statusCode === 401) {
+    } else if ( statusCode === undefined) {
       try {
-        const {response, statusCode} = await backendApi.authUser.refresh(AsyncStorage.getItem('refresh'))
-        if (statusCode === 201) {
-          await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-          await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
-          await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-          setIsLoading(false);
-          navigation.replace("Home");
-        } else {
-          await logOut()
+
+        if(await asyncStorage.getItem('token') !== null) {
+          await refreshToken()
         }
+        else
+          await logOut()
+
       } catch (e) {
         await logOut()
       }
@@ -131,14 +130,14 @@ const Login = () => {
 
   const logOut = async () => {
     await clearAsyncStorage()
-    GoogleSignin.signOut()
+    await GoogleSignin.signOut()
     setIsLoading(false);
   }
 
   const clearAsyncStorage = async () => {
-    await AsyncStorage.setItem("token", null);
-    await AsyncStorage.setItem("refresh", null);
-    await AsyncStorage.setItem("userId", null);
+    await AsyncStorage.clear()
+    await AsyncStorage.clear()
+    await AsyncStorage.clear()
   }
   return (
     <View style={{ flex: 1 }}>
