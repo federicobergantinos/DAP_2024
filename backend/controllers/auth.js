@@ -1,8 +1,8 @@
 const { createUser, findUserByEmail } = require("../services/userService");
-const { createAuthTokens, loginUser } = require("../services/authService");
+const { createAuthTokens, loginUser, refreshToken} = require("../services/authService");
 const authenticate = async (req, res) => {
   try {
-    const userData = await loginUser(req.body.token);
+    const userData = await loginUser(req.body.token, req.header['Authorization']);
     let user = await findUserByEmail(userData.email);
 
     if (!user) {
@@ -17,13 +17,38 @@ const authenticate = async (req, res) => {
       refreshToken: tokens.refreshToken,
     });
   } catch (error) {
-    console.error(`getResources: ${error}`);
+    console.error(`${error}`);
     res.status(error.code || 500).json({
       msg: error.message || "An exception has ocurred",
     });
   }
 };
 
+const refresh = async (req, res) => {
+  try {
+    const accessToken = req.header['Authorization']
+    const refresh = req.body.refreshToken
+
+    let user = await refreshToken(accessToken, refresh)
+
+    if (!user) {
+      user = await createUser(userData);
+    }
+
+    const tokens = createAuthTokens(user);
+
+    res.status(201).json({
+      id: user.id,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    });
+  } catch (error) {
+    console.error(` ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "An exception has ocurred",
+    });
+  }
+};
 module.exports = {
-  authenticate,
+  authenticate, refresh
 };

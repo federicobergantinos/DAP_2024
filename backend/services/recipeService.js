@@ -163,21 +163,21 @@ const searchRecipes = async ({ searchTerm, limit, offset }) => {
         attributes: ["data"], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
         limit: 1, // Intenta limitar a 1 el resultado de media directamente en la consulta
       },
-    ],
-  });
+      ],
+    });
 
-  return recipes.map((recipe) => {
-    // Asumiendo que `media` es un array, incluso si limitas los resultados en la consulta
-    const firstImage = recipe.media.length > 0 ? recipe.media[0].data : null;
+    return recipes.map((recipe) => {
+      // Asumiendo que `media` es un array, incluso si limitas los resultados en la consulta
+      const firstImage = recipe.media.length > 0 ? recipe.media[0].data : null;
 
-    return {
-      id: recipe.id,
-      title: recipe.title,
-      media: firstImage,
-      description: recipe.description,
-    };
-  });
-};
+      return {
+        id: recipe.id,
+        title: recipe.title,
+        media: firstImage,
+        description: recipe.description,
+      };
+    });
+  };
 
 const getRecipe = async (recipeId) => {
   const recipe = await Recipe.findByPk(recipeId, {
