@@ -42,10 +42,12 @@ const authUser = {
 };
 
 const recipesGateway = {
+
   getRecipeById: (
     id: number,
   ): Promise<{ response: RecipeDTO; statusCode: number }> =>
     requests.get(recipeBaseUrl + "/" + id),
+
   getAll: (
     page = 0,
     tag,
@@ -55,6 +57,7 @@ const recipesGateway = {
       : `${recipeBaseUrl}/?page=${page}&limit=10`;
     return requests.get(url);
   },
+
   searchRecipes: (
     searchTerm = "",
     page = 0,
@@ -62,6 +65,16 @@ const recipesGateway = {
   ): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
     const url = `${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${searchTerm}`;
     return requests.get(url);
+  },
+
+  createRecipe: async (recipeData) => {
+    try {
+      const response = await requests.post(`${recipeBaseUrl}`, recipeData);
+      return response; 
+    } catch (error) {
+      console.error('Error al crear la receta:', error);
+      throw error;
+    }
   },
 };
 
@@ -87,6 +100,7 @@ const getAuthHeader = async (config) => {
   }
   return config;
 };
+
 const getToken = async (): Promise<string> => {
   try {
     const token = await AsyncStorage.getItem("token");

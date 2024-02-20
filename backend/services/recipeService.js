@@ -10,52 +10,119 @@ const { isValidUser } = require("./userService");
 const NotFound = require("../Errors/NotFound");
 const { Op } = require("sequelize");
 
+// const createRecipe = async (recipeData) => {
+//   const {
+//     userId,
+//     title,
+//     media,
+//     preparationTime,
+//     servingCount,
+//     ingredients,
+//     steps,
+//     tags,
+//     calories,
+//     proteins,
+//     totalFats,
+//   } = recipeData;
+
+//   if (!(await isValidUser(userId))) {
+//     throw new BadRequest("Invalid User");
+//   }
+
+//   const newRecipe = await Recipe.create({
+//     title: title,
+//     preparationTime: preparationTime,
+//     servingCount: servingCount,
+//     ingredients: ingredients.join("|"),
+//     steps: steps.join("|"),
+//     calories: calories,
+//     proteins: proteins,
+//     totalFats: totalFats,
+//     userId: userId,
+//   });
+
+//   const recipeTagsIds = await Tag.findAll({
+//     where: {
+//       title: tags,
+//     },
+//     attributes: ["id"],
+//   });
+
+//   media.forEach((it) => Media.create({ recipeId: newRecipe.id, data: it }));
+
+//   recipeTagsIds.forEach((it) => {
+//     console.log(it.id);
+//     RecipeTags.create({ recipeId: newRecipe.id, tagId: it.id });
+//   });
+
+//   return newRecipe.id;
+// };
+
+// Función para crear una receta y asociarla con tags y medios
 const createRecipe = async (recipeData) => {
   const {
     userId,
     title,
-    media,
+    description,
     preparationTime,
     servingCount,
     ingredients,
     steps,
-    tags,
     calories,
     proteins,
     totalFats,
+    tags, // Este será un array de nombres de tags
+    video,
   } = recipeData;
 
+  // Verificar si el usuario es válido
   if (!(await isValidUser(userId))) {
     throw new BadRequest("Invalid User");
   }
 
-  const newRecipe = await Recipe.create({
-    title: title,
-    preparationTime: preparationTime,
-    servingCount: servingCount,
-    ingredients: ingredients.join("|"),
-    steps: steps.join("|"),
-    calories: calories,
-    proteins: proteins,
-    totalFats: totalFats,
-    userId: userId,
+  // Convertir arrays a strings para almacenamiento
+  const ingredientsString = ingredients.join("|");
+  const stepsString = steps.join("|");
+
+  // Crear la receta
+  const recipe = await Recipe.create({
+    userId,
+    title,
+    description,
+    preparationTime,
+    servingCount,
+    ingredients: ingredientsString,
+    steps: stepsString,
+    calories,
+    proteins,
+    totalFats,
   });
 
-  const recipeTagsIds = await Tag.findAll({
-    where: {
-      title: tags,
-    },
-    attributes: ["id"],
-  });
+  // Si se proporcionó una URL de YouTube, guardarla en media
+  if (video) {
+    await Media.create({
+      recipeId: recipe.id,
+      data: video,
+    });
+  }
 
-  media.forEach((it) => Media.create({ recipeId: newRecipe.id, data: it }));
+  if (tags && tags.length > 0) {
+    const tagsPromises = tags.map(async (tagName) => {
+      const tag = await Tag.findOne({
+        where: { key: tagName },
+      });
+      if (tag) {
+        await RecipeTags.create({
+          recipeId: recipe.id,
+          tagId: tag.id,
+        });
+      }
+    });
 
-  recipeTagsIds.forEach((it) => {
-    console.log(it.id);
-    RecipeTags.create({ recipeId: newRecipe.id, tagId: it.id });
-  });
+    await Promise.all(tagsPromises);
+  }
 
-  return newRecipe.id;
+  return recipe.id;
 };
 
 const getRecipes = async (queryData) => {

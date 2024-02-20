@@ -6,17 +6,20 @@ const {
 } = require("../services/recipeService");
 const { findUserById } = require("../services/userService");
 const { isFavorite } = require("../services/favoriteService");
+
 const create = async (req, res) => {
   try {
+    console.log(req.body);
     const recipe = await createRecipe(req.body);
 
     res.status(201).json({
       id: recipe.id,
+      message: "Receta creada con éxito",
     });
   } catch (error) {
-    console.error(`getResources: ${error}`);
-    res.status(error.code || 500).json({
-      msg: error.message || "An exception has ocurred",
+    console.error(`Error al crear la receta: ${error}`);
+    res.status(500).json({
+      message: "Ocurrió un error al crear la receta",
     });
   }
 };

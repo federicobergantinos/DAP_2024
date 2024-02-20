@@ -10,7 +10,7 @@ const Media = sequelize.define("media", {
   data: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: false,
   },
 });
 

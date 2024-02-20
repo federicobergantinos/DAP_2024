@@ -16,21 +16,46 @@ import {
 import MultiSelect from "react-native-multiple-select";
 
 import { Images, yummlyTheme } from "../constants";
-import { HeaderHeight } from "../constants/utils";
+import backendApi from "../api/backendGateway";
 import tags from "../constants/tabs";
 import Icon from "../components/Icon";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
 const { width, height } = Dimensions.get("screen");
 
 class CreateRecipe extends React.Component {
+  // state = {
+  //   selectedTags: [],
+  //   isMultiSelectOpen: false,
+  //   ingredientes: [""],
+  //   pasos: [""],
+  //   title: "",
+  //   description: "",
+  //   preparationTime: "",
+  //   servingCount: null,
+  //   calories: null,
+  //   proteins: null,
+  //   totalFats: null,
+  //   video: "",
+  // };
+  // TODO
   state = {
-    selectedTags: [],
+    selectedTags: ["VEGAN"], // Asume que "1" es un ID válido para un tag existente
     isMultiSelectOpen: false,
-    ingredientes: [""],
-    pasos: [""],
+    ingredientes: ["Ingrediente 1", "Ingrediente 2"], // Valores por defecto para ingredientes
+    pasos: ["Paso 1", "Paso 2"], // Valores por defecto para pasos
+    title: "Título de la Receta",
+    description: "Descripción de la receta.",
+    preparationTime: "45", // Asume que el tiempo de preparación es en minutos
+    servingCount: 4, // Asume un número de porciones
+    calories: 500, // Valor por defecto para calorías
+    proteins: 30.5, // Valor por defecto para proteínas
+    totalFats: 20.5, // Valor por defecto para grasas totales
+    video:
+      "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
   };
 
   onSelectedItemsChange = (selectedTags) => {
@@ -76,6 +101,8 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            value={this.state.title}
+            onChangeText={(text) => this.setState({ title: text })}
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder="Agrega un titulo que llame la atención!"
@@ -89,6 +116,8 @@ class CreateRecipe extends React.Component {
             color="black"
             autoFocus={false}
             autoCorrect={false}
+            value={this.state.description}
+            onChangeText={(text) => this.setState({ description: text })}
             autoCapitalize="none"
             iconContent={<Block />}
             style={{
@@ -104,6 +133,8 @@ class CreateRecipe extends React.Component {
           <Input
             right
             color="black"
+            value={this.state.video}
+            onChangeText={(text) => this.setState({ video: text })}
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
@@ -128,6 +159,13 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={
+              this.state.servingCount ? this.state.servingCount.toString() : ""
+            }
+            onChangeText={(text) =>
+              this.setState({ servingCount: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder="Cuantas personas pueden comer?"
@@ -141,6 +179,15 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={
+              this.state.preparationTime
+                ? this.state.preparationTime.toString()
+                : ""
+            }
+            onChangeText={(text) =>
+              this.setState({ preparationTime: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder="Agrega el tiempo en minutos!"
@@ -163,6 +210,11 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={this.state.calories ? this.state.calories.toString() : ""}
+            onChangeText={(text) =>
+              this.setState({ calories: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder=""
@@ -176,6 +228,11 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={this.state.proteins ? this.state.proteins.toString() : ""}
+            onChangeText={(text) =>
+              this.setState({ proteins: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder=""
@@ -189,6 +246,11 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={this.state.totalFats ? this.state.totalFats.toString() : ""}
+            onChangeText={(text) =>
+              this.setState({ totalFats: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder=""
@@ -213,7 +275,7 @@ class CreateRecipe extends React.Component {
   removeIngrediente = (indexToRemove) => {
     this.setState((prevState) => ({
       ingredientes: prevState.ingredientes.filter(
-        (_, index) => index !== indexToRemove,
+        (_, index) => index !== indexToRemove
       ),
     }));
   };
@@ -287,6 +349,67 @@ class CreateRecipe extends React.Component {
     const newPasos = [...this.state.pasos];
     newPasos[index] = text;
     this.setState({ pasos: newPasos });
+  };
+
+  submitRecipe = async () => {
+    // const userId = await AsyncStorage.getItem("userId");
+    const userId = 1;
+
+    const {
+      selectedTags,
+      ingredientes,
+      pasos,
+      title,
+      description,
+      preparationTime,
+      servingCount,
+      calories,
+      proteins,
+      totalFats,
+      video,
+    } = this.state;
+
+    // Verifica si todos los campos requeridos están llenos
+    if (
+      !title.trim() ||
+      !description.trim() ||
+      !preparationTime.trim() ||
+      servingCount === null ||
+      calories === null ||
+      proteins === null ||
+      totalFats === null ||
+      video === null ||
+      ingredientes.some((i) => !i.trim()) ||
+      pasos.some((p) => !p.trim()) ||
+      selectedTags.length === 0
+    ) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    const recipeData = {
+      userId,
+      title,
+      description,
+      preparationTime,
+      servingCount,
+      ingredients: ingredientes.filter((i) => i.trim()),
+      steps: pasos.filter((p) => p.trim()),
+      calories,
+      proteins,
+      totalFats,
+      video,
+      tags: selectedTags,
+    };
+
+    try {
+      console.log(userId);
+      console.log(recipeData);
+      const response = await backendApi.recipesGateway.createRecipe(recipeData);
+      console.log(response);
+    } catch (error) {
+      console.error("Error al crear la receta:", error);
+    }
   };
 
   renderPasos = () => {
@@ -387,7 +510,7 @@ class CreateRecipe extends React.Component {
           center
           textStyle={{ color: yummlyTheme.COLORS.BLACK }}
           style={styles.buttonStyle}
-          onPress={() => this.props.navigation.navigate("Home")}
+          onPress={this.submitRecipe}
         >
           Confirmar
         </Button>
