@@ -15,8 +15,7 @@ import Screens from "./navigation/Screens";
 import { yummlyTheme } from "./constants";
 import { RecipeProvider } from "./navigation/RecipeContext";
 
-const assetImages = [
-];
+const assetImages = [];
 
 function cacheImages(images) {
   return images.map((image) => {
@@ -27,7 +26,6 @@ function cacheImages(images) {
     }
   });
 }
-
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -52,7 +50,6 @@ export default function App() {
     }
     prepare();
   }, []);
-
 
   const _loadResourcesAsync = async () => {
     return Promise.all([...cacheImages(assetImages)]);

@@ -31,9 +31,6 @@ const DismissKeyboard = ({ children }) => (
 const Login = () => {
   const navigation = useNavigation();
   const isLoggedUser = async () => {
-    console.log("TOKEN SAVED", await AsyncStorage.getItem("token"))
-    console.log("REFRESH SAVED", await AsyncStorage.getItem("refresh"))
-    console.log("UserId SAVED", await AsyncStorage.getItem("userId"))
     return (
         await AsyncStorage.getItem("token") !== null &&
         await AsyncStorage.getItem("refresh") !== null &&
@@ -53,7 +50,7 @@ const Login = () => {
 
   const refreshToken = async () => {
     const {response, statusCode } = await backendApi.authUser.refresh(AsyncStorage.getItem("refresh"))
-    console.log("REFRESH", response);
+
     if (statusCode === 201) {
       await AsyncStorage.setItem("token", JSON.stringify(response.accessToken),);
       await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
@@ -65,8 +62,6 @@ const Login = () => {
 
   useEffect(() => {
     const validateLoggedUser = async () => {
-      console.log("INIT")
-      console.log("LOGGED USER: ", await isLoggedUser())
       if (await isLoggedUser()) {
         reAuthenticate()
       } else {
@@ -112,13 +107,12 @@ const Login = () => {
       console.log("START LOGIN")
       setIsLoading(true);
       const userInfo = await GoogleSignin.signIn();
-      console.log("GOOGLE RESPONSE", userInfo)
+
       const { idToken, user } = userInfo;
       const { response, statusCode } = await backendApi.authUser.authenticate({
         token: idToken,
       });
-      console.log("AUTH RESPONSE", response)
-      console.log("AUTH STATUS CODE", statusCode)
+
       if (statusCode === 201) {
         await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
         await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);

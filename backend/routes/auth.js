@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 const {
@@ -6,7 +6,7 @@ const {
     refresh
 } = require("../controllers/auth");
 
-router.post('/', authenticate);
+router.post("/", authenticate);
 router.put('/',refresh)
 
 module.exports = router;
