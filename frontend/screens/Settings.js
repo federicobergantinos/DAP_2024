@@ -1,17 +1,16 @@
 import React from "react";
-import {
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { StyleSheet, FlatList, TouchableOpacity, View, TextInput } from "react-native";
 import { Block, Text, theme, Icon } from "galio-framework";
 import { Switch } from "../components";
+
 
 import yummlyTheme from "../constants/Theme";
 
 export default class Settings extends React.Component {
-  state = {};
+  state = {
+    nombre: "",
+    apellido: "",
+  };
 
   toggleSwitch = switchNumber =>
     this.setState({ [switchNumber]: !this.state[switchNumber] });
@@ -20,31 +19,61 @@ export default class Settings extends React.Component {
     const { navigate } = this.props.navigation;
 
     switch (item.type) {
-      case "switch":
+      case "deleteAccount":
+        return (
+          <TouchableOpacity onPress={() => {/* Lógica para eliminar la cuenta */}}>
+            <View style={styles.deleteButton}>
+              <Text style={{ color: 'red' }}>Eliminar Cuenta</Text>
+            </View>
+          </TouchableOpacity>
+        );
+
+      case "nameInput":
         return (
           <Block row middle space="between" style={styles.rows}>
             <Text style={{ fontFamily: 'open-sans-regular' }} size={14} color="#525F7F">{item.title}</Text>
-            <Switch
-              onValueChange={() => this.toggleSwitch(item.id)}
-              value={this.state[item.id]}
+            <TextInput
+              style={styles.input}
+              onChangeText={text => this.setState({ nombre: text })}
+              value={this.state.nombre}
+              placeholder={item.title}
+              placeholderTextColor="#BFBFBF"
             />
           </Block>
         );
-      case "button":
+      case "lastNameInput":
+              return (
+                <Block row middle space="between" style={styles.rows}>
+                  <Text style={{ fontFamily: 'open-sans-regular' }} size={14} color="#525F7F">{item.title}</Text>
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={text => this.setState({ apellido: text })}
+                    value={this.state.apellido}
+                    placeholder={item.title}
+                    placeholderTextColor="#BFBFBF"
+                  />
+                </Block>
+              );
+      case "mailInput":
         return (
-          <Block >
-            <TouchableOpacity onPress={() => (item.id !== 'Payment' && item.id !== 'gift') && navigate(item.id)}>
-              <Block row middle space="between" style={{ paddingTop: 7 }}>
-                <Text style={{ fontFamily: 'open-sans-regular' }} size={14} color="#525F7F">{item.title}</Text>
-                <Icon
-                  name="angle-right"
-                  family="font-awesome"
-                  style={{ paddingRight: 5 }}
-                />
-              </Block>
-            </TouchableOpacity>
+          <Block row middle space="between" style={styles.rows}>
+            <Text style={{ fontFamily: 'open-sans-regular' }} size={14} color="#525F7F">{item.title}</Text>
+            <TextInput
+              style={[styles.inputContainer, { color: '#BFBFBF' }]}
+              //value={this.state.email}
+              value={'test@gmail.com'}
+              editable={false}
+            />
           </Block>
         );
+        case "logout":
+          return (
+            <TouchableOpacity onPress={() => {/* Lógica para cerrar sesión */}}>
+              <View style={styles.logoutButton}>
+                <Text style={{ color: 'red' }}>Cerrar sesión</Text>
+              </View>
+            </TouchableOpacity>
+          );
       default:
         break;
     }
@@ -52,21 +81,16 @@ export default class Settings extends React.Component {
 
   render() {
     const recommended = [
-      { title: "Use FaceID to sign in", id: "face", type: "switch" },
-      { title: "Auto-Lock security", id: "autolock", type: "switch" },
-      { title: "Notifications", id: "NotificationsSettings", type: "button" }
+      { title: "Nombre", id: "nombre", type: "nameInput" },
+      { title: "Apellido", id: "apellido", type: "lastNameInput" },
+      { title: "Mail", id: "mail", type: "mailInput" },
+      { title: "Cerrar Sesión", id: "sesion", type: "logout" }
     ];
 
     const payment = [
-      { title: "Manage Payment Options", id: "Payment", type: "button" },
-      { title: "Manage Gift Cards", id: "gift", type: "button" }
+      { title: "Eliminar Cuenta", id: "delete", type: "deleteAccount" },
     ];
 
-    const privacy = [
-      { title: "User Agreement", id: "Agreement", type: "button" },
-      { title: "Privacy", id: "Privacy", type: "button" },
-      { title: "About", id: "About", type: "button" }
-    ];
 
     return (
       <View
@@ -78,22 +102,16 @@ export default class Settings extends React.Component {
           keyExtractor={(item, index) => item.id}
           renderItem={this.renderItem}
           ListHeaderComponent={
-            <Block center style={styles.title}>
-              <Text style={{ fontFamily: 'open-sans-bold', paddingBottom: 5 }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
-                Recommended Settings
-              </Text>
-              <Text style={{ fontFamily: 'open-sans-regular' }} size={12} color={yummlyTheme.COLORS.CAPTION} color={yummlyTheme.COLORS.TEXT}>
-                These are the most important settings
+            <Block center style={styles.title, {marginTop:20}}>
+              <Text style={{ fontFamily: 'open-sans', paddingBottom: 5 }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
+                Configuración Recomendada
               </Text>
             </Block>
           }
         />
-        <Block center style={styles.title}>
-          <Text style={{ fontFamily: 'open-sans-bold', paddingBottom: 5 }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
-            Payment Settings
-          </Text>
-          <Text style={{ fontFamily: 'open-sans-regular' }} size={12} color={yummlyTheme.COLORS.CAPTION} color={yummlyTheme.COLORS.TEXT}>
-            These are also important settings
+        <Block center style={styles.title, {marginTop: 400}}>
+          <Text style={{ fontFamily: 'open-sans-bold', paddingBottom: 10, color: 'red' }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
+            Danger Zone
           </Text>
         </Block>
 
@@ -102,21 +120,8 @@ export default class Settings extends React.Component {
           keyExtractor={(item, index) => item.id}
           renderItem={this.renderItem}
         />
-
-        <Block center style={styles.title}>
-          <Text style={{ fontFamily: 'open-sans-bold', paddingBottom: 5 }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
-            Privacy Settings
-          </Text>
-          <Text style={{ fontFamily: 'open-sans-regular' }} size={12} color={yummlyTheme.COLORS.CAPTION} color={yummlyTheme.COLORS.TEXT}>
-            Third most important settings
-          </Text>
-        </Block>
-        <FlatList
-          data={privacy}
-          keyExtractor={(item, index) => item.id}
-          renderItem={this.renderItem}
-        />
       </View>
+
     );
   }
 }
@@ -133,5 +138,52 @@ const styles = StyleSheet.create({
     height: theme.SIZES.BASE * 2,
     paddingHorizontal: theme.SIZES.BASE,
     marginBottom: theme.SIZES.BASE / 2
-  }
+  },
+  input: {
+    paddingHorizontal: 10,
+    height: 30,
+    borderRadius: 10,
+    justifyContent: 'center',
+    marginRight: 10,
+    width: 300,
+    flexShrink: 1,
+    borderWidth: 1,
+    borderColor: 'gray',
+  },
+ inputContainer: {
+   paddingHorizontal: 10,
+   height: 30,
+   borderRadius: 10,
+   justifyContent: 'center',
+   backgroundColor: 'gray',
+   marginRight: 10,
+   width: 300,
+   flexShrink: 1,
+   borderWidth: 1,
+   borderColor: 'gray',
+ },
+ logoutButton: {
+   paddingHorizontal: 10,
+   width: 150,
+   alignItems: 'center',
+   justifyContent: 'center',
+   marginTop: 10,
+   borderWidth: 1,
+   borderRadius: 20,
+   borderColor: 'red',
+   marginLeft: 10
+ },
+
+ deleteButton: {
+   paddingHorizontal: 10,
+   width: 150,
+   alignItems: 'center',
+   justifyContent: 'center',
+   marginTop: 10,
+   borderWidth: 1,
+   borderRadius: 20,
+   borderColor: 'red',
+   marginLeft: 10
+ },
+
 });
