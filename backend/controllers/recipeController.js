@@ -57,19 +57,20 @@ const create = async (req, res) => {
       imageUrl: imageUrl,
     };
 
-        res.status(201).json(
-            {
-                id: recipeId,
-                message: "Receta creada con éxito",
-                imageUrl: imageUrl,
-            }
-        );
-    } catch (error) {
-        console.error(` ${error}`);
-        res.status(error.code || 500).json({
-            msg: error.message || "An exception has ocurred",
-        });
-    }
+    console.log(recipeData);
+    const recipeId = await createRecipe(recipeData);
+
+    res.status(201).json({
+      id: recipeId,
+      message: "Receta creada con éxito",
+      imageUrl: imageUrl,
+    });
+  } catch (error) {
+    console.error(` ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "An exception has ocurred",
+    });
+  }
 };
 
 const getAll = async (req, res) => {
