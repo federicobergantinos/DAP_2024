@@ -446,7 +446,6 @@ class CreateRecipe extends React.Component {
 
     try {
       const response = await backendApi.recipesGateway.createRecipe(recipeData);
-      console.log(response);
 
       // Verifica si la receta se creó exitosamente y si el estado es 201
       if (response.statusCode === 201) {

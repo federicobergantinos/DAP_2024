@@ -57,7 +57,6 @@ const create = async (req, res) => {
       imageUrl: imageUrl,
     };
 
-    console.log(recipeData);
     const recipeId = await createRecipe(recipeData);
 
     res.status(201).json({
