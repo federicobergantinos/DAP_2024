@@ -2,6 +2,7 @@ const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
 const Authorization = require("../entities/auth");
 const Unauthorized = require("../Errors/Unauthorized");
+const {findUserById} = require("./userService");
 const client = new OAuth2Client();
 
 const createAuthTokens = (user) => {
@@ -14,7 +15,15 @@ const createAuthTokens = (user) => {
   return { refreshToken, accessToken };
 };
 
-const loginUser = async (token) => {
+const loginUser = async (token, accessToken) => {
+    console.log(accessToken)
+    if(accessToken !== undefined && accessToken !== null) {
+        jwt.verify(accessToken, process.env.CODE, (err, decodedToken) => {
+            if (err) {
+                throw Unauthorized('Error in token')
+            }
+        });
+    }
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -36,6 +45,21 @@ const loginUser = async (token) => {
   }
 };
 
+const refreshToken = async (accessToken, refreshToken) => {
+
+    const auth = await Authorization.findOne({
+        where: { accessToken: accessToken, refreshToken: refreshToken },
+    });
+    if(auth === null) {
+        throw new Unauthorized("Unauthorized")
+    }
+
+    const user = await findUserById(auth.userId)
+
+    Authorization.destroy({where: {id: auth.id}})
+    return createAuthTokens(user)
+}
+
 const saveInDb = async (accessToken, refreshToken, userId) => {
   await Authorization.create({
     userId: userId,
@@ -45,6 +69,7 @@ const saveInDb = async (accessToken, refreshToken, userId) => {
 };
 
 module.exports = {
-  loginUser,
-  createAuthTokens,
+    loginUser,
+    createAuthTokens,
+    refreshToken
 };
