@@ -1,23 +1,29 @@
-const {response} = require("express");
-const signUp = async (req, res = response) => {
-    try {
-        const { googleToken } = req.params;
-        //hacer signUp
+const { createUser, findUserByEmail } = require("../services/userService");
+const { createAuthTokens, loginUser } = require("../services/authService");
+const authenticate = async (req, res) => {
+  try {
+    const userData = await loginUser(req.body.token);
+    let user = await findUserByEmail(userData.email);
 
-        res.status(201).json(
-            {
-                "accessToken": googleToken,
-                "refreshToken": "refresh"
-            }
-        );
-    } catch (error) {
-        console.error(`getResources: ${error}`);
-        res.status(error.code || 500).json({
-            msg: error.message || "An exception has ocurred",
-        });
+    if (!user) {
+      user = await createUser(userData);
     }
+
+    const tokens = createAuthTokens(user);
+
+    res.status(201).json({
+      id: user.id,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    });
+  } catch (error) {
+    console.error(`getResources: ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "An exception has ocurred",
+    });
+  }
 };
 
 module.exports = {
-    signUp,
+  authenticate,
 };
