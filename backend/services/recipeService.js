@@ -95,11 +95,11 @@ const searchRecipes = async ({ searchTerm, limit, offset }) => {
         }
       ],
     });
-  
+
     return recipes.map(recipe => {
       // Asumiendo que `media` es un array, incluso si limitas los resultados en la consulta
       const firstImage = recipe.media.length > 0 ? recipe.media[0].data : null;
-  
+
       return {
         id: recipe.id,
         title: recipe.title,
@@ -108,7 +108,7 @@ const searchRecipes = async ({ searchTerm, limit, offset }) => {
       };
     });
   };
-  
+
 
 
 
@@ -132,7 +132,7 @@ const getRecipe = async (recipeId) => {
     const tagIds = recipeTags.map(recipeTag => recipeTag.tagId);
     const tags = await Tag.findAll({
         where: { id: tagIds },
-        attributes: ['title']
+        attributes: ['key']
     });
 
     console.log(tags)

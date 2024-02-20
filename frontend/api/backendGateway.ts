@@ -5,7 +5,7 @@ import {RecipeDTO} from "./RecipeDTO";
 import {RecipesDTO} from "./RecipesDTO";
 import {RecipesSearchDTO} from "./RecipesSearchDTO";
 
-const olympusApi = axios.create({ baseURL: "http://192.168.1.112:8080" });
+const olympusApi = axios.create({ baseURL: "http://192.168.0.5:8080" });
 const recipeBaseUrl = "/v1/recipes"
 const usersBaseUrl = "/v1/users"
 
@@ -29,7 +29,8 @@ const requests = {
 };
 
 const authUser = {
-    authenticate: (auth: createAuthDTO): Promise<{ response: Credentials; statusCode: number }> => requests.post('/v1/auth', auth)
+    authenticate: (auth: createAuthDTO): Promise<{ response: Credentials; statusCode: number }> => requests.post('/v1/auth', auth),
+    refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> => requests.put('/v1/auth', {refreshToken: refreshToken})
 };
 
 const recipesGateway = {

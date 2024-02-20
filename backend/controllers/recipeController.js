@@ -12,7 +12,7 @@ const create = async (req, res ) => {
             }
         );
     } catch (error) {
-        console.error(`getResources: ${error}`);
+        console.error(` ${error}`);
         res.status(error.code || 500).json({
             msg: error.message || "An exception has ocurred",
         });
@@ -46,7 +46,7 @@ const getAll = async (req, res) => {
         });
         res.status(200).json(response);
     } catch (error) {
-        console.error(`getResources: ${error}`);
+        console.error(` ${error}`);
         res.status(error.code || 500).json({
             msg: error.message || "An exception has occurred",
         });
@@ -90,7 +90,7 @@ const getById = async (req, res) => {
             isFavorite: isValidFavorite
         })
     } catch (error) {
-        console.error(`getResources: ${error}`);
+        console.error(` ${error}`);
         res.status(error.code || 500).json({
             msg: error.message || "An exception has ocurred",
         });

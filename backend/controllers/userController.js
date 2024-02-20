@@ -11,7 +11,7 @@ const createFav = async (req, res ) => {
             res.status(500).send("")
         }
     } catch (error) {
-        console.error(`getResources: ${error}`);
+        console.error(` ${error}`);
         res.status(error.code || 500).json({
             msg: error.message || "An exception has ocurred",
         });
@@ -29,7 +29,7 @@ const deleteFav = async (req, res ) => {
             res.status(500).send("");
         }
     } catch (error) {
-        console.error(`getResources: ${error}`);
+        console.error(` ${error}`);
         res.status(error.code || 500).json({
             msg: error.message || "An exception has ocurred",
         });

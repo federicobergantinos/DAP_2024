@@ -83,10 +83,8 @@
             }
           }
         }
-      }
-    },
-    "/v1/auth/refresh": {
-      "post": {
+      },
+      "put": {
         "tags": ["Auth"],
         "summary": "refresca el token",
         "requestBody": {
