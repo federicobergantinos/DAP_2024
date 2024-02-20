@@ -61,7 +61,7 @@ function ProfileStack(props) {
         component={Profile}
         options={{
           header: ({ navigation, scene }) => (
-            <Header 
+            <Header
               title="Profile"
               back
               black
@@ -122,7 +122,7 @@ function ProfileFavoritosStack(props) {
   );
 }
 
-function ProfileRecetasStack(props) {
+/*function ProfileRecetasStack(props) {
   return (
     <Stack.Navigator
       initialRouteName="ProfileRecetas"
@@ -181,7 +181,7 @@ function ProfileFavoritosStack(props) {
     </Stack.Navigator>
   );
 }
-
+*/
 
 function HomeStack(props) {
   return (
