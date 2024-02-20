@@ -1,64 +1,86 @@
-const { Recipe, Media, Tag, RecipeTags, User } = require("../../../entities/associateModels");
-const { recipesData }  = require("./recipesData");
+const {
+  Recipe,
+  Media,
+  Tag,
+  RecipeTags,
+  User,
+} = require("../../../entities/associateModels");
+const { recipesData } = require("./recipesData");
 
 const populateRecipes = async () => {
-    try {
-        for (const recipeData of recipesData) {
-            const { title, description, preparationTime, servingCount, ingredients, steps, calories, totalFats, proteins, image, tags, userId } = recipeData;
+  try {
+    for (const recipeData of recipesData) {
+      const {
+        title,
+        description,
+        preparationTime,
+        servingCount,
+        ingredients,
+        steps,
+        calories,
+        totalFats,
+        proteins,
+        image,
+        tags,
+        userId,
+      } = recipeData;
 
-            // Buscar el usuario por userId
-            const user = await User.findByPk(userId);
-            if (!user) {
-                console.log(`User with id ${userId} not found.`);
-                continue; // Saltar esta receta si el usuario no se encuentra
-            }
+      // Buscar el usuario por userId
+      const user = await User.findByPk(userId);
+      if (!user) {
+        console.log(`User with id ${userId} not found.`);
+        continue; // Saltar esta receta si el usuario no se encuentra
+      }
 
-            // Crear la receta (sin incluir la imagen directamente aquí)
-            const recipe = await Recipe.create({
-                title,
-                description,
-                preparationTime,
-                servingCount,
-                ingredients,
-                steps,
-                calories,
-                totalFats,
-                proteins,
-                userId: user.id 
-            });
-            
-            // Crear registro de Media para la imagen y asociarlo con la receta
-            const media = await Media.create({
-                data: image,
-                recipeId: recipe.id // Asociar el registro de Media con la receta mediante la clave externa
-            });
+      // Crear la receta (sin incluir la imagen directamente aquí)
+      const recipe = await Recipe.create({
+        title,
+        description,
+        preparationTime,
+        servingCount,
+        ingredients,
+        steps,
+        calories,
+        totalFats,
+        proteins,
+        userId: user.id,
+      });
 
-            // Buscar y asociar etiquetas existentes con la receta
-            const tagInstances = await Promise.all(tags.map(async (tagName) => {
-                // Aquí cambiamos findOrCreate por findOne ya que no queremos crear nuevas etiquetas
-                const tagInstance = await Tag.findOne({
-                    where: { key: tagName }
-                });
-                return tagInstance;
-            }));
+      // Crear registro de Media para la imagen y asociarlo con la receta
+      const media = await Media.create({
+        data: image,
+        recipeId: recipe.id, // Asociar el registro de Media con la receta mediante la clave externa
+      });
 
-            // Filtramos cualquier instancia de etiqueta que no se haya encontrado para evitar errores
-            const existingTagInstances = tagInstances.filter(tagInstance => tagInstance !== null);
+      // Buscar y asociar etiquetas existentes con la receta
+      const tagInstances = await Promise.all(
+        tags.map(async (tagName) => {
+          // Aquí cambiamos findOrCreate por findOne ya que no queremos crear nuevas etiquetas
+          const tagInstance = await Tag.findOne({
+            where: { key: tagName },
+          });
+          return tagInstance;
+        }),
+      );
 
-            // Asociar la receta con sus etiquetas existentes
-            for (const tagInstance of existingTagInstances) {
-                await RecipeTags.create({
-                    recipeId: recipe.id,
-                    tagId: tagInstance.id
-                });
-            }
-        }
+      // Filtramos cualquier instancia de etiqueta que no se haya encontrado para evitar errores
+      const existingTagInstances = tagInstances.filter(
+        (tagInstance) => tagInstance !== null,
+      );
 
-
-        console.log("Recipes table has been populated with initial data.");
-    } catch (error) {
-        console.error("Error populating Recipes table:", error);
+      // Asociar la receta con sus etiquetas existentes
+      for (const tagInstance of existingTagInstances) {
+        await RecipeTags.create({
+          recipeId: recipe.id,
+          tagId: tagInstance.id,
+        });
+      }
     }
+
+    console.log("Recipes table has been populated with initial data.");
+  } catch (error) {
+    console.error("Error populating Recipes table:", error);
+  }
 };
 
 module.exports = populateRecipes;

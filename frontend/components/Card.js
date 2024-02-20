@@ -2,13 +2,24 @@ import React from "react";
 import PropTypes from "prop-types";
 import { StyleSheet, Image, TouchableWithoutFeedback } from "react-native";
 import { Block, Text, theme } from "galio-framework";
-import { useNavigation } from '@react-navigation/native'; // Importa useNavigation
+import { useNavigation } from "@react-navigation/native"; // Importa useNavigation
 import { yummlyTheme } from "../constants";
 
-const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight }) => {
+const Card = ({
+  item,
+  horizontal,
+  full,
+  style,
+  ctaColor,
+  imageStyle,
+  ctaRight,
+}) => {
   const navigation = useNavigation(); // Usa el hook useNavigation
 
-  const imageStyles = [full ? styles.fullImage : styles.horizontalImage, imageStyle];
+  const imageStyles = [
+    full ? styles.fullImage : styles.horizontalImage,
+    imageStyle,
+  ];
   const cardContainer = [styles.card, styles.shadow, style];
   const imgContainer = [
     styles.imageContainer,
@@ -31,7 +42,7 @@ const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight })
         <Block flex space="between" style={styles.cardDescription}>
           <Block flex>
             <Text
-              style={{ fontFamily: 'open-sans-regular' }}
+              style={{ fontFamily: "open-sans-regular" }}
               size={14}
               style={styles.cardTitle}
               color={yummlyTheme.COLORS.TEXT}
@@ -40,7 +51,11 @@ const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight })
             </Text>
             {item.description ? (
               <Block flex left>
-                <Text style={{ fontFamily: 'open-sans-regular' }} size={12} color={yummlyTheme.COLORS.TEXT}>
+                <Text
+                  style={{ fontFamily: "open-sans-regular" }}
+                  size={12}
+                  color={yummlyTheme.COLORS.TEXT}
+                >
                   {item.description}
                 </Text>
               </Block>
@@ -50,7 +65,7 @@ const Card = ({ item, horizontal, full, style, ctaColor, imageStyle, ctaRight })
           </Block>
           <Block right={ctaRight ? true : false}>
             <Text
-              style={{ fontFamily: 'open-sans-bold' }}
+              style={{ fontFamily: "open-sans-bold" }}
               size={12}
               muted={!ctaColor}
               color={ctaColor || yummlyTheme.COLORS.ACTIVE}
@@ -74,7 +89,6 @@ Card.propTypes = {
   ctaRight: PropTypes.bool,
 };
 
-
 const styles = StyleSheet.create({
   card: {
     backgroundColor: theme.COLORS.WHITE,
@@ -86,42 +100,42 @@ const styles = StyleSheet.create({
   cardTitle: {
     // flex: 1,
     // flexWrap: "wrap",
-    paddingBottom: 6
+    paddingBottom: 6,
   },
   cardDescription: {
-    padding: theme.SIZES.BASE / 2
+    padding: theme.SIZES.BASE / 2,
   },
   imageContainer: {
     borderRadius: 3,
     elevation: 1,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   image: {
     // borderRadius: 3,
   },
   horizontalImage: {
     height: 122,
-    width: "auto"
+    width: "auto",
   },
   horizontalStyles: {
     borderTopRightRadius: 0,
-    borderBottomRightRadius: 0
+    borderBottomRightRadius: 0,
   },
   verticalStyles: {
     borderBottomRightRadius: 0,
-    borderBottomLeftRadius: 0
+    borderBottomLeftRadius: 0,
   },
   fullImage: {
-    height: 215
+    height: 215,
   },
   shadow: {
     shadowColor: "#8898AA",
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 6,
     shadowOpacity: 0.1,
-    elevation: 2
-  }
+    elevation: 2,
+  },
 });
 
 export default Card;

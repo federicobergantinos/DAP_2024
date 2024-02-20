@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 import { Input } from "galio-framework";
 
-import Icon from './Icon';
+import Icon from "./Icon";
 import { yummlyTheme } from "../constants";
 
 class ArInput extends React.Component {
@@ -16,7 +16,7 @@ class ArInput extends React.Component {
       !shadowless && styles.shadow,
       success && styles.success,
       error && styles.error,
-      {...this.props.style}
+      { ...this.props.style },
     ];
 
     return (
@@ -41,21 +41,21 @@ class ArInput extends React.Component {
 ArInput.defaultProps = {
   shadowless: false,
   success: false,
-  error: false
+  error: false,
 };
 
 ArInput.propTypes = {
   shadowless: PropTypes.bool,
   success: PropTypes.bool,
-  error: PropTypes.bool
-}
+  error: PropTypes.bool,
+};
 
 const styles = StyleSheet.create({
   input: {
     borderRadius: 4,
     borderColor: yummlyTheme.COLORS.BORDER,
     height: 44,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: "#FFFFFF",
   },
   success: {
     borderColor: yummlyTheme.COLORS.INPUT_SUCCESS,
@@ -65,12 +65,12 @@ const styles = StyleSheet.create({
   },
   shadow: {
     shadowColor: yummlyTheme.COLORS.BLACK,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     shadowOffset: { width: 0, height: 0.5 },
     shadowRadius: 1,
     shadowOpacity: 0.13,
     elevation: 2,
-  }
+  },
 });
 
 export default ArInput;

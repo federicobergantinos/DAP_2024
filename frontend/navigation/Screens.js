@@ -34,7 +34,7 @@ function HomeStack(props) {
         name="Login"
         component={Login}
         options={{
-            headerShown: false,
+          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -100,10 +100,14 @@ function HomeStack(props) {
       <Stack.Screen
         name="CreateRecipe"
         component={CreateRecipe}
-        
         options={{
           header: ({ navigation, scene }) => (
-            <Header title="Crear receta" back scene={scene} navigation={navigation} />
+            <Header
+              title="Crear receta"
+              back
+              scene={scene}
+              navigation={navigation}
+            />
           ),
           cardStyle: { backgroundColor: "#FFFFFF" },
           headerTransparent: false,
@@ -122,7 +126,7 @@ function HomeStack(props) {
               scene={scene}
             />
           ),
-          cardStyle: { backgroundColor: "#FFFFFF" }
+          cardStyle: { backgroundColor: "#FFFFFF" },
         }}
       />
       <Stack.Screen
@@ -130,7 +134,12 @@ function HomeStack(props) {
         component={Settings}
         options={{
           header: ({ navigation, scene }) => (
-            <Header title="Configuracion" back scene={scene} navigation={navigation} />
+            <Header
+              title="Configuracion"
+              back
+              scene={scene}
+              navigation={navigation}
+            />
           ),
           cardStyle: { backgroundColor: "#F8F9FE" },
         }}

@@ -27,16 +27,13 @@
   "paths": {
     "/ping": {
       "post": {
-        "tags": [
-          "Health"
-        ],
+        "tags": ["Health"],
         "summary": "Health check",
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
-              "application/json": {
-              }
+              "application/json": {}
             }
           }
         }
@@ -152,9 +149,7 @@
     },
     "/v1/users/{userId}": {
       "get": {
-        "tags": [
-          "Usuarios"
-        ],
+        "tags": ["Usuarios"],
         "summary": "Obtener información del usuario",
         "parameters": [
           {
@@ -201,9 +196,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Usuarios"
-        ],
+        "tags": ["Usuarios"],
         "summary": "Modificar información del usuario",
         "requestBody": {
           "content": {
@@ -252,9 +245,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Usuarios"
-        ],
+        "tags": ["Usuarios"],
         "summary": "Elimina la cuenta de usuario",
         "parameters": [
           {
@@ -296,9 +287,7 @@
     },
     "/v1/users/{userId}/favorites": {
       "post": {
-        "tags": [
-          "Usuarios"
-        ],
+        "tags": ["Usuarios"],
         "summary": "Agrega un nuevo favorito al usuario",
         "requestBody": {
           "content": {
@@ -348,9 +337,7 @@
         }
       },
       "get": {
-        "tags": [
-          "Usuarios"
-        ],
+        "tags": ["Usuarios"],
         "summary": "Devuelve un listado de las recetas favoritas del usuario",
         "parameters": [
           {
@@ -446,9 +433,7 @@
     },
     "/v1/users/{userId}/favorites/{recipeId}": {
       "delete": {
-        "tags": [
-          "Usuarios"
-        ],
+        "tags": ["Usuarios"],
         "summary": "Elimina un favorito del usuario",
         "parameters": [
           {
@@ -497,9 +482,7 @@
     },
     "/v1/recipes": {
       "get": {
-        "tags": [
-          "Recetas"
-        ],
+        "tags": ["Recetas"],
         "summary": "Devuelve un listado de recetas",
         "parameters": [
           {
@@ -583,9 +566,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Recetas"
-        ],
+        "tags": ["Recetas"],
         "summary": "Crear una receta nueva",
         "requestBody": {
           "required": true,
@@ -634,9 +615,7 @@
     },
     "/v1/recipes/{recipeId}": {
       "put": {
-        "tags": [
-          "Recetas"
-        ],
+        "tags": ["Recetas"],
         "summary": "Modifica la receta",
         "requestBody": {
           "content": {
@@ -685,9 +664,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Recetas"
-        ],
+        "tags": ["Recetas"],
         "summary": "Borra la receta",
         "parameters": [
           {
@@ -724,9 +701,7 @@
         }
       },
       "get": {
-        "tags": [
-          "Recetas"
-        ],
+        "tags": ["Recetas"],
         "parameters": [
           {
             "name": "Authorization",
@@ -775,9 +750,7 @@
     },
     "/v1/recipes/{recipeId}/califications": {
       "put": {
-        "tags": [
-          "Recetas"
-        ],
+        "tags": ["Recetas"],
         "summary": "Agrega una calificación a la receta",
         "requestBody": {
           "content": {
