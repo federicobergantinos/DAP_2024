@@ -9,18 +9,16 @@ import {
   Platform,
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
-import {
-  openImagePickerAsync,
-  openCameraAsync,
-} from "../components/ImagePicker.js";
+import { openImagePickerAsync } from "../components/ImagePicker.js";
 import MultiSelect from "react-native-multiple-select";
 
 import { Images, yummlyTheme } from "../constants";
-import { HeaderHeight } from "../constants/utils";
+import backendApi from "../api/backendGateway";
 import tags from "../constants/tabs";
 import Icon from "../components/Icon";
 import Input from "../components/Input";
 import Button from "../components/Button";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
 const { width, height } = Dimensions.get("screen");
@@ -31,7 +29,33 @@ class CreateRecipe extends React.Component {
     isMultiSelectOpen: false,
     ingredientes: [""],
     pasos: [""],
+    title: "",
+    description: "",
+    preparationTime: null,
+    image: null,
+    servingCount: null,
+    calories: null,
+    proteins: null,
+    totalFats: null,
+    video: "",
   };
+  // TODO
+  // state = {
+  //   selectedTags: ["RAPID_PREPARATION"], // Asume que "1" es un ID válido para un tag existente
+  //   isMultiSelectOpen: false,
+  //   ingredientes: ["Pan de papa", "Carne picada", "Chedar"],
+  //   pasos: ["Cortar el pan", "Cocinar las hamburgesas", "Poner el chedar"],
+  //   title: "Hamburgesa Crispy",
+  //   description: "Una de las hambursas mas ricas que hay, una delicia.",
+  //   preparationTime: "20",
+  //   image: null,
+  //   servingCount: 1,
+  //   calories: 500,
+  //   proteins: 30.5,
+  //   totalFats: 20.5,
+  //   video:
+  //     "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
+  // };
 
   onSelectedItemsChange = (selectedTags) => {
     this.setState({ selectedTags });
@@ -41,25 +65,66 @@ class CreateRecipe extends React.Component {
     this.setState({ isMultiSelectOpen: isOpen });
   };
 
+  handleImagePicked = async () => {
+    try {
+      const result = await openImagePickerAsync();
+      this.setState({ image: result });
+    } catch (error) {
+      console.error("Error al seleccionar la imagen:", error);
+      alert("No se pudo seleccionar la imagen.");
+    }
+  };
+
   renderMainInformation = () => {
+    const { image } = this.state;
+
     return (
       <Block flex style={styles.CreateRecipeCard}>
         <Block style={styles.info}>
           <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={openImagePickerAsync}
+            style={[
+              styles.uploadButton,
+              image ? styles.uploadContainerSuccess : {},
+            ]} // Aplica el estilo de éxito si image no es null
+            onPress={this.handleImagePicked}
           >
-            <Block middle row space="evenly" style={styles.uploadContainer}>
-              <Icon
-                name="camera"
-                family="Entypo"
-                size={30}
-                color={yummlyTheme.COLORS.ICON}
-              />
+            <Block
+              middle
+              row
+              space="evenly"
+              style={[
+                styles.uploadContainer,
+                image ? styles.uploadContainerSuccess : {},
+              ]}
+            >
+              {image ? (
+                <>
+                  <Icon
+                    name="check"
+                    family="AntDesign"
+                    size={30}
+                    color={yummlyTheme.COLORS.SUCCESS}
+                  />
+                  <Text bold size={14} style={[styles.textWhite]}>
+                    {/* Aplica el estilo de texto blanco */}
+                    Imagen seleccionada
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Icon
+                    name="camera"
+                    family="Entypo"
+                    size={30}
+                    color={yummlyTheme.COLORS.ICON}
+                    padding={10}
+                  />
+                  <Text bold size={14} color={yummlyTheme.COLORS.HEADER}>
+                    Añade una foto
+                  </Text>
+                </>
+              )}
             </Block>
-            <Text bold size={14} color={yummlyTheme.COLORS.HEADER}>
-              Añade una foto de tu receta hecha por ti
-            </Text>
           </TouchableOpacity>
         </Block>
         <Block middle style={{ marginTop: 30, marginBottom: 16 }}>
@@ -76,6 +141,8 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            value={this.state.title}
+            onChangeText={(text) => this.setState({ title: text })}
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder="Agrega un titulo que llame la atención!"
@@ -89,6 +156,8 @@ class CreateRecipe extends React.Component {
             color="black"
             autoFocus={false}
             autoCorrect={false}
+            value={this.state.description}
+            onChangeText={(text) => this.setState({ description: text })}
             autoCapitalize="none"
             iconContent={<Block />}
             style={{
@@ -104,6 +173,8 @@ class CreateRecipe extends React.Component {
           <Input
             right
             color="black"
+            value={this.state.video}
+            onChangeText={(text) => this.setState({ video: text })}
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
@@ -128,6 +199,13 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={
+              this.state.servingCount ? this.state.servingCount.toString() : ""
+            }
+            onChangeText={(text) =>
+              this.setState({ servingCount: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder="Cuantas personas pueden comer?"
@@ -141,6 +219,15 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={
+              this.state.preparationTime
+                ? this.state.preparationTime.toString()
+                : ""
+            }
+            onChangeText={(text) =>
+              this.setState({ preparationTime: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder="Agrega el tiempo en minutos!"
@@ -163,6 +250,11 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={this.state.calories ? this.state.calories.toString() : ""}
+            onChangeText={(text) =>
+              this.setState({ calories: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder=""
@@ -176,6 +268,11 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={this.state.proteins ? this.state.proteins.toString() : ""}
+            onChangeText={(text) =>
+              this.setState({ proteins: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder=""
@@ -189,6 +286,11 @@ class CreateRecipe extends React.Component {
             autoFocus={false}
             autoCorrect={false}
             autoCapitalize="none"
+            keyboardType="numeric"
+            value={this.state.totalFats ? this.state.totalFats.toString() : ""}
+            onChangeText={(text) =>
+              this.setState({ totalFats: text ? parseInt(text) : null })
+            }
             iconContent={<Block />}
             style={[styles.search, this.state.active ? styles.shadow : null]}
             placeholder=""
@@ -213,7 +315,7 @@ class CreateRecipe extends React.Component {
   removeIngrediente = (indexToRemove) => {
     this.setState((prevState) => ({
       ingredientes: prevState.ingredientes.filter(
-        (_, index) => index !== indexToRemove,
+        (_, index) => index !== indexToRemove
       ),
     }));
   };
@@ -287,6 +389,79 @@ class CreateRecipe extends React.Component {
     const newPasos = [...this.state.pasos];
     newPasos[index] = text;
     this.setState({ pasos: newPasos });
+  };
+
+  submitRecipe = async () => {
+    // const userId = await AsyncStorage.getItem("userId");
+    const userId = 1;
+
+    const {
+      selectedTags,
+      ingredientes,
+      pasos,
+      title,
+      description,
+      preparationTime,
+      servingCount,
+      calories,
+      proteins,
+      totalFats,
+      video,
+      image,
+    } = this.state;
+
+    if (
+      !title.trim() ||
+      !description.trim() ||
+      preparationTime === null ||
+      servingCount === null ||
+      calories === null ||
+      proteins === null ||
+      totalFats === null ||
+      image === null ||
+      video === null ||
+      ingredientes.some((i) => !i.trim()) ||
+      pasos.some((p) => !p.trim()) ||
+      selectedTags.length === 0
+    ) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    const recipeData = {
+      userId: userId,
+      title: title,
+      description: description,
+      ingredients: ingredientes,
+      steps: pasos,
+      tags: selectedTags,
+      video: video,
+      image: image ? `data:image/jpeg;base64,${image.base64}` : null,
+      preparationTime: preparationTime,
+      servingCount: servingCount,
+      calories: calories,
+      proteins: proteins,
+      totalFats: totalFats,
+    };
+
+    try {
+      const response = await backendApi.recipesGateway.createRecipe(recipeData);
+
+      // Verifica si la receta se creó exitosamente y si el estado es 201
+      if (response.statusCode === 201) {
+        // Si es exitoso, navega a la pantalla de la receta con el ID proporcionado
+        this.props.navigation.navigate("Recipe", {
+          recipeId: response.response.id,
+        });
+      } else {
+        // Si no es exitoso, muestra un mensaje de error
+        alert("No se pudo crear la receta. Por favor, inténtalo de nuevo.");
+      }
+    } catch (error) {
+      // Si hay una excepción durante la llamada API, muestra un mensaje de error
+      console.error("Error al crear la receta:", error);
+      alert("Ocurrió un error al intentar crear la receta.");
+    }
   };
 
   renderPasos = () => {
@@ -387,7 +562,7 @@ class CreateRecipe extends React.Component {
           center
           textStyle={{ color: yummlyTheme.COLORS.BLACK }}
           style={styles.buttonStyle}
-          onPress={() => this.props.navigation.navigate("Home")}
+          onPress={this.submitRecipe}
         >
           Confirmar
         </Button>

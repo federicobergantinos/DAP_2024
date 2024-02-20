@@ -6,17 +6,68 @@ const {
 } = require("../services/recipeService");
 const { findUserById } = require("../services/userService");
 const { isFavorite } = require("../services/favoriteService");
+
+const AWS = require("aws-sdk");
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+const s3 = new AWS.S3();
+
+const uploadBase64ImageToS3 = async (base64Image, filename) => {
+  // Eliminar el prefijo de la cadena base64 si está presente
+  const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
+  const buffer = Buffer.from(base64Data, "base64");
+
+  // Asignar un tipo de contenido basado en el prefijo de la cadena base64 o asumir jpeg como predeterminado
+  const contentType =
+    base64Image.match(/^data:(image\/\w+);base64,/)?.[1] || "image/jpeg";
+
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: `${Date.now()}_${filename}`,
+    Body: buffer,
+    ContentType: contentType,
+    ACL: "public-read",
+  };
+
+  try {
+    const s3Response = await s3.upload(params).promise();
+    return s3Response.Location; // Retorna la URL del archivo cargado
+  } catch (error) {
+    console.error("Error al cargar la imagen a S3:", error);
+    throw error;
+  }
+};
+
+const { v4: uuidv4 } = require("uuid");
+
 const create = async (req, res) => {
   try {
-    const recipe = await createRecipe(req.body);
+    let imageUrl = null;
+    if (req.body.image) {
+      // Generar un nombre de archivo único utilizando UUID
+      const filename = `${uuidv4()}.jpeg`;
+      imageUrl = await uploadBase64ImageToS3(req.body.image, filename);
+    }
+
+    const recipeData = {
+      ...req.body,
+      imageUrl: imageUrl,
+    };
+
+    const recipeId = await createRecipe(recipeData);
 
     res.status(201).json({
-      id: recipe.id,
+      id: recipeId,
+      message: "Receta creada con éxito",
+      imageUrl: imageUrl,
     });
   } catch (error) {
-    console.error(`getResources: ${error}`);
-    res.status(error.code || 500).json({
-      msg: error.message || "An exception has ocurred",
+    console.error(`Error al crear la receta: ${error}`);
+    res.status(500).json({
+      message: "Ocurrió un error al crear la receta",
     });
   }
 };
