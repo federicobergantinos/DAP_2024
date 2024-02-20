@@ -31,7 +31,7 @@ class CreateRecipe extends React.Component {
     pasos: [""],
     title: "",
     description: "",
-    preparationTime: "",
+    preparationTime: null,
     image: null,
     servingCount: null,
     calories: null,
@@ -41,18 +41,18 @@ class CreateRecipe extends React.Component {
   };
   // TODO
   // state = {
-  //   selectedTags: ["VEGAN"], // Asume que "1" es un ID válido para un tag existente
+  //   selectedTags: ["RAPID_PREPARATION"], // Asume que "1" es un ID válido para un tag existente
   //   isMultiSelectOpen: false,
-  //   ingredientes: ["Ingrediente 1", "Ingrediente 2"], // Valores por defecto para ingredientes
-  //   pasos: ["Paso 1", "Paso 2"], // Valores por defecto para pasos
-  //   title: "Título de la Receta",
-  //   description: "Descripción de la receta.",
-  //   preparationTime: "45", // Asume que el tiempo de preparación es en minutos
+  //   ingredientes: ["Pan de papa", "Carne picada", "Chedar"],
+  //   pasos: ["Cortar el pan", "Cocinar las hamburgesas", "Poner el chedar"],
+  //   title: "Hamburgesa Crispy",
+  //   description: "Una de las hambursas mas ricas que hay, una delicia.",
+  //   preparationTime: "20",
   //   image: null,
-  //   servingCount: 4, // Asume un número de porciones
-  //   calories: 500, // Valor por defecto para calorías
-  //   proteins: 30.5, // Valor por defecto para proteínas
-  //   totalFats: 20.5, // Valor por defecto para grasas totales
+  //   servingCount: 1,
+  //   calories: 500,
+  //   proteins: 30.5,
+  //   totalFats: 20.5,
   //   video:
   //     "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
   // };
@@ -413,7 +413,7 @@ class CreateRecipe extends React.Component {
     if (
       !title.trim() ||
       !description.trim() ||
-      !preparationTime.trim() ||
+      preparationTime === null ||
       servingCount === null ||
       calories === null ||
       proteins === null ||
