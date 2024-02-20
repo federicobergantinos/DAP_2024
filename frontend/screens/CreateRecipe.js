@@ -393,7 +393,7 @@ class CreateRecipe extends React.Component {
 
   submitRecipe = async () => {
     // const userId = await AsyncStorage.getItem("userId");
-    const userId = 1;
+    const userId = await AsyncStorage.getItem("userId");
 
     const {
       selectedTags,
@@ -421,8 +421,7 @@ class CreateRecipe extends React.Component {
       image === null ||
       video === null ||
       ingredientes.some((i) => !i.trim()) ||
-      pasos.some((p) => !p.trim()) ||
-      selectedTags.length === 0
+      pasos.some((p) => !p.trim())
     ) {
       alert("Por favor, completa todos los campos.");
       return;
@@ -447,18 +446,14 @@ class CreateRecipe extends React.Component {
     try {
       const response = await backendApi.recipesGateway.createRecipe(recipeData);
 
-      // Verifica si la receta se creó exitosamente y si el estado es 201
       if (response.statusCode === 201) {
-        // Si es exitoso, navega a la pantalla de la receta con el ID proporcionado
-        this.props.navigation.navigate("Recipe", {
+        this.props.navigation.replace("Recipe", {
           recipeId: response.response.id,
         });
       } else {
-        // Si no es exitoso, muestra un mensaje de error
         alert("No se pudo crear la receta. Por favor, inténtalo de nuevo.");
       }
     } catch (error) {
-      // Si hay una excepción durante la llamada API, muestra un mensaje de error
       console.error("Error al crear la receta:", error);
       alert("Ocurrió un error al intentar crear la receta.");
     }
@@ -660,7 +655,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: theme.COLORS.WHITE,
     shadowColor: "black",
-    backgroundColor: "#FFF",
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 8,
     shadowOpacity: 0.2,

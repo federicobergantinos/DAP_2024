@@ -27,6 +27,7 @@ export default class Profile extends React.Component {
     };
   }
   render() {
+    const { navigation } = this.props;
     return (
       <Block flex style={styles.profile}>
         <Block flex>
@@ -45,14 +46,24 @@ export default class Profile extends React.Component {
                     style={styles.avatar}
                     size={40}
                   />
-                  <TouchableOpacity
-                    style={styles.container}
-                    onPress={() => {
-                      this.setState({ show: true });
-                    }}
-                  >
-                    <Text>Adjuntar Imagen</Text>
-                  </TouchableOpacity>
+                  <View style={styles.parent}>
+                    <TouchableOpacity
+                      style={styles.container}
+                      onPress={() => { this.setState({ show: true }) }}
+                    >
+                      <Text>Adjuntar Imagen</Text>
+                    </TouchableOpacity>
+                    <Text>       </Text>
+                    <TouchableOpacity
+                      style={styles.container}
+                      onPress={() => navigation.navigate('Home')} /* PONER SCREEN MODIFICAR PERFIL */
+                    >
+                      <Text>Modificar Perfil</Text>
+                    </TouchableOpacity>
+
+                  </View>
+
+                  
                 </Block>
                 <Modal transparent={true} visible={this.state.show}>
                   <View style={styles.editarPerfilPopup}>
@@ -227,6 +238,11 @@ const styles = StyleSheet.create({
     width: width,
     height: height / 1.5,
     top: height / 10,
+  },
+  parent: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    
   },
   profileCard: {
     padding: theme.SIZES.BASE,

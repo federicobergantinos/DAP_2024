@@ -1,0 +1,3 @@
+CN=federico bergantinos, OU=uade, O=uade, L=buenos_aires, ST=buenos_aires, C=ar
+password= uade_dapi
+alias = my-key-alias

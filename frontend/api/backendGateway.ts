@@ -5,11 +5,12 @@ import { RecipeDTO } from "./RecipeDTO";
 import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
-const olympusApi = axios.create({ baseURL: "https://3ab7-152-168-141-21.ngrok-free.app" });
+const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
+//const api = axios.create({ baseURL: "http://192.168.0.5:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
-olympusApi.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
     return getAuthHeader(config);
   },
@@ -18,33 +19,42 @@ olympusApi.interceptors.request.use(
   },
 );
 
-const responseBodyWithStatusCode = (response: AxiosResponse) => ({
+api.interceptors.response.use(
+    (response: AxiosResponse) => {
+      return response;
+    },
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        return {response: error.response.data, status: error.response.statusCode}
+      }
+      return Promise.reject(error);
+    }
+);
+
+const responseBodyWithStatusCode = (response: AxiosResponse): {response: any, statusCode: any} => ({
   response: response.data,
   statusCode: response.status,
 });
-olympusApi.interceptors.response.use((response) => response);
+api.interceptors.response.use((response) => response);
 
 const requests = {
-  get: (url: string) => olympusApi.get(url).then(responseBodyWithStatusCode),
+  get: (url: string) => api.get(url).then(responseBodyWithStatusCode),
   post: (url: string, body?: any) =>
-    olympusApi.post(url, body).then(responseBodyWithStatusCode),
+    api.post(url, body).then(responseBodyWithStatusCode),
   put: (url: string, body?: any) =>
-    olympusApi.put(url, body).then(responseBodyWithStatusCode),
+    api.put(url, body).then(responseBodyWithStatusCode),
   delete: (url: string) =>
-    olympusApi.delete(url).then(responseBodyWithStatusCode),
+    api.delete(url).then(responseBodyWithStatusCode),
 };
 
 const authUser = {
-  authenticate: (
-    auth: createAuthDTO,
-  ): Promise<{ response: Credentials; statusCode: number }> =>
-    requests.post("/v1/auth", auth),
+    authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> => requests.post('/v1/auth', auth),
+    refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> => requests.put('/v1/auth', {refreshToken: refreshToken})
 };
 
 const recipesGateway = {
   createRecipe: async (recipeData) => {
     try {
-      console.log(recipeData)
       const url = `${recipeBaseUrl}` + "/create"
       const response = await requests.post(url, recipeData);
 

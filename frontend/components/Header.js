@@ -83,9 +83,11 @@ const Header = ({
 
   useEffect(() => {
     const checkOwner = async () => {
-      const userId = await getUserId();
-      setCurrentUserId(userId);
-      setIsOwner(userId.toString() === recipe.userId.toString());
+      if(recipe !== null) {
+        const userId = await getUserId();
+        setCurrentUserId(userId);
+        setIsOwner(userId.toString() === recipe.userId.toString());
+      }
     };
 
     setIsFavorite(recipe ? recipe.isFavorite : false);
