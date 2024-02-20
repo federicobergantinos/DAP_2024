@@ -5,7 +5,7 @@ import { RecipeDTO } from "./RecipeDTO";
 import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
-const olympusApi = axios.create({ baseURL: "https://3ab7-152-168-141-21.ngrok-free.app" });
+const olympusApi = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
