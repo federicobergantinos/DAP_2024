@@ -29,9 +29,18 @@ class Profile extends React.Component {
       show:false
     }
   }
+  
   render() {
     const { navigation } = this.props;
+    handleImageUploadError = async () => {
+      try {
+        await openImagePickerAsync();
+      } catch (error) {
+        Alert.alert("Error", "No se pudo cargar la imagen. Por favor, inténtelo de nuevo más tarde.");
+      }
+    };
     return (
+      
       <Block flex style={styles.profile}>
         <Block flex>
           <ImageBackground
@@ -83,7 +92,7 @@ class Profile extends React.Component {
                       />
                       <TouchableOpacity
                         style={styles.containerInterno}
-                        onPress={() => { openImagePickerAsync /* VER PQ NO ANDA */ , this.setState({ show: false }) }}
+                        onPress={() => { this.handleImageUploadError }}
                       >
                         <Text>Adjuntar Imagen</Text>
                       </TouchableOpacity>

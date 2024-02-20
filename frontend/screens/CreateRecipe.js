@@ -23,6 +23,13 @@ import Button from '../components/Button';
 const { width, height } = Dimensions.get("screen");
 
 class CreateRecipe extends React.Component {
+  handleImageUploadError = async () => {
+    try {
+      await openImagePickerAsync();
+    } catch (error) {
+      Alert.alert("Error", "No se pudo cargar la imagen. Por favor, inténtelo de nuevo más tarde.");
+    }
+  };
   state = {
     selectedTags: [],
     isMultiSelectOpen: false,
@@ -40,7 +47,7 @@ class CreateRecipe extends React.Component {
     return (
       <Block flex style={styles.CreateRecipeCard}>
         <Block style={styles.info}>
-          <TouchableOpacity style={styles.uploadButton} onPress={openImagePickerAsync}>
+          <TouchableOpacity style={styles.uploadButton} onPress={this.handleImageUploadError}>
             <Block middle row space="evenly" style={styles.uploadContainer}>
               <Icon name="camera" family="Entypo" size={30} color={yummlyTheme.COLORS.ICON} />
             </Block>

@@ -6,7 +6,7 @@ import { Card } from "../components";
 import recipes from "../constants/recipes";
 const { width } = Dimensions.get("screen");
 
-const ITEMS_PER_PAGE = 6; 
+const ITEMS_PER_PAGE = 6;
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -17,26 +17,30 @@ const Home = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const tabId = route.params?.tabId;
-  
+
   useEffect(() => {
     // Establece el tag seleccionado basado en el parámetro recibido
     setSelectedTag(tabId);
   }, [tabId]);
-  
+
   useEffect(() => {
     // Filtra las recetas cada vez que cambia el tag seleccionado
     filterRecipesByTag();
   }, [selectedTag]);
 
   const filterRecipesByTag = () => {
-    const filteredData = selectedTag
-      ? recipes.filter(recipe => recipe.tags.includes(selectedTag))
-      : recipes; // Filtra las recetas basándose en el tag seleccionado
+    try {
+      const filteredData = selectedTag
+        ? recipes.filter(recipe => recipe.tags.includes(selectedTag))
+        : recipes; // Filtra las recetas basándose en el tag seleccionado
 
-    setData(filteredData.slice(0, ITEMS_PER_PAGE));
-    setCurrentPage(0); // Resetea la paginación
+      setData(filteredData.slice(0, ITEMS_PER_PAGE));
+      setCurrentPage(0); // Resetea la paginación
+    } catch (error) {
+      console.error("Error al filtrar las recetas:", error);
+    }
   };
-  
+
   const loadMoreItems = () => {
     if (loading) return;
 
@@ -65,7 +69,6 @@ const Home = () => {
   const renderRecipe = ({ item, index }) => {
     const marginRight = (index % 2 === 0) ? theme.SIZES.BASE : 0;
 
-
     return (
       <Card
         item={item}
@@ -74,7 +77,6 @@ const Home = () => {
     );
   };
 
-  
   return (
     <Block flex center style={styles.home}>
       <FlatList
@@ -86,7 +88,7 @@ const Home = () => {
         onEndReached={loadMoreItems}
         onEndReachedThreshold={0.1}
         ListFooterComponent={renderFooter}
-        numColumns={2} 
+        numColumns={2}
       />
       <TouchableOpacity
         onPress={() => navigation.navigate('CreateRecipeDrawer')}
@@ -95,7 +97,7 @@ const Home = () => {
         <Text style={styles.fabIcon}>+</Text>
       </TouchableOpacity>
     </Block>
-  );  
+  );
 };
 
 const styles = StyleSheet.create({
@@ -113,13 +115,13 @@ const styles = StyleSheet.create({
     right: 20,
     bottom: 20,
     backgroundColor: 'white',
-    width: 56, 
-    height: 56, 
-    borderRadius: 28, 
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 8, 
-    shadowColor: '#000', 
+    elevation: 8,
+    shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 2,
@@ -129,6 +131,5 @@ const styles = StyleSheet.create({
     color: '#333',
   },
 });
-
 
 export default Home;
