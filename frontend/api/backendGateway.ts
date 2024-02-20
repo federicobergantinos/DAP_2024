@@ -5,7 +5,7 @@ import { RecipeDTO } from "./RecipeDTO";
 import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
-const olympusApi = axios.create({ baseURL: "http://192.168.1.112:8080" });
+const olympusApi = axios.create({ baseURL: "https://3ab7-152-168-141-21.ngrok-free.app" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
@@ -42,6 +42,17 @@ const authUser = {
 };
 
 const recipesGateway = {
+  createRecipe: async (recipeData) => {
+    try {
+      const url = `${recipeBaseUrl}` + "/create"
+      const response = await requests.post(url, recipeData);
+
+      return response;
+    } catch (error) {
+      console.error('Error al crear la receta:', error);
+      throw error;
+    }
+  },
 
   getRecipeById: (
     id: number,
@@ -57,7 +68,6 @@ const recipesGateway = {
       : `${recipeBaseUrl}/?page=${page}&limit=10`;
     return requests.get(url);
   },
-
   searchRecipes: (
     searchTerm = "",
     page = 0,
@@ -65,17 +75,7 @@ const recipesGateway = {
   ): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
     const url = `${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${searchTerm}`;
     return requests.get(url);
-  },
-
-  createRecipe: async (recipeData) => {
-    try {
-      const response = await requests.post(`${recipeBaseUrl}`, recipeData);
-      return response; 
-    } catch (error) {
-      console.error('Error al crear la receta:', error);
-      throw error;
-    }
-  },
+  }
 };
 
 const users = {

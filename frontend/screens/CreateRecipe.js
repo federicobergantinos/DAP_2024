@@ -9,10 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
-import {
-  openImagePickerAsync,
-  openCameraAsync,
-} from "../components/ImagePicker.js";
+import { openImagePickerAsync } from "../components/ImagePicker.js";
 import MultiSelect from "react-native-multiple-select";
 
 import { Images, yummlyTheme } from "../constants";
@@ -27,36 +24,38 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 const { width, height } = Dimensions.get("screen");
 
 class CreateRecipe extends React.Component {
-  // state = {
-  //   selectedTags: [],
-  //   isMultiSelectOpen: false,
-  //   ingredientes: [""],
-  //   pasos: [""],
-  //   title: "",
-  //   description: "",
-  //   preparationTime: "",
-  //   servingCount: null,
-  //   calories: null,
-  //   proteins: null,
-  //   totalFats: null,
-  //   video: "",
-  // };
-  // TODO
   state = {
-    selectedTags: ["VEGAN"], // Asume que "1" es un ID válido para un tag existente
+    selectedTags: [],
     isMultiSelectOpen: false,
-    ingredientes: ["Ingrediente 1", "Ingrediente 2"], // Valores por defecto para ingredientes
-    pasos: ["Paso 1", "Paso 2"], // Valores por defecto para pasos
-    title: "Título de la Receta",
-    description: "Descripción de la receta.",
-    preparationTime: "45", // Asume que el tiempo de preparación es en minutos
-    servingCount: 4, // Asume un número de porciones
-    calories: 500, // Valor por defecto para calorías
-    proteins: 30.5, // Valor por defecto para proteínas
-    totalFats: 20.5, // Valor por defecto para grasas totales
-    video:
-      "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
+    ingredientes: [""],
+    pasos: [""],
+    title: "",
+    description: "",
+    preparationTime: "",
+    image: null,
+    servingCount: null,
+    calories: null,
+    proteins: null,
+    totalFats: null,
+    video: "",
   };
+  // TODO
+  // state = {
+  //   selectedTags: ["VEGAN"], // Asume que "1" es un ID válido para un tag existente
+  //   isMultiSelectOpen: false,
+  //   ingredientes: ["Ingrediente 1", "Ingrediente 2"], // Valores por defecto para ingredientes
+  //   pasos: ["Paso 1", "Paso 2"], // Valores por defecto para pasos
+  //   title: "Título de la Receta",
+  //   description: "Descripción de la receta.",
+  //   preparationTime: "45", // Asume que el tiempo de preparación es en minutos
+  //   image: null,
+  //   servingCount: 4, // Asume un número de porciones
+  //   calories: 500, // Valor por defecto para calorías
+  //   proteins: 30.5, // Valor por defecto para proteínas
+  //   totalFats: 20.5, // Valor por defecto para grasas totales
+  //   video:
+  //     "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
+  // };
 
   onSelectedItemsChange = (selectedTags) => {
     this.setState({ selectedTags });
@@ -66,25 +65,66 @@ class CreateRecipe extends React.Component {
     this.setState({ isMultiSelectOpen: isOpen });
   };
 
+  handleImagePicked = async () => {
+    try {
+      const result = await openImagePickerAsync();
+      this.setState({ image: result });
+    } catch (error) {
+      console.error("Error al seleccionar la imagen:", error);
+      alert("No se pudo seleccionar la imagen.");
+    }
+  };
+
   renderMainInformation = () => {
+    const { image } = this.state;
+
     return (
       <Block flex style={styles.CreateRecipeCard}>
         <Block style={styles.info}>
           <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={openImagePickerAsync}
+            style={[
+              styles.uploadButton,
+              image ? styles.uploadContainerSuccess : {},
+            ]} // Aplica el estilo de éxito si image no es null
+            onPress={this.handleImagePicked}
           >
-            <Block middle row space="evenly" style={styles.uploadContainer}>
-              <Icon
-                name="camera"
-                family="Entypo"
-                size={30}
-                color={yummlyTheme.COLORS.ICON}
-              />
+            <Block
+              middle
+              row
+              space="evenly"
+              style={[
+                styles.uploadContainer,
+                image ? styles.uploadContainerSuccess : {},
+              ]}
+            >
+              {image ? (
+                <>
+                  <Icon
+                    name="check"
+                    family="AntDesign"
+                    size={30}
+                    color={yummlyTheme.COLORS.SUCCESS}
+                  />
+                  <Text bold size={14} style={[styles.textWhite]}>
+                    {/* Aplica el estilo de texto blanco */}
+                    Imagen seleccionada
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Icon
+                    name="camera"
+                    family="Entypo"
+                    size={30}
+                    color={yummlyTheme.COLORS.ICON}
+                    padding={10}
+                  />
+                  <Text bold size={14} color={yummlyTheme.COLORS.HEADER}>
+                    Añade una foto
+                  </Text>
+                </>
+              )}
             </Block>
-            <Text bold size={14} color={yummlyTheme.COLORS.HEADER}>
-              Añade una foto de tu receta hecha por ti
-            </Text>
           </TouchableOpacity>
         </Block>
         <Block middle style={{ marginTop: 30, marginBottom: 16 }}>
@@ -367,9 +407,9 @@ class CreateRecipe extends React.Component {
       proteins,
       totalFats,
       video,
+      image,
     } = this.state;
 
-    // Verifica si todos los campos requeridos están llenos
     if (
       !title.trim() ||
       !description.trim() ||
@@ -378,6 +418,7 @@ class CreateRecipe extends React.Component {
       calories === null ||
       proteins === null ||
       totalFats === null ||
+      image === null ||
       video === null ||
       ingredientes.some((i) => !i.trim()) ||
       pasos.some((p) => !p.trim()) ||
@@ -388,27 +429,39 @@ class CreateRecipe extends React.Component {
     }
 
     const recipeData = {
-      userId,
-      title,
-      description,
-      preparationTime,
-      servingCount,
-      ingredients: ingredientes.filter((i) => i.trim()),
-      steps: pasos.filter((p) => p.trim()),
-      calories,
-      proteins,
-      totalFats,
-      video,
+      userId: userId,
+      title: title,
+      description: description,
+      ingredients: ingredientes,
+      steps: pasos,
       tags: selectedTags,
+      video: video,
+      image: image ? `data:image/jpeg;base64,${image.base64}` : null,
+      preparationTime: preparationTime,
+      servingCount: servingCount,
+      calories: calories,
+      proteins: proteins,
+      totalFats: totalFats,
     };
 
     try {
-      console.log(userId);
-      console.log(recipeData);
       const response = await backendApi.recipesGateway.createRecipe(recipeData);
       console.log(response);
+
+      // Verifica si la receta se creó exitosamente y si el estado es 201
+      if (response.statusCode === 201) {
+        // Si es exitoso, navega a la pantalla de la receta con el ID proporcionado
+        this.props.navigation.navigate("Recipe", {
+          recipeId: response.response.id,
+        });
+      } else {
+        // Si no es exitoso, muestra un mensaje de error
+        alert("No se pudo crear la receta. Por favor, inténtalo de nuevo.");
+      }
     } catch (error) {
+      // Si hay una excepción durante la llamada API, muestra un mensaje de error
       console.error("Error al crear la receta:", error);
+      alert("Ocurrió un error al intentar crear la receta.");
     }
   };
 

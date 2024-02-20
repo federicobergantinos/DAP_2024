@@ -9,54 +9,7 @@ const BadRequest = require("../Errors/BadRequest");
 const { isValidUser } = require("./userService");
 const NotFound = require("../Errors/NotFound");
 const { Op } = require("sequelize");
-
-// const createRecipe = async (recipeData) => {
-//   const {
-//     userId,
-//     title,
-//     media,
-//     preparationTime,
-//     servingCount,
-//     ingredients,
-//     steps,
-//     tags,
-//     calories,
-//     proteins,
-//     totalFats,
-//   } = recipeData;
-
-//   if (!(await isValidUser(userId))) {
-//     throw new BadRequest("Invalid User");
-//   }
-
-//   const newRecipe = await Recipe.create({
-//     title: title,
-//     preparationTime: preparationTime,
-//     servingCount: servingCount,
-//     ingredients: ingredients.join("|"),
-//     steps: steps.join("|"),
-//     calories: calories,
-//     proteins: proteins,
-//     totalFats: totalFats,
-//     userId: userId,
-//   });
-
-//   const recipeTagsIds = await Tag.findAll({
-//     where: {
-//       title: tags,
-//     },
-//     attributes: ["id"],
-//   });
-
-//   media.forEach((it) => Media.create({ recipeId: newRecipe.id, data: it }));
-
-//   recipeTagsIds.forEach((it) => {
-//     console.log(it.id);
-//     RecipeTags.create({ recipeId: newRecipe.id, tagId: it.id });
-//   });
-
-//   return newRecipe.id;
-// };
+const sequelize = require("../configurations/database/sequelizeConnection");
 
 // Función para crear una receta y asociarla con tags y medios
 const createRecipe = async (recipeData) => {
@@ -71,7 +24,8 @@ const createRecipe = async (recipeData) => {
     calories,
     proteins,
     totalFats,
-    tags, // Este será un array de nombres de tags
+    tags,
+    imageUrl,
     video,
   } = recipeData;
 
@@ -84,45 +38,77 @@ const createRecipe = async (recipeData) => {
   const ingredientsString = ingredients.join("|");
   const stepsString = steps.join("|");
 
-  // Crear la receta
-  const recipe = await Recipe.create({
-    userId,
-    title,
-    description,
-    preparationTime,
-    servingCount,
-    ingredients: ingredientsString,
-    steps: stepsString,
-    calories,
-    proteins,
-    totalFats,
-  });
+  // Iniciar una transacción
+  const transaction = await sequelize.transaction();
 
-  // Si se proporcionó una URL de YouTube, guardarla en media
-  if (video) {
-    await Media.create({
-      recipeId: recipe.id,
-      data: video,
-    });
-  }
-
-  if (tags && tags.length > 0) {
-    const tagsPromises = tags.map(async (tagName) => {
-      const tag = await Tag.findOne({
-        where: { key: tagName },
-      });
-      if (tag) {
-        await RecipeTags.create({
+  try {
+    // Crear la receta
+    const recipe = await Recipe.create(
+      {
+        userId,
+        title,
+        description,
+        preparationTime,
+        servingCount,
+        ingredients: ingredientsString,
+        steps: stepsString,
+        calories,
+        proteins,
+        totalFats,
+      },
+      { transaction }
+    );
+    // Guardar la imagen en Media si existe
+    if (imageUrl) {
+      await Media.create(
+        {
           recipeId: recipe.id,
-          tagId: tag.id,
+          data: imageUrl,
+        },
+        { transaction }
+      );
+    }
+
+    // Guardar el video en Media si existe
+    if (video) {
+      await Media.create(
+        {
+          recipeId: recipe.id,
+          data: video,
+        },
+        { transaction }
+      );
+    }
+
+    // Asociar tags si existen
+    if (tags && tags.length > 0) {
+      const tagsPromises = tags.map(async (tagName) => {
+        const tag = await Tag.findOne({
+          where: { key: tagName },
         });
-      }
-    });
+        if (tag) {
+          await RecipeTags.create(
+            {
+              recipeId: recipe.id,
+              tagId: tag.id,
+            },
+            { transaction }
+          );
+        }
+      });
 
-    await Promise.all(tagsPromises);
+      await Promise.all(tagsPromises);
+    }
+
+    // Si todo ha ido bien, hacer commit de la transacción
+    await transaction.commit();
+
+    return recipe.id;
+  } catch (error) {
+    // Si hay un error, revertir la transacción
+    await transaction.rollback();
+    throw error;
   }
-
-  return recipe.id;
 };
 
 const getRecipes = async (queryData) => {
@@ -203,7 +189,6 @@ const getRecipe = async (recipeId) => {
       },
     ],
   });
-  console.log(recipeId);
   if (recipe === null) {
     throw new NotFound("Recipe not found");
   }

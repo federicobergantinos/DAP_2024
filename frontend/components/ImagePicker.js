@@ -10,15 +10,22 @@ export const openImagePickerAsync = async () => {
     return;
   }
 
-  let pickerResult = await ImagePicker.launchImageLibraryAsync();
+  // Incluir la opción `base64` en la configuración
+  let pickerResult = await ImagePicker.launchImageLibraryAsync({
+    base64: true,
+  });
   if (pickerResult.canceled) {
-    // Cambiado de `cancelled` a `canceled`
     return;
   }
 
-  // Acceder a la URI de la imagen seleccionada a través del arreglo `assets`
+  // Acceder a la URI y a la cadena base64 de la imagen seleccionada
   const imageUri = pickerResult.assets ? pickerResult.assets[0].uri : null;
-  return imageUri; // Devolver la URI de la imagen seleccionada
+  const imageBase64 = pickerResult.assets
+    ? pickerResult.assets[0].base64
+    : null;
+
+  // Devolver tanto la URI como la cadena base64 de la imagen seleccionada
+  return { uri: imageUri, base64: imageBase64 };
 };
 
 export const openCameraAsync = async () => {
@@ -29,13 +36,20 @@ export const openCameraAsync = async () => {
     return;
   }
 
-  let pickerResult = await ImagePicker.launchCameraAsync();
+  // Incluir la opción `base64` en la configuración
+  let pickerResult = await ImagePicker.launchCameraAsync({
+    base64: true,
+  });
   if (pickerResult.canceled) {
-    // Cambiado de `cancelled` a `canceled`
     return;
   }
 
-  // Acceder a la URI de la imagen capturada a través del arreglo `assets`
+  // Acceder a la URI y a la cadena base64 de la imagen capturada
   const imageUri = pickerResult.assets ? pickerResult.assets[0].uri : null;
-  return imageUri; // Devolver la URI de la imagen capturada
+  const imageBase64 = pickerResult.assets
+    ? pickerResult.assets[0].base64
+    : null;
+
+  // Devolver tanto la URI como la cadena base64 de la imagen capturada
+  return { uri: imageUri, base64: imageBase64 };
 };
