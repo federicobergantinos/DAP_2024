@@ -44,7 +44,6 @@ const authUser = {
 const recipesGateway = {
   createRecipe: async (recipeData) => {
     try {
-      console.log(recipeData)
       const url = `${recipeBaseUrl}` + "/create"
       const response = await requests.post(url, recipeData);
 
