@@ -6,10 +6,10 @@ import {
   View,
   ActivityIndicator,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import { Block, theme } from "galio-framework";
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Card } from "../components";
 import backendApi from "../api/backendGateway";
 
@@ -23,7 +23,6 @@ const Home = () => {
   const [selectedTag, setSelectedTag] = useState(null);
   const [allItemsLoaded, setAllItemsLoaded] = useState(false);
   const [endReachedThreshold, setEndReachedThreshold] = useState(0.1); // Valor inicial
-
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -49,10 +48,13 @@ const Home = () => {
     try {
       const page = currentPage;
       const tag = selectedTag !== "ALL" ? selectedTag : undefined;
-      const { response: recipes } = await backendApi.recipesGateway.getAll(page, tag);
+      const { response: recipes } = await backendApi.recipesGateway.getAll(
+        page,
+        tag,
+      );
 
       if (recipes.length > 0) {
-        setData(prevData => [...prevData, ...recipes]);
+        setData((prevData) => [...prevData, ...recipes]);
       } else {
         setAllItemsLoaded(true);
       }
@@ -79,11 +81,14 @@ const Home = () => {
   };
 
   const renderRecipe = ({ item, index }) => {
-    const marginRight = (index % 2 === 0) ? theme.SIZES.BASE : 0;
+    const marginRight = index % 2 === 0 ? theme.SIZES.BASE : 0;
     return (
       <Card
         item={item}
-        style={{ marginRight: marginRight, width: (width - theme.SIZES.BASE * 3) / 2 }}
+        style={{
+          marginRight: marginRight,
+          width: (width - theme.SIZES.BASE * 3) / 2,
+        }}
       />
     );
   };
@@ -102,7 +107,7 @@ const Home = () => {
         numColumns={2}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate('CreateRecipe')}
+        onPress={() => navigation.navigate("CreateRecipe")}
         style={styles.fab}
       >
         <Text style={styles.fabIcon}>+</Text>
@@ -116,32 +121,31 @@ const styles = StyleSheet.create({
     width: width,
   },
   recipes: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     width: width - theme.SIZES.BASE * 2,
     paddingVertical: theme.SIZES.BASE,
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     margin: 16,
     right: 20,
     bottom: 20,
-    backgroundColor: 'white',
-    width: 56, 
-    height: 56, 
-    borderRadius: 28, 
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 8, 
-    shadowColor: '#000', 
+    backgroundColor: "white",
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+    shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 2,
   },
   fabIcon: {
     fontSize: 24,
-    color: '#333',
+    color: "#333",
   },
 });
-
 
 export default Home;

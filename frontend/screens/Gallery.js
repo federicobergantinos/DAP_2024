@@ -5,7 +5,7 @@ import {
   ScrollView,
   Image,
   Animated,
-  Platform
+  Platform,
 } from "react-native";
 
 import { Block, theme } from "galio-framework";
@@ -28,9 +28,10 @@ export default class Gallery extends React.Component {
         decelerationRate={0}
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
-        onScroll={Animated.event([
-          { nativeEvent: { contentOffset: { x: this.scrollX } } }
-        ], {useNativeDriver: false})}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: this.scrollX } } }],
+          { useNativeDriver: false },
+        )}
       >
         {images.map((image, key) => (
           <Image
@@ -46,7 +47,7 @@ export default class Gallery extends React.Component {
 
   renderProgress = () => {
     const { navigation, route } = this.props;
-    
+
     const { images, index } = route.params;
     const position = Animated.divide(this.scrollX, width);
     return (
@@ -55,13 +56,13 @@ export default class Gallery extends React.Component {
           const opacity = position.interpolate({
             inputRange: [i - 1, i, i + 1],
             outputRange: [0.5, 1, 0.5],
-            extrapolate: "clamp"
+            extrapolate: "clamp",
           });
 
           const width = position.interpolate({
             inputRange: [i - 1, i, i + 1],
             outputRange: [8, 18, 8],
-            extrapolate: "clamp"
+            extrapolate: "clamp",
           });
 
           return (
@@ -90,22 +91,22 @@ export default class Gallery extends React.Component {
 const styles = StyleSheet.create({
   gallery: {
     backgroundColor: theme.COLORS.BLACK,
-    marginTop: Platform.OS === "android" ? -HeaderHeight : 0
+    marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
   },
   galleryImage: {
     width: width,
-    height: "auto"
+    height: "auto",
   },
   dots: {
     height: 8,
     margin: 8,
     borderRadius: 4,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   dotsContainer: {
     position: "absolute",
     bottom: theme.SIZES.BASE * 3,
     left: 0,
-    right: 0
-  }
+    right: 0,
+  },
 });

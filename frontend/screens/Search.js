@@ -33,7 +33,10 @@ export default class Search extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.search !== this.state.search || prevState.currentPage !== this.state.currentPage) {
+    if (
+      prevState.search !== this.state.search ||
+      prevState.currentPage !== this.state.currentPage
+    ) {
       this.fetchSearchResults();
     }
   }
@@ -44,29 +47,37 @@ export default class Search extends React.Component {
 
     this.setState({ loading: true });
     try {
-        const { response, statusCode } = await backendApi.recipesGateway.searchRecipes(search, currentPage, ITEMS_PER_PAGE);
-        if (response && response.length > 0) {
-            this.setState(prevState => ({
-                results: currentPage === 0 ? response : [...prevState.results, ...response],
-                allItemsLoaded: response.length < ITEMS_PER_PAGE,
-            }));
-        } else {
-            this.setState({ allItemsLoaded: true });
-        }
+      const { response, statusCode } =
+        await backendApi.recipesGateway.searchRecipes(
+          search,
+          currentPage,
+          ITEMS_PER_PAGE,
+        );
+      if (response && response.length > 0) {
+        this.setState((prevState) => ({
+          results:
+            currentPage === 0 ? response : [...prevState.results, ...response],
+          allItemsLoaded: response.length < ITEMS_PER_PAGE,
+        }));
+      } else {
+        this.setState({ allItemsLoaded: true });
+      }
     } catch (error) {
-        console.error("Error fetching search results:", error);
+      console.error("Error fetching search results:", error);
     } finally {
-        this.setState({ loading: false });
+      this.setState({ loading: false });
     }
-};
+  };
 
-  handleSearchChange = search => {
+  handleSearchChange = (search) => {
     this.setState({ search, currentPage: 0, allItemsLoaded: false }); // Resetea la paginación con cada nueva búsqueda
   };
 
   loadMoreItems = () => {
     if (!this.state.loading && !this.state.allItemsLoaded) {
-      this.setState(prevState => ({ currentPage: prevState.currentPage + 1 }));
+      this.setState((prevState) => ({
+        currentPage: prevState.currentPage + 1,
+      }));
     }
   };
 
@@ -76,7 +87,7 @@ export default class Search extends React.Component {
     Animated.timing(this.animatedValue, {
       toValue: 1,
       duration: 300,
-      useNativeDriver: true
+      useNativeDriver: true,
     }).start();
   }
 
@@ -118,11 +129,11 @@ export default class Search extends React.Component {
     );
   };
 
-  renderResult = result => {
+  renderResult = (result) => {
     const opacity = this.animatedValue.interpolate({
       inputRange: [0, 1],
       outputRange: [0.8, 1],
-      extrapolate: "clamp"
+      extrapolate: "clamp",
     });
 
     return (
@@ -153,7 +164,7 @@ export default class Search extends React.Component {
         <FlatList
           data={this.state.results}
           renderItem={({ item }) => this.renderResult(item)}
-          keyExtractor={item => item.id.toString()} 
+          keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
           onEndReached={this.loadMoreItems}
           onEndReachedThreshold={0.5}
@@ -167,7 +178,7 @@ export default class Search extends React.Component {
 const styles = StyleSheet.create({
   searchContainer: {
     width: width,
-    paddingHorizontal: theme.SIZES.BASE
+    paddingHorizontal: theme.SIZES.BASE,
   },
   search: {
     height: 48,
@@ -175,14 +186,14 @@ const styles = StyleSheet.create({
     marginHorizontal: theme.SIZES.BASE,
     marginBottom: theme.SIZES.BASE,
     borderWidth: 1,
-    borderRadius: 3
+    borderRadius: 3,
   },
   shadow: {
     shadowColor: "black",
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 4,
     shadowOpacity: 0.1,
-    elevation: 2
+    elevation: 2,
   },
   header: {
     backgroundColor: theme.COLORS.WHITE,
@@ -191,51 +202,51 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOpacity: 1,
     elevation: 2,
-    zIndex: 2
+    zIndex: 2,
   },
   result: {
     backgroundColor: theme.COLORS.WHITE,
     marginBottom: theme.SIZES.BASE,
-    borderWidth: 0
+    borderWidth: 0,
   },
   resultTitle: {
     flex: 1,
     flexWrap: "wrap",
-    paddingBottom: 6
+    paddingBottom: 6,
   },
   resultDescription: {
-    padding: theme.SIZES.BASE / 2
+    padding: theme.SIZES.BASE / 2,
   },
   image: {
     overflow: "hidden",
     borderBottomLeftRadius: 4,
-    borderTopLeftRadius: 4
+    borderTopLeftRadius: 4,
   },
   dealsContainer: {
     justifyContent: "center",
-    paddingTop: theme.SIZES.BASE
+    paddingTop: theme.SIZES.BASE,
   },
   deals: {
     backgroundColor: theme.COLORS.WHITE,
     marginBottom: theme.SIZES.BASE,
-    borderWidth: 0
+    borderWidth: 0,
   },
   dealsTitle: {
     flex: 1,
     flexWrap: "wrap",
-    paddingBottom: 6
+    paddingBottom: 6,
   },
   dealsDescription: {
-    padding: theme.SIZES.BASE / 2
+    padding: theme.SIZES.BASE / 2,
   },
   imageHorizontal: {
     overflow: "hidden",
     borderBottomLeftRadius: 4,
-    borderTopLeftRadius: 4
+    borderTopLeftRadius: 4,
   },
   imageVertical: {
     overflow: "hidden",
     borderTopRightRadius: 4,
-    borderTopLeftRadius: 4
-  }
+    borderTopLeftRadius: 4,
+  },
 });
