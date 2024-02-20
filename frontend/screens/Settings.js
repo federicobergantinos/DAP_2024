@@ -10,6 +10,9 @@ import { Block, Text, theme, Icon } from "galio-framework";
 import { Switch } from "../components";
 
 import yummlyTheme from "../constants/Theme";
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
+import asyncStorage from "@react-native-async-storage/async-storage/src/AsyncStorage";
+
 
 export default class Settings extends React.Component {
   state = {
@@ -20,8 +23,14 @@ export default class Settings extends React.Component {
   toggleSwitch = (switchNumber) =>
     this.setState({ [switchNumber]: !this.state[switchNumber] });
 
+
   renderItem = ({ item }) => {
-    const { navigate } = this.props.navigation;
+
+    const logOut = async () => {
+      asyncStorage.clear()
+      await GoogleSignin.signOut()
+
+    }
 
     switch (item.type) {
       case "deleteAccount":
@@ -97,7 +106,7 @@ export default class Settings extends React.Component {
         return (
           <TouchableOpacity
             onPress={() => {
-              /* Lógica para cerrar sesión */
+              logOut()
             }}
           >
             <View style={styles.logoutButton}>
