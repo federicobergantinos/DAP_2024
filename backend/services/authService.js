@@ -31,6 +31,7 @@ const loginUser = async (token, accessToken) => {
         "445263022323-u2nac6qhp2rupfsgc26gkbriup8n7ho5.apps.googleusercontent.com",
         "445263022323-iej9nrjnjk5gr7h1l9cuq9g9l8mbfr6b.apps.googleusercontent.com",
         "445263022323-e0okjk06i01er8q0gcg51oensjp8h34o.apps.googleusercontent.com",
+          "445263022323-8f34nmjijio8u21dkb2tu3hq9h06bem4.apps.googleusercontent.com"
       ],
     });
     const payload = ticket.getPayload();
