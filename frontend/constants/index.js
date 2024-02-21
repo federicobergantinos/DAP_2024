@@ -1,13 +1,6 @@
-import yummlyTheme from './Theme';
-import recipes from './recipes';
-import Images from './Images';
-import tabs from './tabs';
-import utils from './utils';
+import yummlyTheme from "./Theme";
+import Images from "./Images";
+import tabs from "./tabs";
+import utils from "./utils";
 
-export {
-  recipes, 
-  yummlyTheme,
-  Images,
-  tabs,
-  utils,
-};
+export { yummlyTheme, Images, tabs, utils };

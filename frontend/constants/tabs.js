@@ -1,13 +1,14 @@
 export default tabs = {
   tags: [
-    { id: 'vegetariana', title: 'Vegetariana' },
-    { id: 'rapida', title: 'Rapida Preparación' },
-    { id: 'vegana', title: 'Vegana' },
-    { id: 'celiacas', title: 'Aptas celiacas' },
-    { id: 'inmune', title: 'Sistema inmune' },
-    { id: 'flora', title: 'Flora intestinal' },
-    { id: 'antiinflamatoria', title: 'Antiinflamatoria' },
-    { id: 'sodio', title: 'Baja en sodio'},
-    { id: 'carbohidratos', title: 'Baja en carbohidratos'}
+    { id: "ALL", title: "All" },
+    { id: "VEGETARIAN", title: "Vegetariana" },
+    { id: "RAPID_PREPARATION", title: "Rapida Preparación" },
+    { id: "VEGAN", title: "Vegana" },
+    { id: "GLUTEN_FREE", title: "Aptas celiacas" },
+    { id: "IMMUNE_SYSTEM", title: "Sistema inmune" },
+    { id: "INTESTINAL_FLORA", title: "Flora intestinal" },
+    { id: "ANTI_INFLAMMATORY", title: "Antiinflamatoria" },
+    { id: "LOW_SODIUM", title: "Baja en sodio" },
+    { id: "LOW_CARB", title: "Baja en carbohidratos" },
   ],
-}
+};

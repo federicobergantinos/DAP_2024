@@ -5,6 +5,9 @@ import { Switch } from "../components";
 
 
 import yummlyTheme from "../constants/Theme";
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
+import asyncStorage from "@react-native-async-storage/async-storage/src/AsyncStorage";
+
 
 export default class Settings extends React.Component {
   state = {
@@ -12,11 +15,17 @@ export default class Settings extends React.Component {
     apellido: "",
   };
 
-  toggleSwitch = switchNumber =>
+  toggleSwitch = (switchNumber) =>
     this.setState({ [switchNumber]: !this.state[switchNumber] });
 
+
   renderItem = ({ item }) => {
-    const { navigate } = this.props.navigation;
+
+    const logOut = async () => {
+      asyncStorage.clear()
+      await GoogleSignin.signOut()
+
+    }
 
     switch (item.type) {
       case "deleteAccount":
@@ -68,7 +77,9 @@ export default class Settings extends React.Component {
         );
         case "logout":
           return (
-            <TouchableOpacity onPress={() => {/* Lógica para cerrar sesión */}}>
+            <TouchableOpacity onPress={() => {
+              logOut()
+            }}>
               <View style={styles.logoutButton}>
                 <Text style={{ color: 'red' }}>Cerrar sesión</Text>
               </View>
@@ -91,7 +102,6 @@ export default class Settings extends React.Component {
       { title: "Eliminar Cuenta", id: "delete", type: "deleteAccount" },
     ];
 
-
     return (
       <View
         showsVerticalScrollIndicator={false}
@@ -102,14 +112,14 @@ export default class Settings extends React.Component {
           keyExtractor={(item, index) => item.id}
           renderItem={this.renderItem}
           ListHeaderComponent={
-            <Block center style={styles.title, {marginTop:20}}>
+            <Block center style={styles.title}>
               <Text style={{ fontFamily: 'open-sans', paddingBottom: 5 }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
                 Configuración Recomendada
               </Text>
             </Block>
           }
         />
-        <Block center style={styles.title, {marginTop: 400}}>
+        <Block center style={styles.title}>
           <Text style={{ fontFamily: 'open-sans-bold', paddingBottom: 10, color: 'red' }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
             Danger Zone
           </Text>
@@ -128,11 +138,11 @@ export default class Settings extends React.Component {
 
 const styles = StyleSheet.create({
   settings: {
-    paddingVertical: theme.SIZES.BASE / 3
+    paddingVertical: theme.SIZES.BASE / 3,
   },
   title: {
     paddingTop: theme.SIZES.BASE,
-    paddingBottom: theme.SIZES.BASE / 2
+    paddingBottom: theme.SIZES.BASE / 2,
   },
   rows: {
     height: theme.SIZES.BASE * 2,
