@@ -10,7 +10,7 @@ sequelize = new Sequelize(
     host: process.env.POSTGRES_HOST,
     dialect: "postgres",
     logging: false,
-  },
+  }
 );
 
 module.exports = sequelize;

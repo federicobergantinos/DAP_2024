@@ -8,8 +8,11 @@ const createUser = async (userData) => {
   if (await findUserByEmail(userData.email)) {
     throw new BadRequest("The user exists");
   }
+
   const newUser = await User.create(userData);
+
   const token = getToken(newUser);
+
   return {
     id: newUser.id,
     accessToken: token.accessToken,

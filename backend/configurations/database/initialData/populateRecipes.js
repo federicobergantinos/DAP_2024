@@ -60,12 +60,12 @@ const populateRecipes = async () => {
             where: { key: tagName },
           });
           return tagInstance;
-        }),
+        })
       );
 
       // Filtramos cualquier instancia de etiqueta que no se haya encontrado para evitar errores
       const existingTagInstances = tagInstances.filter(
-        (tagInstance) => tagInstance !== null,
+        (tagInstance) => tagInstance !== null
       );
 
       // Asociar la receta con sus etiquetas existentes

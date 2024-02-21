@@ -32,9 +32,9 @@ const Login = () => {
   const navigation = useNavigation();
   const isLoggedUser = async () => {
     return (
-        await AsyncStorage.getItem("token") !== null &&
-        await AsyncStorage.getItem("refresh") !== null &&
-        await AsyncStorage.getItem("userId") !== null
+      (await AsyncStorage.getItem("token")) !== null &&
+      (await AsyncStorage.getItem("refresh")) !== null &&
+      (await AsyncStorage.getItem("userId")) !== null
     );
   };
   const [isLoading, setIsLoading] = useState(isLoggedUser);
@@ -49,28 +49,32 @@ const Login = () => {
   });
 
   const refreshToken = async () => {
-
-    const {response, statusCode} = await backendApi.authUser.refresh(AsyncStorage.getItem('refresh'))
+    const { response, statusCode } = await backendApi.authUser.refresh(
+      AsyncStorage.getItem("refresh")
+    );
     if (statusCode === 201) {
       await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-      await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
+      await AsyncStorage.setItem(
+        "refresh",
+        JSON.stringify(response.refreshToken)
+      );
       await AsyncStorage.setItem("userId", JSON.stringify(response.id));
       setIsLoading(false);
       navigation.replace("Home");
     } else {
-      await logOut()
+      await logOut();
     }
-  }
+  };
 
   useEffect(() => {
     const validateLoggedUser = async () => {
       if (await isLoggedUser()) {
-        reAuthenticate()
+        reAuthenticate();
       } else {
         setIsLoading(false);
       }
-    }
-    validateLoggedUser()
+    };
+    validateLoggedUser();
   }, []);
 
   const reAuthenticate = async () => {
@@ -82,46 +86,54 @@ const Login = () => {
 
     if (statusCode === 201) {
       await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-      await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
+      await AsyncStorage.setItem(
+        "refresh",
+        JSON.stringify(response.refreshToken)
+      );
       await AsyncStorage.setItem("userId", JSON.stringify(response.id));
       navigation.replace("Home");
       setIsLoading(false);
-    } else if ( statusCode === undefined) {
+    } else if (statusCode === undefined) {
       try {
-
-        if(await asyncStorage.getItem('token') !== null) {
-          await refreshToken()
-        }
-        else
-          await logOut()
-
+        if ((await asyncStorage.getItem("token")) !== null) {
+          await refreshToken();
+        } else await logOut();
       } catch (e) {
-        await logOut()
+        await logOut();
       }
     }
-  }
+  };
 
   const authenticate = async () => {
     try {
-      console.log("START LOGIN")
+      console.log("START LOGIN");
       setIsLoading(true);
       const userInfo = await GoogleSignin.signIn();
 
+      console.log("userInfo", userInfo);
       const { idToken, user } = userInfo;
+      console.log("idToken", idToken);
       const { response, statusCode } = await backendApi.authUser.authenticate({
         token: idToken,
       });
+      console.log("response", response);
 
       if (statusCode === 201) {
-        await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-        await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
+        await AsyncStorage.setItem(
+          "token",
+          JSON.stringify(response.accessToken)
+        );
+        await AsyncStorage.setItem(
+          "refresh",
+          JSON.stringify(response.refreshToken)
+        );
         await AsyncStorage.setItem("userId", JSON.stringify(response.id));
         setIsLoading(false);
         navigation.replace("Home");
       }
       setIsLoading(false);
     } catch (error) {
-      await logOut()
+      await logOut();
       console.error("CODE:" + error.code);
       console.error("MESSAGE:" + error.message);
       console.error("STACK:" + error.stack);
@@ -129,16 +141,16 @@ const Login = () => {
   };
 
   const logOut = async () => {
-    await clearAsyncStorage()
-    await GoogleSignin.signOut()
+    await clearAsyncStorage();
+    await GoogleSignin.signOut();
     setIsLoading(false);
-  }
+  };
 
   const clearAsyncStorage = async () => {
-    await AsyncStorage.clear()
-    await AsyncStorage.clear()
-    await AsyncStorage.clear()
-  }
+    await AsyncStorage.clear();
+    await AsyncStorage.clear();
+    await AsyncStorage.clear();
+  };
   return (
     <View style={{ flex: 1 }}>
       <DismissKeyboard>
