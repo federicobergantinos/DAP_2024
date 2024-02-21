@@ -1,26 +1,26 @@
-import React from 'react';
-import { StyleSheet, Dimensions, FlatList, Animated } from 'react-native';
-import { Block, theme } from 'galio-framework';
+import React from "react";
+import { StyleSheet, Dimensions, FlatList, Animated } from "react-native";
+import { Block, theme } from "galio-framework";
 
-const { width } = Dimensions.get('screen');
-import yummlyTheme from '../constants/Theme';
+const { width } = Dimensions.get("screen");
+import yummlyTheme from "../constants/Theme";
 
 const defaultMenu = [
-  { id: 'music', title: 'Music', },
-  { id: 'beauty', title: 'Beauty', },
-  { id: 'fashion', title: 'Fashion', },
-  { id: 'motocycles', title: 'Motocycles', },
+  { id: "music", title: "Music" },
+  { id: "beauty", title: "Beauty" },
+  { id: "fashion", title: "Fashion" },
+  { id: "motocycles", title: "Motocycles" },
 ];
 
 export default class Tabs extends React.Component {
   static defaultProps = {
     data: defaultMenu,
     initialIndex: null,
-  }
+  };
 
   state = {
     active: null,
-  }
+  };
 
   componentDidMount() {
     const { initialIndex } = this.props;
@@ -36,7 +36,7 @@ export default class Tabs extends React.Component {
       toValue: 1,
       duration: 300,
       useNativeDriver: false, // color not supported
-    }).start()
+    }).start();
   }
 
   menuRef = React.createRef();
@@ -44,35 +44,38 @@ export default class Tabs extends React.Component {
   onScrollToIndexFailed = () => {
     this.menuRef.current.scrollToIndex({
       index: 0,
-      viewPosition: 0.5
+      viewPosition: 0.5,
     });
-  }
+  };
 
   selectMenu = (id) => {
     this.setState({ active: id });
 
     this.menuRef.current.scrollToIndex({
-      index: this.props.data.findIndex(item => item.id === id),
-      viewPosition: 0.5
+      index: this.props.data.findIndex((item) => item.id === id),
+      viewPosition: 0.5,
     });
 
     this.animate();
     this.props.onChange && this.props.onChange(id);
-  }
+  };
 
   renderItem = (item) => {
     const isActive = this.state.active === item.id;
 
     const textColor = this.animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [yummlyTheme.COLORS.TEXT, isActive ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.TEXT],
-      extrapolate: 'clamp',
+      outputRange: [
+        yummlyTheme.COLORS.TEXT,
+        isActive ? yummlyTheme.COLORS.WHITE : yummlyTheme.COLORS.TEXT,
+      ],
+      extrapolate: "clamp",
     });
-    
+
     const containerStyles = [
       styles.titleContainer,
       !isActive && { backgroundColor: yummlyTheme.COLORS.SECONDARY },
-      isActive && styles.containerShadow
+      isActive && styles.containerShadow,
     ];
 
     return (
@@ -81,14 +84,15 @@ export default class Tabs extends React.Component {
           style={[
             styles.menuTitle,
             { color: textColor },
-            { fontFamily: 'open-sans-bold' },
+            { fontFamily: "open-sans-bold" },
           ]}
-          onPress={() => this.selectMenu(item.id)}>
+          onPress={() => this.selectMenu(item.id)}
+        >
           {item.title}
         </Animated.Text>
       </Block>
-    )
-  }
+    );
+  };
 
   renderMenu = () => {
     const { data, ...props } = this.props;
@@ -106,15 +110,11 @@ export default class Tabs extends React.Component {
         renderItem={({ item }) => this.renderItem(item)}
         contentContainerStyle={styles.menu}
       />
-    )
-  }
+    );
+  };
 
   render() {
-    return (
-      <Block style={styles.container}>
-        {this.renderMenu()}
-      </Block>
-    )
+    return <Block style={styles.container}>{this.renderMenu()}</Block>;
   }
 }
 
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   shadow: {
     shadowColor: theme.COLORS.BLACK,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     shadowOpacity: 0.2,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   titleContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: yummlyTheme.COLORS.ACTIVE,
     borderRadius: 4,
     marginRight: 9,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   containerShadow: {
-    shadowColor: 'black',
+    shadowColor: "black",
     backgroundColor: yummlyTheme.COLORS.ACTIVE,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
@@ -154,11 +154,11 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   menuTitle: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 14,
     // lineHeight: 28,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    color: yummlyTheme.COLORS.MUTED
+    color: yummlyTheme.COLORS.MUTED,
   },
 });

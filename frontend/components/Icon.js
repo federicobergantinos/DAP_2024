@@ -1,16 +1,16 @@
-import React from 'react';
-import * as Font from 'expo-font';
-import { createIconSetFromIcoMoon } from '@expo/vector-icons';
-import { Icon } from 'galio-framework';
+import React from "react";
+import * as Font from "expo-font";
+import { createIconSetFromIcoMoon } from "@expo/vector-icons";
+import { Icon } from "galio-framework";
 
-import yummlyConfig from '../assets/config/yummly.json';
-const YummlyExtra = require('../assets/font/yummly.ttf');
-const IconYummlyExtra = createIconSetFromIcoMoon(yummlyConfig, 'YummlyExtra');
+import yummlyConfig from "../assets/config/yummly.json";
+const YummlyExtra = require("../assets/font/yummly.ttf");
+const IconYummlyExtra = createIconSetFromIcoMoon(yummlyConfig, "YummlyExtra");
 
 class IconExtra extends React.Component {
   state = {
     fontLoaded: false,
-  }
+  };
 
   async componentDidMount() {
     await Font.loadAsync({ YummlyExtra: YummlyExtra });
@@ -19,9 +19,9 @@ class IconExtra extends React.Component {
 
   render() {
     const { name, family, ...rest } = this.props;
-    
+
     if (name && family && this.state.fontLoaded) {
-      if (family === 'YummlyExtra') {
+      if (family === "YummlyExtra") {
         return <IconYummlyExtra name={name} family={family} {...rest} />;
       }
       return <Icon name={name} family={family} {...rest} />;

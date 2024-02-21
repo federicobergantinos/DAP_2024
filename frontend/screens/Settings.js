@@ -12,7 +12,7 @@ export default class Settings extends React.Component {
     apellido: "",
   };
 
-  toggleSwitch = switchNumber =>
+  toggleSwitch = (switchNumber) =>
     this.setState({ [switchNumber]: !this.state[switchNumber] });
 
   renderItem = ({ item }) => {
@@ -91,7 +91,6 @@ export default class Settings extends React.Component {
       { title: "Eliminar Cuenta", id: "delete", type: "deleteAccount" },
     ];
 
-
     return (
       <View
         showsVerticalScrollIndicator={false}
@@ -102,14 +101,14 @@ export default class Settings extends React.Component {
           keyExtractor={(item, index) => item.id}
           renderItem={this.renderItem}
           ListHeaderComponent={
-            <Block center style={styles.title, {marginTop:20}}>
+            <Block center style={styles.title}>
               <Text style={{ fontFamily: 'open-sans', paddingBottom: 5 }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
                 Configuración Recomendada
               </Text>
             </Block>
           }
         />
-        <Block center style={styles.title, {marginTop: 400}}>
+        <Block center style={styles.title}>
           <Text style={{ fontFamily: 'open-sans-bold', paddingBottom: 10, color: 'red' }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
             Danger Zone
           </Text>
@@ -128,11 +127,11 @@ export default class Settings extends React.Component {
 
 const styles = StyleSheet.create({
   settings: {
-    paddingVertical: theme.SIZES.BASE / 3
+    paddingVertical: theme.SIZES.BASE / 3,
   },
   title: {
     paddingTop: theme.SIZES.BASE,
-    paddingBottom: theme.SIZES.BASE / 2
+    paddingBottom: theme.SIZES.BASE / 2,
   },
   rows: {
     height: theme.SIZES.BASE * 2,

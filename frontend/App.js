@@ -12,13 +12,10 @@ import { enableScreens } from "react-native-screens";
 enableScreens();
 
 import Screens from "./navigation/Screens";
-import { Images, recipes, yummlyTheme } from "./constants";
+import { yummlyTheme } from "./constants";
+import { RecipeProvider } from "./navigation/RecipeContext";
 
-const assetImages = [
-];
-
-// cache product images
-recipes.map((article) => assetImages.push(article.image));
+const assetImages = [];
 
 function cacheImages(images) {
   return images.map((image) => {
@@ -29,7 +26,6 @@ function cacheImages(images) {
     }
   });
 }
-
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -55,7 +51,6 @@ export default function App() {
     prepare();
   }, []);
 
-
   const _loadResourcesAsync = async () => {
     return Promise.all([...cacheImages(assetImages)]);
   };
@@ -71,12 +66,14 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer onReady={onLayoutRootView}>
-      <GalioProvider theme={yummlyTheme}>
-        <Block flex>
-          <Screens />
-        </Block>
-      </GalioProvider>
-    </NavigationContainer>
+    <RecipeProvider>
+      <NavigationContainer onReady={onLayoutRootView}>
+        <GalioProvider theme={yummlyTheme}>
+          <Block flex>
+            <Screens />
+          </Block>
+        </GalioProvider>
+      </NavigationContainer>
+    </RecipeProvider>
   );
 }

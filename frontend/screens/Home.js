@@ -1,60 +1,74 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Dimensions, FlatList, View, ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  View,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { Block, theme } from "galio-framework";
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Card } from "../components";
-import recipes from "../constants/recipes";
-const { width } = Dimensions.get("screen");
+import backendApi from "../api/backendGateway";
 
+const { width } = Dimensions.get("screen");
 const ITEMS_PER_PAGE = 6;
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedTag, setSelectedTag] = useState(null); // Nuevo estado para el tag seleccionado
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [allItemsLoaded, setAllItemsLoaded] = useState(false);
+  const [endReachedThreshold, setEndReachedThreshold] = useState(0.1); // Valor inicial
 
   const navigation = useNavigation();
   const route = useRoute();
   const tabId = route.params?.tabId;
 
   useEffect(() => {
-    // Establece el tag seleccionado basado en el parámetro recibido
     setSelectedTag(tabId);
+    // Resetea los estados para manejar el nuevo tag
+    setData([]);
+    setCurrentPage(0);
+    setAllItemsLoaded(false);
+    // Asegúrate de llamar a fetchRecipes aquí si es necesario para cargar inmediatamente después de cambiar el tag
   }, [tabId]);
 
   useEffect(() => {
-    // Filtra las recetas cada vez que cambia el tag seleccionado
-    filterRecipesByTag();
-  }, [selectedTag]);
+    fetchRecipes();
+  }, [selectedTag, currentPage]);
 
-  const filterRecipesByTag = () => {
+  const fetchRecipes = async () => {
+    if (loading || allItemsLoaded) return;
+
+    setLoading(true);
     try {
-      const filteredData = selectedTag
-        ? recipes.filter(recipe => recipe.tags.includes(selectedTag))
-        : recipes; // Filtra las recetas basándose en el tag seleccionado
+      const page = currentPage;
+      const tag = selectedTag !== "ALL" ? selectedTag : undefined;
+      const { response: recipes } = await backendApi.recipesGateway.getAll(
+        page,
+        tag,
+      );
 
-      setData(filteredData.slice(0, ITEMS_PER_PAGE));
-      setCurrentPage(0); // Resetea la paginación
+      if (recipes.length > 0) {
+        setData((prevData) => [...prevData, ...recipes]);
+      } else {
+        setAllItemsLoaded(true);
+      }
     } catch (error) {
-      console.error("Error al filtrar las recetas:", error);
+      console.error("Error fetching recipes:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const loadMoreItems = () => {
-    if (loading) return;
-
-    setLoading(true);
-    const nextPage = currentPage + 1;
-    const nextSetOfItems = recipes.slice(nextPage * ITEMS_PER_PAGE, (nextPage + 1) * ITEMS_PER_PAGE);
-
-    setTimeout(() => {
-      if (nextSetOfItems.length > 0) {
-        setData([...data, ...nextSetOfItems]);
-        setCurrentPage(nextPage);
-      }
-      setLoading(false);
-    }, 1500);
+    if (!loading && !allItemsLoaded) {
+      setCurrentPage(currentPage + 1); // Prepara para cargar la siguiente página
+    }
   };
 
   const renderFooter = () => {
@@ -67,12 +81,14 @@ const Home = () => {
   };
 
   const renderRecipe = ({ item, index }) => {
-    const marginRight = (index % 2 === 0) ? theme.SIZES.BASE : 0;
-
+    const marginRight = index % 2 === 0 ? theme.SIZES.BASE : 0;
     return (
       <Card
         item={item}
-        style={{ marginRight: marginRight, width: (width - theme.SIZES.BASE * 3) / 2 }}
+        style={{
+          marginRight: marginRight,
+          width: (width - theme.SIZES.BASE * 3) / 2,
+        }}
       />
     );
   };
@@ -86,12 +102,12 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.recipes}
         onEndReached={loadMoreItems}
-        onEndReachedThreshold={0.1}
+        onEndReachedThreshold={0.3}
         ListFooterComponent={renderFooter}
         numColumns={2}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate('CreateRecipeDrawer')}
+        onPress={() => navigation.navigate("CreateRecipe")}
         style={styles.fab}
       >
         <Text style={styles.fabIcon}>+</Text>
@@ -105,30 +121,30 @@ const styles = StyleSheet.create({
     width: width,
   },
   recipes: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     width: width - theme.SIZES.BASE * 2,
     paddingVertical: theme.SIZES.BASE,
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     margin: 16,
     right: 20,
     bottom: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     width: 56,
     height: 56,
     borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 2,
   },
   fabIcon: {
     fontSize: 24,
-    color: '#333',
+    color: "#333",
   },
 });
 
