@@ -10,12 +10,12 @@ const User = sequelize.define("users", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: false,
   },
   surname: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: false,
   },
   email: {
     type: DataTypes.STRING,
