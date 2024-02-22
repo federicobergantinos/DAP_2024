@@ -61,6 +61,7 @@ function HomeStack(props) {
             <Header
               title="Recipe"
               white
+              back
               transparent
               navigation={navigation}
               scene={scene}
