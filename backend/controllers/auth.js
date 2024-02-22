@@ -5,6 +5,7 @@ const {
   refreshToken,
 } = require("../services/authService");
 const {verify} = require("jsonwebtoken");
+const Unauthorized = require("../Errors/Unauthorized");
 const authenticate = async (req, res) => {
   try {
     const googleToken = req.body.token
@@ -23,9 +24,11 @@ const authenticate = async (req, res) => {
       }
       tokens = createAuthTokens(user);
     } else if (accessToken !== null) {
+
       const decode = verify(accessToken, process.env.CODE, (err, decoded) => {
         if (err) {
-          res.status(403).send();
+          console.log("ERROR", err)
+          throw new Unauthorized("Invalid credentials")
         } else {
           return decoded
         }
@@ -35,8 +38,8 @@ const authenticate = async (req, res) => {
       tokens = createAuthTokens(user);
     } else {
       res.status(400).json({msg: 'invalid credentials'})
+      return
     }
-
 
     res.status(201).json({
       id: user.id,
@@ -53,6 +56,7 @@ const authenticate = async (req, res) => {
 
 const refresh = async (req, res) => {
   try {
+    console.log("LA")
     const accessToken = req.headers["authorization"];
     const refresh = req.body.refreshToken;
 
