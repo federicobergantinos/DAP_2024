@@ -185,9 +185,9 @@ const Header = ({
     }
     if (title === "Recipe") {
       return [
-        <RenderEditButton isOwner={isOwner} />,
-        <RenderShareButton />,
-        <RenderFavoriteButton />,
+        <RenderEditButton key="edit-button" isOwner={isOwner} />,
+        <RenderShareButton key="share-button" />,
+        <RenderFavoriteButton ke="favorite-button"/>,
       ];
     }
 
