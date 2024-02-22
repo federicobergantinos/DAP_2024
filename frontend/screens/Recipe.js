@@ -31,28 +31,6 @@ const tagsTranslations = {
   LOW_CARB: "Bajo en carbohidratos",
 };
 
-const recipe = {
-  userId: 123,
-  userName: "Juan Perez",
-  userImage:
-    "https://www.recetasnestle.com.ar/sites/default/files/2022-06/ingredientes-comida-de-mar-parrilla.jpg",
-  title: "Delicious Recipe",
-  description: "Esto es una breve descripción de la receta",
-  media: [
-    "https://www.recetasnestle.com.ar/sites/default/files/2022-06/ingredientes-comida-de-mar-parrilla.jpg",
-    "https://static-cse.canva.com/blob/598703/Fotografiadecomida.jpg",
-  ],
-  preparationTime: "60 minutos",
-  servingCount: 4,
-  ingredients: ["ingredient1", "ingredient2"],
-  steps: ["Step 1", "Step 2"],
-  tags: ["VEGETARIAN", "VEGAN"],
-  calories: 500,
-  proteins: 20.5,
-  totalFats: 15.3,
-  rating: 4,
-};
-
 const { height, width } = Dimensions.get("window");
 
 const getAsyncRecipe = async (recipeId) => {
@@ -76,7 +54,6 @@ export default function Recipe(props) {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        console.log(route.params.recipeId);
         const fetchedRecipe = await getAsyncRecipe(route.params.recipeId);
         setRecipe(fetchedRecipe);
         setLoading(false);
