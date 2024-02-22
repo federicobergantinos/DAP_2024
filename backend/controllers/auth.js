@@ -4,18 +4,39 @@ const {
   loginUser,
   refreshToken,
 } = require("../services/authService");
+const {verify} = require("jsonwebtoken");
 const authenticate = async (req, res) => {
   try {
-    const userData = await loginUser(
-      req.body.token,
-      req.headers["authorization"]
-    );
-    let user = await findUserByEmail(userData.email);
-    if (!user) {
-      user = await createUser(userData);
+    const googleToken = req.body.token
+    const accessToken = req.headers["authorization"]
+
+    let user = null
+    let tokens = null
+    if(googleToken !== null) {
+      const userData = await loginUser(
+          googleToken,
+          accessToken
+      );
+      user = await findUserByEmail(userData.email);
+      if (!user) {
+        user = await createUser(userData);
+      }
+      tokens = createAuthTokens(user);
+    } else if (accessToken !== null) {
+      const decode = verify(accessToken, process.env.CODE, (err, decoded) => {
+        if (err) {
+          res.status(403).send();
+        } else {
+          return decoded
+        }
+      });
+      const userData = await findUserByEmail(decode.email);
+      user = userData.dataValues
+      tokens = createAuthTokens(user);
+    } else {
+      res.status(400).json({msg: 'invalid credentials'})
     }
-    console.log("user", user);
-    const tokens = createAuthTokens(user);
+
 
     res.status(201).json({
       id: user.id,
