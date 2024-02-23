@@ -5,8 +5,8 @@ import { RecipeDTO } from "./RecipeDTO";
 import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
-//const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
-const api = axios.create({ baseURL: "http://192.168.0.5:8080" });
+// const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
+const api = axios.create({ baseURL: "http://192.168.0.189:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
@@ -46,7 +46,6 @@ const requests = {
   delete: (url: string) =>
     api.delete(url).then(responseBodyWithStatusCode),
 };
-
 const authUser = {
     authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> => requests.post('/v1/auth', auth),
     refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> => requests.put('/v1/auth', {refreshToken: refreshToken})

@@ -24,38 +24,38 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 const { width, height } = Dimensions.get("screen");
 
 class CreateRecipe extends React.Component {
-  state = {
-    selectedTags: [],
-    isMultiSelectOpen: false,
-    ingredientes: [""],
-    pasos: [""],
-    title: "",
-    description: "",
-    preparationTime: null,
-    image: null,
-    servingCount: null,
-    calories: null,
-    proteins: null,
-    totalFats: null,
-    video: "",
-  };
-  // TODO
   // state = {
-  //   selectedTags: ["RAPID_PREPARATION"], // Asume que "1" es un ID válido para un tag existente
+  //   selectedTags: [],
   //   isMultiSelectOpen: false,
-  //   ingredientes: ["Pan de papa", "Carne picada", "Chedar"],
-  //   pasos: ["Cortar el pan", "Cocinar las hamburgesas", "Poner el chedar"],
-  //   title: "Hamburgesa Crispy",
-  //   description: "Una de las hambursas mas ricas que hay, una delicia.",
-  //   preparationTime: "20",
-  //   image: null,
-  //   servingCount: 1,
-  //   calories: 500,
-  //   proteins: 30.5,
-  //   totalFats: 20.5,
-  //   video:
-  //     "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
+  //   ingredientes: [""],
+  //   pasos: [""],
+  //   title: "",
+  //   description: "",
+  //   preparationTime: null,
+  //   images: [],
+  //   servingCount: null,
+  //   calories: null,
+  //   proteins: null,
+  //   totalFats: null,
+  //   video: "",
   // };
+  // TODO
+  state = {
+    selectedTags: ["RAPID_PREPARATION"], // Asume que "1" es un ID válido para un tag existente
+    isMultiSelectOpen: false,
+    ingredientes: ["Pan de papa", "Carne picada", "Chedar"],
+    pasos: ["Cortar el pan", "Cocinar las hamburgesas", "Poner el chedar"],
+    title: "Hamburgesa Crispy",
+    description: "Una de las hambursas mas ricas que hay, una delicia.",
+    preparationTime: "20",
+    images: [],
+    servingCount: 1,
+    calories: 500,
+    proteins: 30.5,
+    totalFats: 20.5,
+    video:
+      "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
+  };
 
   onSelectedItemsChange = (selectedTags) => {
     this.setState({ selectedTags });
@@ -67,8 +67,24 @@ class CreateRecipe extends React.Component {
 
   handleImagePicked = async () => {
     try {
-      const result = await openImagePickerAsync();
-      this.setState({ image: result });
+      const newImage = await openImagePickerAsync();
+      if (newImage) {
+        this.setState((prevState) => {
+          // Verificar si la imagen ya está en el array comparando la cadena base64
+          const imageAlreadyExists = prevState.images.some(
+            (image) => image.base64 === newImage.base64
+          );
+
+          if (!imageAlreadyExists) {
+            // Si la imagen no existe, añadirla al array
+            return { images: [...prevState.images, newImage] };
+          } else {
+            // Opcional: Mostrar un mensaje indicando que la imagen ya está seleccionada
+            alert("Esta imagen ya ha sido seleccionada.");
+            return {}; // No actualizar el estado si la imagen ya existe
+          }
+        });
+      }
     } catch (error) {
       console.error("Error al seleccionar la imagen:", error);
       alert("No se pudo seleccionar la imagen.");
@@ -76,7 +92,7 @@ class CreateRecipe extends React.Component {
   };
 
   renderMainInformation = () => {
-    const { image } = this.state;
+    const { images } = this.state;
 
     return (
       <Block flex style={styles.CreateRecipeCard}>
@@ -84,9 +100,9 @@ class CreateRecipe extends React.Component {
           <TouchableOpacity
             style={[
               styles.uploadButton,
-              image ? styles.uploadContainerSuccess : {},
-            ]} // Aplica el estilo de éxito si image no es null
-            onPress={this.handleImagePicked}
+              images && images.length > 0 ? styles.uploadContainerSuccess : {},
+            ]} // Se aplica el estilo de éxito si hay imágenes seleccionadas
+            onPress={() => this.handleImagePicked(true)} // Asegúrate de llamar a handleImagePicked correctamente para la selección múltiple
           >
             <Block
               middle
@@ -94,10 +110,12 @@ class CreateRecipe extends React.Component {
               space="evenly"
               style={[
                 styles.uploadContainer,
-                image ? styles.uploadContainerSuccess : {},
+                images && images.length > 0
+                  ? styles.uploadContainerSuccess
+                  : {},
               ]}
             >
-              {image ? (
+              {images && images.length > 0 ? (
                 <>
                   <Icon
                     name="check"
@@ -106,8 +124,7 @@ class CreateRecipe extends React.Component {
                     color={yummlyTheme.COLORS.SUCCESS}
                   />
                   <Text bold size={14} style={[styles.textWhite]}>
-                    {/* Aplica el estilo de texto blanco */}
-                    Imagen seleccionada
+                    {images.length} Imagen(es) seleccionada(s)
                   </Text>
                 </>
               ) : (
@@ -407,7 +424,7 @@ class CreateRecipe extends React.Component {
       proteins,
       totalFats,
       video,
-      image,
+      images,
     } = this.state;
 
     if (
@@ -418,7 +435,7 @@ class CreateRecipe extends React.Component {
       calories === null ||
       proteins === null ||
       totalFats === null ||
-      image === null ||
+      images.length === 0 ||
       video === null ||
       ingredientes.some((i) => !i.trim()) ||
       pasos.some((p) => !p.trim())
@@ -435,7 +452,10 @@ class CreateRecipe extends React.Component {
       steps: pasos,
       tags: selectedTags,
       video: video,
-      image: image ? `data:image/jpeg;base64,${image.base64}` : null,
+      images:
+        images.length > 0
+          ? images.map((img) => `data:image/jpeg;base64,${img.base64}`)
+          : [],
       preparationTime: preparationTime,
       servingCount: servingCount,
       calories: calories,

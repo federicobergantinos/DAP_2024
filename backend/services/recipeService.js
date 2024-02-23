@@ -25,10 +25,9 @@ const createRecipe = async (recipeData) => {
     proteins,
     totalFats,
     tags,
-    imageUrl,
+    imageUrls,
     video,
   } = recipeData;
-
   // Verificar si el usuario es válido
   if (!(await isValidUser(userId))) {
     throw new BadRequest("Invalid User");
@@ -58,15 +57,19 @@ const createRecipe = async (recipeData) => {
       },
       { transaction }
     );
-    // Guardar la imagen en Media si existe
-    if (imageUrl) {
-      await Media.create(
-        {
-          recipeId: recipe.id,
-          data: imageUrl,
-        },
-        { transaction }
+
+    // Insertar cada URL de imagen en la base de datos
+    if (imageUrls && imageUrls.length > 0) {
+      const mediaPromises = imageUrls.map((url) =>
+        Media.create(
+          {
+            recipeId: recipe.id,
+            data: url,
+          },
+          { transaction }
+        )
       );
+      await Promise.all(mediaPromises);
     }
 
     // Guardar el video en Media si existe
@@ -163,21 +166,21 @@ const searchRecipes = async ({ searchTerm, limit, offset }) => {
         attributes: ["data"], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
         limit: 1, // Intenta limitar a 1 el resultado de media directamente en la consulta
       },
-      ],
-    });
+    ],
+  });
 
-    return recipes.map((recipe) => {
-      // Asumiendo que `media` es un array, incluso si limitas los resultados en la consulta
-      const firstImage = recipe.media.length > 0 ? recipe.media[0].data : null;
+  return recipes.map((recipe) => {
+    // Asumiendo que `media` es un array, incluso si limitas los resultados en la consulta
+    const firstImage = recipe.media.length > 0 ? recipe.media[0].data : null;
 
-      return {
-        id: recipe.id,
-        title: recipe.title,
-        media: firstImage,
-        description: recipe.description,
-      };
-    });
-  };
+    return {
+      id: recipe.id,
+      title: recipe.title,
+      media: firstImage,
+      description: recipe.description,
+    };
+  });
+};
 
 const getRecipe = async (recipeId) => {
   const recipe = await Recipe.findByPk(recipeId, {

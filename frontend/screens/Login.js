@@ -64,13 +64,20 @@ const Login = () => {
   const authenticate = async () => {
     try {
       setIsLoading(true);
-      const userInfo = await GoogleSignin.signIn();
-      const {idToken, user} = userInfo;
 
-      const {response, statusCode} = await backendApi.authUser.authenticate({token: idToken});
+      const userInfo = await GoogleSignin.signIn();
+      const { idToken, user } = userInfo;
+
+      const { response, statusCode } = await backendApi.authUser.authenticate({
+        token: idToken,
+      });
 
       if (statusCode === 201) {
-        await saveCredentials(response.accessToken, response.refreshToken, response.id);
+        await saveCredentials(
+          response.accessToken,
+          response.refreshToken,
+          response.id
+        );
       }
       setIsLoading(false);
     } catch (error) {
@@ -80,10 +87,19 @@ const Login = () => {
 
   const reAuthenticate = async () => {
     setIsLoading(true);
-    const { response, statusCode } = await backendApi.authUser.authenticate({token: null});
+    const userInfo = await GoogleSignin.signIn();
+    const { idToken, user } = userInfo;
+
+    const { response, statusCode } = await backendApi.authUser.authenticate({
+      token: idToken,
+    });
 
     if (statusCode === 201) {
-      await saveCredentials(response.accessToken, response.refreshToken, response.userId)
+      await saveCredentials(
+        response.accessToken,
+        response.refreshToken,
+        response.userId
+      );
     } else if (statusCode === undefined) {
       try {
         if ((await asyncStorage.getItem("token")) !== null) {
@@ -97,18 +113,22 @@ const Login = () => {
 
   const refreshToken = async () => {
     const { response, statusCode } = await backendApi.authUser.refresh(
-        await AsyncStorage.getItem("refresh")
+      await AsyncStorage.getItem("refresh")
     );
     if (statusCode === 201) {
-      const userId = await AsyncStorage.getItem('userId')
-      await saveCredentials(response.accessToken, response.refreshToken, userId)
+      const userId = await AsyncStorage.getItem("userId");
+      await saveCredentials(
+        response.accessToken,
+        response.refreshToken,
+        userId
+      );
     } else {
       await logOut();
     }
   };
 
   const logOut = async () => {
-    console.log("AFUERA")
+    console.log("AFUERA");
     await clearAsyncStorage();
     await GoogleSignin.signOut();
     setIsLoading(false);
@@ -119,16 +139,16 @@ const Login = () => {
   };
 
   const saveCredentials = async (accessToken, refreshToken, userId) => {
-    console.log("ACCESS",accessToken)
-    console.log("REFRESH",refreshToken)
-    console.log("USER",userId)
+    console.log("ACCESS", accessToken);
+    console.log("REFRESH", refreshToken);
+    console.log("USER", userId);
 
-    navigation.replace('Home');
+    navigation.replace("Home");
     await AsyncStorage.setItem("token", accessToken);
     await AsyncStorage.setItem("refresh", refreshToken);
     await AsyncStorage.setItem("userId", JSON.stringify(userId));
     setIsLoading(false);
-  }
+  };
 
   return (
     <View style={{ flex: 1 }}>
