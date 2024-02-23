@@ -86,8 +86,9 @@ const getAll = async (req, res) => {
     const response = recipes.map((recipe) => {
       const { id, title, media, tags } = recipe;
 
-      // Selecciona la primera imagen de media, si existe
-      const firstImage = media.length > 0 ? media[0].data : "";
+      // Filtra los elementos de media que contienen 'youtube' en su URL y selecciona la primera imagen, si existe
+      const filteredMedia = media.filter((m) => !m.data.includes("youtube"));
+      const firstImage = filteredMedia.length > 0 ? filteredMedia[0].data : "";
 
       // Mapea los tags a la forma deseada, por ejemplo, un arreglo de nombres de tags
       const tagsArray = tags.map((tag) => tag.key);
@@ -95,7 +96,7 @@ const getAll = async (req, res) => {
       return {
         id,
         title,
-        media: firstImage, // Solo devuelve la primera imagen
+        media: firstImage, // Solo devuelve la primera imagen filtrada
         tags: tagsArray, // Incluye los tags asociados
       };
     });
