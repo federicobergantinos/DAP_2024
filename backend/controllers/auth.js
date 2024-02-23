@@ -56,7 +56,7 @@ const authenticate = async (req, res) => {
 
 const refresh = async (req, res) => {
   try {
-    console.log("LA")
+
     const accessToken = req.headers["authorization"];
     const refresh = req.body.refreshToken;
 

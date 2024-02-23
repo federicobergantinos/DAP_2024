@@ -83,7 +83,7 @@ const Login = () => {
     const { response, statusCode } = await backendApi.authUser.authenticate({token: null});
 
     if (statusCode === 201) {
-      await saveCredentials(response.accessToken, response.refreshToken, response.userId)
+      await saveCredentials(response.accessToken, response.refreshToken, response.id)
     } else if (statusCode === undefined) {
       try {
         if ((await asyncStorage.getItem("token")) !== null) {
@@ -108,7 +108,6 @@ const Login = () => {
   };
 
   const logOut = async () => {
-    console.log("AFUERA")
     await clearAsyncStorage();
     await GoogleSignin.signOut();
     setIsLoading(false);
