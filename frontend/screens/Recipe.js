@@ -41,6 +41,7 @@ const recipe = {
   media: [
     "https://www.recetasnestle.com.ar/sites/default/files/2022-06/ingredientes-comida-de-mar-parrilla.jpg",
     "https://static-cse.canva.com/blob/598703/Fotografiadecomida.jpg",
+    "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
   ],
   preparationTime: "60 minutos",
   servingCount: 4,
@@ -110,7 +111,7 @@ export default function Recipe(props) {
         showsHorizontalScrollIndicator={false}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false },
+          { useNativeDriver: false }
         )}
       >
         {recipeImages.map((image, index) => (

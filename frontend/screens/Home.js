@@ -50,7 +50,7 @@ const Home = () => {
       const tag = selectedTag !== "ALL" ? selectedTag : undefined;
       const { response: recipes } = await backendApi.recipesGateway.getAll(
         page,
-        tag,
+        tag
       );
 
       if (recipes.length > 0) {
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   recipes: {
     justifyContent: "space-between",
-    width: width - theme.SIZES.BASE * 2,
+    width: width - theme.SIZES.BASE,
     paddingVertical: theme.SIZES.BASE,
   },
   fab: {
