@@ -3,7 +3,9 @@ const {
   createAuthTokens,
   loginUser,
   refreshToken,
+  deleteCredentials,
 } = require("../services/authService");
+
 const authenticate = async (req, res) => {
   try {
     const userData = await loginUser(
@@ -50,7 +52,25 @@ const refresh = async (req, res) => {
     });
   }
 };
+
+const deleteCredential = async (req, res) => {
+  try {
+    const accessToken = req.headers["authorization"];
+    deleteCredentials(accessToken);
+    res.status(204).send()
+      
+  } catch (error) {
+    console.error(` ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "An exception has ocurred",
+    });
+  }
+};
+
+
+
 module.exports = {
   authenticate,
   refresh,
+  deleteCredential
 };

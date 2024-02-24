@@ -49,7 +49,8 @@ const requests = {
 
 const authUser = {
     authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> => requests.post('/v1/auth', auth),
-    refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> => requests.put('/v1/auth', {refreshToken: refreshToken})
+    refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> => requests.put('/v1/auth', {refreshToken: refreshToken}),
+    deleteCredential: () => requests.delete('/v1/auth')
 };
 
 const recipesGateway = {
