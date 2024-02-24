@@ -87,11 +87,8 @@ const Login = () => {
 
   const reAuthenticate = async () => {
     setIsLoading(true);
-    const userInfo = await GoogleSignin.signIn();
-    const { idToken, user } = userInfo;
-
     const { response, statusCode } = await backendApi.authUser.authenticate({
-      token: idToken,
+      token: null,
     });
 
     if (statusCode === 201) {

@@ -243,7 +243,7 @@ export default function Recipe(props) {
                     color={yummlyTheme.COLORS.MUTED}
                   />
                   <Text color={yummlyTheme.COLORS.MUTED}>
-                    {recipe.preparationTime}
+                    {recipe.preparationTime} minutos
                   </Text>
                 </Block>
                 <Block
@@ -262,7 +262,7 @@ export default function Recipe(props) {
                     color={yummlyTheme.COLORS.MUTED}
                   />
                   <Text color={yummlyTheme.COLORS.MUTED}>
-                    {recipe.servingCount}
+                    {recipe.servingCount} personas
                   </Text>
                 </Block>
               </Block>
