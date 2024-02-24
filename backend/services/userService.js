@@ -15,6 +15,7 @@ const createUser = async (userData) => {
 
   return {
     id: newUser.id,
+    email: newUser.email,
     accessToken: token.accessToken,
     refreshToken: token.refreshToken,
   };
@@ -37,6 +38,7 @@ const findUserById = async (userId) => {
 const findUserByEmail = async (email) => {
   return User.findOne({
     where: { email: email },
+    attributes: ['id', 'name', 'surname', 'email']
   });
 };
 

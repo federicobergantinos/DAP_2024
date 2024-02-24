@@ -7,7 +7,7 @@ import {
   Animated,
   Platform,
 } from "react-native";
-
+import { WebView } from "react-native-webview"; // Importa WebView
 import { Block, theme } from "galio-framework";
 import { HeaderHeight } from "../constants/utils";
 
@@ -16,10 +16,20 @@ const { width } = Dimensions.get("window");
 export default class Gallery extends React.Component {
   scrollX = new Animated.Value(0);
 
-  renderGallery = () => {
-    const { navigation, route } = this.props;
+  getYouTubeEmbedUrl = (url) => {
+    // Extrae el ID del video de la URL
+    const regExp =
+      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[7].length == 11 ? match[7] : false;
 
-    const { images, index } = route.params;
+    // Retorna la URL de incrustación
+    return `https://www.youtube.com/embed/${videoId}`;
+  };
+
+  renderGallery = () => {
+    const { route } = this.props;
+    const { images } = route.params;
 
     return (
       <ScrollView
@@ -30,17 +40,31 @@ export default class Gallery extends React.Component {
         showsHorizontalScrollIndicator={false}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: this.scrollX } } }],
-          { useNativeDriver: false },
+          { useNativeDriver: false }
         )}
       >
-        {images.map((image, key) => (
-          <Image
-            key={`gallery-image-${key}`}
-            resizeMode="contain"
-            source={{ uri: image }}
-            style={{ width, height: width }}
-          />
-        ))}
+        {images.map((image, key) => {
+          if (image.toLowerCase().includes("youtube")) {
+            const embedUrl = this.getYouTubeEmbedUrl(image);
+            return (
+              <WebView
+                key={`gallery-video-${key}`}
+                style={{ width, height: width }}
+                source={{ uri: embedUrl }}
+                allowsFullscreenVideo={true}
+              />
+            );
+          } else {
+            return (
+              <Image
+                key={`gallery-image-${key}`}
+                resizeMode="contain"
+                source={{ uri: image }}
+                style={{ width, height: width }}
+              />
+            );
+          }
+        })}
       </ScrollView>
     );
   };
