@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
   Image,
   Animated,
-  Platform,
+  Platform, TouchableOpacity,
 } from "react-native";
 import { Block, Text, Button, theme } from "galio-framework";
 import yummlyTheme from "../constants/Theme";
@@ -18,6 +18,7 @@ import backendApi from "../api/backendGateway";
 import LoadingScreen from "../components/LoadingScreen";
 import { useNavigation } from "@react-navigation/native";
 import RecipeContext from "../navigation/RecipeContext";
+import ReviewsModal from "../components/RatingModal";
 
 const tagsTranslations = {
   RAPID_PREPARATION: "Preparación rápida",
@@ -42,6 +43,7 @@ export default function Recipe(props) {
   const { route } = props;
   const navigation = useNavigation();
   const [isStepsAvailable, setIsStepsAvailable] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const scrollX = new Animated.Value(0);
   const [loading, setLoading] = useState(true);
   const { recipe, setRecipe } = useContext(RecipeContext);
@@ -59,6 +61,14 @@ export default function Recipe(props) {
     };
     fetchRecipe();
   }, []);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const buttonStyle1 = isStepsAvailable
     ? styles.buttonSelected
@@ -85,6 +95,10 @@ export default function Recipe(props) {
           { useNativeDriver: false },
         )}
       >
+        <ReviewsModal
+            isVisible={modalVisible}
+            onClose={closeModal}
+        />
         {recipeImages.map((image, index) => (
           <TouchableWithoutFeedback
             key={`recipe-image-${index}`}
@@ -171,17 +185,28 @@ export default function Recipe(props) {
                 >
                   {recipe.description}
                 </Text>
-                <Block row>
-                  <AirbnbRating
-                    count={5}
-                    defaultRating={1}
-                    isDisabled={true}
-                    selectedColor={yummlyTheme.COLORS.GRADIENT_START}
-                    size={20}
-                    showRating={false}
-                    style={{ paddingVertical: 10, width: 100 }}
-                  />
-                </Block>
+                <TouchableOpacity onPress={openModal}>
+                  <Block flex
+                         flexDirection="row"
+                         style={{ justifyContent: "flex-start", alignItems: "center"}} >
+                      <AirbnbRating
+                        count={5}
+                        defaultRating={1}
+                        isDisabled={true}
+                        selectedColor={yummlyTheme.COLORS.GRADIENT_START}
+                        size={20}
+                        showRating={false}
+                        style={{ paddingVertical: 10, width: 100 }}
+                      />
+                      <Text
+                          size={15}
+                          family="MaterialIcons"
+                          name="edit"
+                          color={yummlyTheme.COLORS.GRADIENT_START}>
+                        Calificar
+                      </Text>
+                  </Block>
+                </TouchableOpacity>
                 <Block
                   flex
                   flexDirection="row"
@@ -350,6 +375,19 @@ export default function Recipe(props) {
                   >
                     {recipe.username}
                   </Text>
+                </Block>
+                <Block style={{ borderColor: theme.COLORS.GREY, borderTopWidth:1, paddingTop:10, paddingBottom: 15, alignItems: "center", justifyContent: "flex-start" }}>
+                  <Text>¿Te gustó la receta?</Text>
+                  <Block row style={{ padding: 10 }}>
+                    <AirbnbRating
+                        count={5}
+                        defaultRating={0}
+                        selectedColor={yummlyTheme.COLORS.GRADIENT_START}
+                        size={35}
+                        showRating={false}
+                        style={{ paddingVertical: 10, width: 100 }}
+                    />
+                  </Block>
                 </Block>
               </Block>
           </Block>
