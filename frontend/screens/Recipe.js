@@ -6,7 +6,8 @@ import {
   TouchableWithoutFeedback,
   Image,
   Animated,
-  Platform, TouchableOpacity,
+  Platform,
+  TouchableOpacity,
 } from "react-native";
 import { Block, Text, Button, theme } from "galio-framework";
 import yummlyTheme from "../constants/Theme";

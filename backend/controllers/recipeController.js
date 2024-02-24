@@ -16,11 +16,11 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 const uploadBase64ImageToS3 = async (base64Image, filename) => {
-  // Eliminar el prefijo de la cadena base64 si está presente
+  // Corrige la expresión regular para eliminar correctamente el prefijo de la cadena base64
   const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
   const buffer = Buffer.from(base64Data, "base64");
 
-  // Asignar un tipo de contenido basado en el prefijo de la cadena base64 o asumir jpeg como predeterminado
+  // Asignar un tipo de contenido correcto o asumir jpeg como predeterminado
   const contentType =
     base64Image.match(/^data:(image\/\w+);base64,/)?.[1] || "image/jpeg";
 
@@ -45,30 +45,31 @@ const { v4: uuidv4 } = require("uuid");
 
 const create = async (req, res) => {
   try {
-    let imageUrl = null;
-    if (req.body.image) {
-      // Generar un nombre de archivo único utilizando UUID
-      const filename = `${uuidv4()}.jpeg`;
-      imageUrl = await uploadBase64ImageToS3(req.body.image, filename);
+    let imageUrls = [];
+    if (req.body.images && req.body.images.length) {
+      // Iterar sobre todas las imágenes en el array y cargarlas a S3
+      const uploadPromises = req.body.images.map(async (imageBase64, index) => {
+        const filename = `${uuidv4()}_${index}.jpeg`; // Asegurar un nombre de archivo único para cada imagen
+        return uploadBase64ImageToS3(imageBase64, filename);
+      });
+      imageUrls = await Promise.all(uploadPromises); // Esperar a que todas las promesas se resuelvan
     }
-
     const recipeData = {
       ...req.body,
-      imageUrl: imageUrl,
+      imageUrls: imageUrls, // Guardar el array de URLs de las imágenes
     };
 
-    console.log(recipeData);
-    const recipeId = await createRecipe(recipeData);
+    const recipeId = await createRecipe(recipeData); // Asegúrate de que `createRecipe` maneje correctamente `imageUrls`
 
     res.status(201).json({
       id: recipeId,
       message: "Receta creada con éxito",
-      imageUrl: imageUrl,
+      imageUrls: imageUrls, // Devolver las URLs de las imágenes cargadas
     });
   } catch (error) {
-    console.error(` ${error}`);
+    console.error(`Error en la creación de la receta: ${error}`);
     res.status(error.code || 500).json({
-      msg: error.message || "An exception has ocurred",
+      msg: error.message || "Ha ocurrido una excepción",
     });
   }
 };
@@ -85,8 +86,9 @@ const getAll = async (req, res) => {
     const response = recipes.map((recipe) => {
       const { id, title, media, tags } = recipe;
 
-      // Selecciona la primera imagen de media, si existe
-      const firstImage = media.length > 0 ? media[0].data : "";
+      // Filtra los elementos de media que contienen 'youtube' en su URL y selecciona la primera imagen, si existe
+      const filteredMedia = media.filter((m) => !m.data.includes("youtube"));
+      const firstImage = filteredMedia.length > 0 ? filteredMedia[0].data : "";
 
       // Mapea los tags a la forma deseada, por ejemplo, un arreglo de nombres de tags
       const tagsArray = tags.map((tag) => tag.key);
@@ -94,7 +96,7 @@ const getAll = async (req, res) => {
       return {
         id,
         title,
-        media: firstImage, // Solo devuelve la primera imagen
+        media: firstImage, // Solo devuelve la primera imagen filtrada
         tags: tagsArray, // Incluye los tags asociados
       };
     });
