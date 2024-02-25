@@ -30,6 +30,14 @@ function HomeStack(props) {
         headerShown: "screen",
       }}
     >
+
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{
+            headerShown: false,
+        }}
+      />
       <Stack.Screen
         name="Home"
         component={Home}
@@ -44,13 +52,6 @@ function HomeStack(props) {
             />
           ),
           cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{
-          headerShown: false,
         }}
       />
       <Stack.Screen
