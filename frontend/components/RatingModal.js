@@ -1,9 +1,31 @@
-import React from "react";
-import {Modal, View, ScrollView, Text, StyleSheet, TouchableOpacity} from "react-native";
+import React, {useEffect, useState} from "react";
+import {Modal, View, ScrollView, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback} from "react-native";
 import {AirbnbRating, Rating} from "react-native-ratings";
 import yummlyTheme from "../constants/Theme";
+import backendGateway from "../api/backendGateway";
+import asyncStorage from "@react-native-async-storage/async-storage/src/AsyncStorage";
 
-const ReviewsModal = ({ isVisible, onClose }) => {
+const ReviewsModal = ({ isVisible, onClose, recipeId, setRecipeRating }) => {
+
+    const [userRating, setUserRating] = useState(0)
+    useEffect(() => {
+        const getUserRated = async () => {
+            const userId = await asyncStorage.getItem('userId')
+            const {response, statusCode} = await backendGateway.rating.getUserRate(recipeId, userId)
+            console.log("RESPONSE:", response)
+            setUserRating(response.userRating)
+        }
+        getUserRated()
+    }, [isVisible]);
+
+    const handleRate = async (value) => {
+        const userId = await asyncStorage.getItem('userId')
+        const {response, statusCode} = await backendGateway.rating.rate(userId, recipeId, value)
+        if(response !== undefined)
+            setRecipeRating(response?response.recipeRating:0)
+        onClose()
+    }
+
     return (
         <Modal
             visible={isVisible}
@@ -11,21 +33,32 @@ const ReviewsModal = ({ isVisible, onClose }) => {
             animationType="slide"
             onRequestClose={onClose}
         >
-            <View style={styles.container}>
-                <View style={styles.modal}>
-                    <AirbnbRating
-                        count={5}
-                        defaultRating={0}
-                        selectedColor={yummlyTheme.COLORS.GRADIENT_START}
-                        size={40}
-                        showRating={false}
-                        style={{ paddingVertical: 10, width: 100 }}
-                    />
-                    <TouchableOpacity onPress={onClose}>
-                        <Text style={styles.closeButton}>Cerrar</Text>
-                    </TouchableOpacity>
+            <TouchableWithoutFeedback onPress={onClose}>
+                <View style={styles.container}>
+                    <TouchableWithoutFeedback>
+                        <View style={styles.modal}>
+                            <Text
+                                style={{ paddingBottom: 10, fontFamily: "open-sans-regular" }}
+                                color={yummlyTheme.COLORS.TEXT}
+                            >
+                                ¿Como evaluarias está receta?
+                            </Text>
+                            <AirbnbRating
+                                count={5}
+                                defaultRating={userRating}
+                                selectedColor={yummlyTheme.COLORS.GRADIENT_START}
+                                size={40}
+                                showRating={false}
+                                onFinishRating={handleRate}
+                                style={{ paddingVertical: 10, width: 100 }}
+                            />
+                            <TouchableOpacity onPress={onClose}>
+                                <Text style={styles.closeButton}>Cerrar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableWithoutFeedback>
                 </View>
-            </View>
+            </TouchableWithoutFeedback>
         </Modal>
     );
 };

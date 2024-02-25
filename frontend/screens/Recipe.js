@@ -19,7 +19,7 @@ import backendApi from "../api/backendGateway";
 import LoadingScreen from "../components/LoadingScreen";
 import { useNavigation } from "@react-navigation/native";
 import RecipeContext from "../navigation/RecipeContext";
-import ReviewsModal from "../components/RatingModal";
+import RatingModal from "../components/RatingModal";
 
 const tagsTranslations = {
   RAPID_PREPARATION: "Preparación rápida",
@@ -45,9 +45,11 @@ export default function Recipe(props) {
   const navigation = useNavigation();
   const [isStepsAvailable, setIsStepsAvailable] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+
   const scrollX = new Animated.Value(0);
   const [loading, setLoading] = useState(true);
   const { recipe, setRecipe } = useContext(RecipeContext);
+  const [ recipeRating ,setRecipeRating ] = useState(0)
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -55,6 +57,7 @@ export default function Recipe(props) {
         const fetchedRecipe = await getAsyncRecipe(route.params.recipeId);
         setRecipe(fetchedRecipe);
         setLoading(false);
+        setRecipeRating(fetchedRecipe.rating)
       } catch (error) {
         console.error("Error al obtener la receta");
         navigation.replace("Home");
@@ -96,9 +99,11 @@ export default function Recipe(props) {
           { useNativeDriver: false },
         )}
       >
-        <ReviewsModal
+        <RatingModal
             isVisible={modalVisible}
             onClose={closeModal}
+            recipeId = {recipe.id}
+            setRecipeRating={setRecipeRating}
         />
         {recipeImages.map((image, index) => (
           <TouchableWithoutFeedback
@@ -192,7 +197,7 @@ export default function Recipe(props) {
                          style={{ justifyContent: "flex-start", alignItems: "center"}} >
                       <AirbnbRating
                         count={5}
-                        defaultRating={1}
+                        defaultRating={recipeRating}
                         isDisabled={true}
                         selectedColor={yummlyTheme.COLORS.GRADIENT_START}
                         size={20}
@@ -376,19 +381,6 @@ export default function Recipe(props) {
                   >
                     {recipe.username}
                   </Text>
-                </Block>
-                <Block style={{ borderColor: theme.COLORS.GREY, borderTopWidth:1, paddingTop:10, paddingBottom: 15, alignItems: "center", justifyContent: "flex-start" }}>
-                  <Text>¿Te gustó la receta?</Text>
-                  <Block row style={{ padding: 10 }}>
-                    <AirbnbRating
-                        count={5}
-                        defaultRating={0}
-                        selectedColor={yummlyTheme.COLORS.GRADIENT_START}
-                        size={35}
-                        showRating={false}
-                        style={{ paddingVertical: 10, width: 100 }}
-                    />
-                  </Block>
                 </Block>
               </Block>
           </Block>

@@ -118,10 +118,6 @@ const Login = () => {
   };
 
   const saveCredentials = async (accessToken, refreshToken, userId) => {
-    console.log("ACCESS",accessToken)
-    console.log("REFRESH",refreshToken)
-    console.log("USER",userId)
-
     navigation.replace('Home');
     await AsyncStorage.setItem("token", accessToken);
     await AsyncStorage.setItem("refresh", refreshToken);
