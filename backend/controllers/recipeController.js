@@ -2,6 +2,7 @@ const {
   createRecipe,
   getRecipes,
   getRecipe,
+  updateRecipe,
   searchRecipes,
 } = require("../services/recipeService");
 const { findUserById } = require("../services/userService");
@@ -16,6 +17,11 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 const uploadBase64ImageToS3 = async (base64Image, filename) => {
+  // Asegúrate de que base64Image es una cadena
+  if (typeof base64Image !== "string") {
+    throw new TypeError("El argumento base64Image debe ser una cadena");
+  }
+
   // Corrige la expresión regular para eliminar correctamente el prefijo de la cadena base64
   const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
   const buffer = Buffer.from(base64Data, "base64");
@@ -50,7 +56,7 @@ const create = async (req, res) => {
       // Iterar sobre todas las imágenes en el array y cargarlas a S3
       const uploadPromises = req.body.images.map(async (imageBase64, index) => {
         const filename = `${uuidv4()}_${index}.jpeg`; // Asegurar un nombre de archivo único para cada imagen
-        return uploadBase64ImageToS3(imageBase64, filename);
+        return uploadBase64ImageToS3(imageBase64.base64, filename);
       });
       imageUrls = await Promise.all(uploadPromises); // Esperar a que todas las promesas se resuelvan
     }
@@ -150,9 +156,60 @@ const getById = async (req, res) => {
   }
 };
 
+const update = async (req, res) => {
+  try {
+    const { recipeId } = req.params;
+    const { images, ...updateData } = req.body; // Asumiendo que las imágenes vienen en `images` en lugar de `newImages`
+
+    let processedImages = [];
+
+    if (images && images.length) {
+      const imageProcessingPromises = images.map(async (image, index) => {
+        // Verificar si el item es un objeto con un atributo base64
+        try {
+          if (image.base64) {
+            const filename = `${uuidv4()}_${index}.jpeg`; // Asegurar un nombre de archivo único
+            const imageUrl = await uploadBase64ImageToS3(
+              image.base64,
+              filename
+            ); // Subir y obtener la URL
+            return imageUrl; // Devolver la URL de la imagen cargada
+          } else {
+            throw new Error("No base64 attribute"); // Forzar caída al catch si no hay atributo base64
+          }
+        } catch (error) {
+          // Si el elemento no tiene atributo base64, se asume que es una URL o un objeto sin el atributo base64
+          return typeof image === "string" ? image : image.uri; // Devolver la URL directa o el uri del objeto
+        }
+      });
+
+      // Esperar que todas las promesas se resuelvan
+      processedImages = await Promise.all(imageProcessingPromises);
+    }
+
+    // Asignar las imágenes procesadas a `updateData`
+    updateData.images = processedImages;
+
+    console.log("Updated Data", updateData);
+
+    await updateRecipe(recipeId, updateData);
+
+    res.status(200).json({
+      message: "Receta actualizada con éxito",
+      images: updateData.images, // Devolver las imágenes procesadas
+    });
+  } catch (error) {
+    console.error(`Error al actualizar la receta: ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "Ha ocurrido un error al actualizar la receta",
+    });
+  }
+};
+
 module.exports = {
   create,
   getAll,
   getById,
   searchAll,
+  update,
 };

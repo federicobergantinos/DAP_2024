@@ -62,7 +62,6 @@ class CreateRecipe extends React.Component {
     const { route } = this.props;
     if (route.params && route.params.recipeId) {
       this.loadRecipe(route.params.recipeId);
-      console.log("route.params.recipeId", route.params.recipeId);
     }
   }
 
@@ -95,6 +94,7 @@ class CreateRecipe extends React.Component {
   };
 
   submitRecipe = async () => {
+    const { route } = this.props;
     this.setState({ isLoading: true });
     const userId = await AsyncStorage.getItem("userId");
 
@@ -131,6 +131,7 @@ class CreateRecipe extends React.Component {
     }
 
     const isEditing = !!this.state.recipeId;
+
     const recipeData = {
       userId: userId,
       title: title,
@@ -139,10 +140,7 @@ class CreateRecipe extends React.Component {
       steps: steps,
       tags: selectedTags,
       video: video,
-      images:
-        images.length > 0
-          ? images.map((img) => `data:image/jpeg;base64,${img.base64}`)
-          : [],
+      images: images,
       preparationTime: preparationTime,
       servingCount: servingCount,
       calories: calories,
@@ -169,7 +167,28 @@ class CreateRecipe extends React.Component {
         this.setState({ isLoading: false }); // Asegura que isLoading se establezca en false después de la operación
       }
     } else {
-      // Lógica para crear una nueva receta
+      try {
+        const response = await backendApi.recipesGateway.updateRecipe(
+          route.params.recipeId,
+          recipeData
+        );
+
+        if (response.statusCode === 200) {
+          alert("Receta actualizada con éxito.");
+          // this.props.navigation.replace("Recipe", {
+          //   recipeId: route.params.recipeId,
+          // });
+        } else {
+          alert(
+            "No se pudo actualizar la receta. Por favor, inténtalo de nuevo."
+          );
+        }
+      } catch (error) {
+        console.error("Error al actualizar la receta:", error);
+        alert("Ocurrió un error al intentar actualizar la receta.");
+      } finally {
+        this.setState({ isLoading: false });
+      }
     }
   };
 

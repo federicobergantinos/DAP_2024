@@ -85,6 +85,17 @@ const recipesGateway = {
   ): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
     const url = `${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${searchTerm}`;
     return requests.get(url);
+  },
+  updateRecipe: async (id: number, recipeData: any): Promise<{ response: any; statusCode: number }> => {
+    try {
+      const url = `${recipeBaseUrl}/${id}`;
+      const response = await requests.put(url, recipeData);
+      
+      return response;
+    } catch (error) {
+      console.error('Error al actualizar la receta:', error);
+      throw error;
+    }
   }
 };
 
