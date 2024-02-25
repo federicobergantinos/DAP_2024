@@ -24,9 +24,10 @@ api.interceptors.response.use(
       return response;
     },
     (error) => {
-      if (error.response && error.response.status === 401) {
-        return {response: error.response.data, status: error.response.statusCode}
+      if (error.response) {
+        return Promise.resolve({ response: null, statusCode: error.response.status });
       }
+      console.error(error)
       return Promise.reject(error);
     }
 );
@@ -35,7 +36,7 @@ const responseBodyWithStatusCode = (response: AxiosResponse): {response: any, st
   response: response.data,
   statusCode: response.status,
 });
-api.interceptors.response.use((response) => response);
+
 
 const requests = {
   get: (url: string) => api.get(url).then(responseBodyWithStatusCode),
@@ -51,6 +52,11 @@ const authUser = {
     refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> => requests.put('/v1/auth', {refreshToken: refreshToken})
 };
 
+const rating = {
+  rate: (userId: number, recipeId: number, value: number): Promise<{ response: any; statusCode: number }>  => requests.put('/v1/recipes/'+recipeId+'/ratings', { userId: userId, value: value}),
+  getUserRate: (recipeId: number, userId: number): Promise<{ response:any; statusCode: number }> => requests.get('/v1/recipes/'+recipeId+'/users/'+userId+'/ratings')
+};
+
 const recipesGateway = {
   createRecipe: async (recipeData) => {
     try {
@@ -64,15 +70,8 @@ const recipesGateway = {
     }
   },
 
-  getRecipeById: (
-    id: number,
-  ): Promise<{ response: RecipeDTO; statusCode: number }> =>
-    requests.get(recipeBaseUrl + "/" + id),
-
-  getAll: (
-    page = 0,
-    tag,
-  ): Promise<{ response: RecipesDTO; statusCode: number }> => {
+  getRecipeById: ( id: number,): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id),
+  getAll: (page = 0, tag,): Promise<{ response: RecipesDTO; statusCode: number }> => {
     const url = tag
       ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}`
       : `${recipeBaseUrl}/?page=${page}&limit=10`;
@@ -100,17 +99,11 @@ const recipesGateway = {
 };
 
 const users = {
-  like: (
-    userId: number,
-    recipeId: number,
-  ): Promise<{ response: any; statusCode: number }> =>
-    requests.post(usersBaseUrl + "/" + userId + "/favorites", {
-      recipeId: recipeId,
-    }),
-  dislike: (
-    userId: number,
-    recipeId: number,
-  ): Promise<{ response: any; statusCode: number }> =>
+  like: ( userId: number, recipeId: number,): Promise<{ response: any; statusCode: number }> =>
+    requests.post(usersBaseUrl + "/" + userId + "/favorites",
+        {recipeId: recipeId,}
+    ),
+  dislike: ( userId: number, recipeId: number,): Promise<{ response: any; statusCode: number }> =>
     requests.delete(usersBaseUrl + "/" + userId + "/favorites/" + recipeId),
 };
 
@@ -131,4 +124,4 @@ const getToken = async (): Promise<string> => {
     return "";
   }
 };
-export default { authUser, recipesGateway, users };
+export default { authUser, recipesGateway, users, rating };

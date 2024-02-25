@@ -178,12 +178,6 @@ const Header = ({
   };
 
   const renderRight = () => {
-    if (title === "Title") {
-      return [
-        <ProfileButton key="profile-title" isWhite={white} />,
-        <SettingsButton key="settings-title" isWhite={white} />,
-      ];
-    }
     if (title === "Recipe") {
       return [
         <RenderEditButton
@@ -191,8 +185,8 @@ const Header = ({
           recipeId={props.recipeId}
           isOwner={isOwner}
         />,
-        <RenderShareButton key="share-recipe" />,
-        <RenderFavoriteButton key="favorite-recipe" />,
+        <RenderShareButton key="share-button" />,
+        <RenderFavoriteButton key="favorite-button" />,
       ];
     }
 

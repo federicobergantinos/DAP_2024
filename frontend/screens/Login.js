@@ -64,7 +64,6 @@ const Login = () => {
   const authenticate = async () => {
     try {
       setIsLoading(true);
-
       const userInfo = await GoogleSignin.signIn();
       const { idToken, user } = userInfo;
 
@@ -95,7 +94,7 @@ const Login = () => {
       await saveCredentials(
         response.accessToken,
         response.refreshToken,
-        response.userId
+        response.id
       );
     } else if (statusCode === undefined) {
       try {
@@ -125,7 +124,6 @@ const Login = () => {
   };
 
   const logOut = async () => {
-    console.log("AFUERA");
     await clearAsyncStorage();
     await GoogleSignin.signOut();
     setIsLoading(false);
@@ -136,10 +134,6 @@ const Login = () => {
   };
 
   const saveCredentials = async (accessToken, refreshToken, userId) => {
-    console.log("ACCESS", accessToken);
-    console.log("REFRESH", refreshToken);
-    console.log("USER", userId);
-
     navigation.replace("Home");
     await AsyncStorage.setItem("token", accessToken);
     await AsyncStorage.setItem("refresh", refreshToken);
