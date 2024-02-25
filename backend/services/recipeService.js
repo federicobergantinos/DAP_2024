@@ -65,6 +65,7 @@ const createRecipe = async (recipeData) => {
           {
             recipeId: recipe.id,
             data: url,
+            type: "image",
           },
           { transaction }
         )
@@ -78,6 +79,7 @@ const createRecipe = async (recipeData) => {
         {
           recipeId: recipe.id,
           data: video,
+          type: "video",
         },
         { transaction }
       );
@@ -120,7 +122,8 @@ const getRecipes = async (queryData) => {
     {
       model: Media,
       as: "media",
-      attributes: ["data"],
+      attributes: ["data", "type"],
+      where: { type: "image" },
     },
     {
       model: Tag,
@@ -145,7 +148,6 @@ const getRecipes = async (queryData) => {
     offset: queryData.offset,
     include: includeOptions,
   });
-
   return recipes;
 };
 
@@ -163,7 +165,8 @@ const searchRecipes = async ({ searchTerm, limit, offset }) => {
       {
         model: Media,
         as: "media",
-        attributes: ["data"], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
+        attributes: ["data", "type"], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
+        where: { type: "image" },
         limit: 1, // Intenta limitar a 1 el resultado de media directamente en la consulta
       },
     ],
@@ -188,7 +191,7 @@ const getRecipe = async (recipeId) => {
       {
         model: Media,
         as: "media",
-        attributes: ["data"],
+        attributes: ["data", "type"],
       },
     ],
   });

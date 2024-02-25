@@ -21,35 +21,49 @@ export default renderMainInformation = ({
     onUpdate({ images: newImages });
   };
 
-  const renderThumbnailItem = ({ item, index }) => (
-    <View style={{ marginRight: 10, position: "relative", marginTop: 10 }}>
-      <Image
-        source={{ uri: item.uri }}
-        style={{ width: 75, height: 75, borderRadius: 5 }}
-      />
-      <TouchableOpacity
-        onPress={() => handleDeleteImage(index)}
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          backgroundColor: "grey",
-          borderRadius: 15,
-          width: 20,
-          height: 20,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Icon
-          name="cross"
-          family="Entypo"
-          size={20}
-          color={yummlyTheme.COLORS.ICON}
+  const getImageSource = (item) => {
+    // Intenta acceder a item.uri, si falla (porque item no es un objeto o no tiene .uri), usa item directamente
+    try {
+      if (item.uri && typeof item.uri === "string") {
+        return { uri: item.uri };
+      }
+    } catch (error) {}
+    return { uri: item };
+  };
+
+  const renderThumbnailItem = ({ item, index }) => {
+    const imageSource = getImageSource(item);
+
+    return (
+      <View style={{ marginRight: 10, position: "relative", marginTop: 10 }}>
+        <Image
+          source={imageSource}
+          style={{ width: 75, height: 75, borderRadius: 5 }}
         />
-      </TouchableOpacity>
-    </View>
-  );
+        <TouchableOpacity
+          onPress={() => handleDeleteImage(index)}
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            backgroundColor: "grey",
+            borderRadius: 15,
+            width: 20,
+            height: 20,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Icon
+            name="cross"
+            family="Entypo"
+            size={20}
+            color={yummlyTheme.COLORS.ICON}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   handleImagePicked = async () => {
     try {

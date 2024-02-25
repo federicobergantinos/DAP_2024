@@ -8,22 +8,22 @@ import Icon from "../../components/Icon.js";
 import Input from "../../components/Input.js";
 import styles from "./CreateRecipeStyles.js";
 
-export default renderIngredientes = ({ ingredientes, onUpdate }) => {
+export default renderIngredientes = ({ ingredients, onUpdate }) => {
   addIngrediente = () => {
     onUpdate((prevState) => ({
-      ingredientes: [...prevState.ingredientes, ""], // Añade un nuevo ingrediente vacío
+      ingredients: [...prevState.ingredients, ""],
     }));
   };
 
   handleIngredienteChange = (text, index) => {
-    const newIngredientes = [...ingredientes];
+    const newIngredientes = [...ingredients];
     newIngredientes[index] = text;
-    onUpdate({ ingredientes: newIngredientes });
+    onUpdate({ ingredients: newIngredientes });
   };
 
   removeIngrediente = (indexToRemove) => {
     onUpdate((prevState) => ({
-      ingredientes: prevState.ingredientes.filter(
+      ingredients: prevState.ingredients.filter(
         (_, index) => index !== indexToRemove
       ),
     }));
@@ -33,7 +33,7 @@ export default renderIngredientes = ({ ingredientes, onUpdate }) => {
       <Text bold size={14} color="#525F7F" style={{ marginTop: 3 }}>
         Ingredientes
       </Text>
-      {ingredientes.map((ingrediente, index) => (
+      {ingredients.map((ingrediente, index) => (
         <Block
           key={index}
           style={{ flexDirection: "row", alignItems: "center" }}
@@ -61,7 +61,7 @@ export default renderIngredientes = ({ ingredientes, onUpdate }) => {
               color={yummlyTheme.COLORS.ICON}
             />
           </TouchableOpacity>
-          {index === ingredientes.length - 1 && (
+          {index === ingredients.length - 1 && (
             <TouchableOpacity style={styles.addButton} onPress={addIngrediente}>
               <Icon
                 name="plus"

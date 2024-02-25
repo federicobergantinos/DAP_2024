@@ -8,23 +8,23 @@ import Icon from "../../components/Icon.js";
 import Input from "../../components/Input.js";
 import styles from "./CreateRecipeStyles.js";
 
-renderPasos = ({ pasos, onUpdate }) => {
+renderPasos = ({ steps, onUpdate }) => {
   addPaso = () => {
     onUpdate((prevState) => ({
-      pasos: [...prevState.pasos, ""],
+      steps: [...prevState.steps, ""],
     }));
   };
 
   removePaso = (indexToRemove) => {
     onUpdate((prevState) => ({
-      pasos: prevState.pasos.filter((_, index) => index !== indexToRemove),
+      steps: prevState.steps.filter((_, index) => index !== indexToRemove),
     }));
   };
 
   handlePasoChange = (text, index) => {
-    const newPasos = [...pasos];
+    const newPasos = [...steps];
     newPasos[index] = text;
-    onUpdate({ pasos: newPasos });
+    onUpdate({ steps: newPasos });
   };
 
   return (
@@ -32,7 +32,7 @@ renderPasos = ({ pasos, onUpdate }) => {
       <Text bold size={14} color="#525F7F" style={{ marginTop: 3 }}>
         Pasos
       </Text>
-      {pasos.map((paso, index) => (
+      {steps.map((paso, index) => (
         <Block
           key={index}
           style={{ flexDirection: "row", alignItems: "center" }}
@@ -60,7 +60,7 @@ renderPasos = ({ pasos, onUpdate }) => {
               color={yummlyTheme.COLORS.ICON}
             />
           </TouchableOpacity>
-          {index === pasos.length - 1 && (
+          {index === steps.length - 1 && (
             <TouchableOpacity style={styles.addButton} onPress={addPaso}>
               <Icon
                 name="plus"

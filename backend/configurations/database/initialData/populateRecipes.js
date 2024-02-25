@@ -50,6 +50,7 @@ const populateRecipes = async () => {
       const media = await Media.create({
         data: image,
         recipeId: recipe.id, // Asociar el registro de Media con la receta mediante la clave externa
+        type: "image",
       });
 
       // Buscar y asociar etiquetas existentes con la receta

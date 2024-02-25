@@ -86,8 +86,7 @@ const getAll = async (req, res) => {
     const response = recipes.map((recipe) => {
       const { id, title, media, tags } = recipe;
 
-      // Filtra los elementos de media que contienen 'youtube' en su URL y selecciona la primera imagen, si existe
-      const filteredMedia = media.filter((m) => !m.data.includes("youtube"));
+      const filteredMedia = media.filter((m) => m.type === "image");
       const firstImage = filteredMedia.length > 0 ? filteredMedia[0].data : "";
 
       // Mapea los tags a la forma deseada, por ejemplo, un arreglo de nombres de tags

@@ -24,8 +24,8 @@ class CreateRecipe extends React.Component {
   state = {
     selectedTags: [],
     isMultiSelectOpen: false,
-    ingredientes: [""],
-    pasos: [""],
+    ingredients: [""],
+    steps: [""],
     title: "",
     description: "",
     preparationTime: null,
@@ -42,8 +42,8 @@ class CreateRecipe extends React.Component {
   // state = {
   //   selectedTags: ["RAPID_PREPARATION"], // Asume que "1" es un ID válido para un tag existente
   //   isMultiSelectOpen: false,
-  //   ingredientes: ["Pan de papa", "Carne picada", "Chedar"],
-  //   pasos: ["Cortar el pan", "Cocinar las hamburgesas", "Poner el chedar"],
+  //   ingredients: ["Pan de papa", "Carne picada", "Chedar"],
+  //   steps: ["Cortar el pan", "Cocinar las hamburgesas", "Poner el chedar"],
   //   title: "Hamburgesa Crispy",
   //   description: "Una de las hambursas mas ricas que hay, una delicia.",
   //   preparationTime: "20",
@@ -79,13 +79,15 @@ class CreateRecipe extends React.Component {
   loadRecipe = async (recipeId) => {
     try {
       const fetchedRecipe = await this.getAsyncRecipe(recipeId);
+
       if (fetchedRecipe) {
         this.setState({
           ...fetchedRecipe,
+          images: fetchedRecipe.media,
+          selectedTags: fetchedRecipe.tags,
           recipeId: recipeId,
         });
       }
-      console.log(state);
     } catch (error) {
       console.error("Error al cargar la receta:", error);
       // Manejar el error, por ejemplo, redirigiendo al usuario
@@ -98,8 +100,8 @@ class CreateRecipe extends React.Component {
 
     const {
       selectedTags,
-      ingredientes,
-      pasos,
+      ingredients,
+      steps,
       title,
       description,
       preparationTime,
@@ -119,10 +121,10 @@ class CreateRecipe extends React.Component {
       calories === null ||
       proteins === null ||
       totalFats === null ||
-      // images.length === 0 ||
+      images.length === 0 ||
       video === null ||
-      ingredientes.some((i) => !i.trim()) ||
-      pasos.some((p) => !p.trim())
+      ingredients.some((i) => !i.trim()) ||
+      steps.some((p) => !p.trim())
     ) {
       alert("Por favor, completa todos los campos.");
       return;
@@ -133,8 +135,8 @@ class CreateRecipe extends React.Component {
       userId: userId,
       title: title,
       description: description,
-      ingredients: ingredientes,
-      steps: pasos,
+      ingredients: ingredients,
+      steps: steps,
       tags: selectedTags,
       video: video,
       images:
@@ -237,18 +239,18 @@ class CreateRecipe extends React.Component {
         }),
     },
     {
-      key: "ingredientes",
+      key: "ingredients",
       render: () =>
         renderIngredientes({
-          ingredientes: this.state.ingredientes,
+          ingredients: this.state.ingredients,
           onUpdate: this.updateState,
         }),
     },
     {
-      key: "pasos",
+      key: "steps",
       render: () =>
         renderPasos({
-          pasos: this.state.pasos,
+          steps: this.state.steps,
           onUpdate: this.updateState,
         }),
     },
