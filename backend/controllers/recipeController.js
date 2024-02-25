@@ -42,6 +42,7 @@ const uploadBase64ImageToS3 = async (base64Image, filename) => {
 };
 
 const { v4: uuidv4 } = require("uuid");
+const {getRecipeRating} = require("../services/ratingService");
 
 const create = async (req, res) => {
   try {
@@ -135,6 +136,7 @@ const getById = async (req, res) => {
     const isValidFavorite = await isFavorite(user.id, recipeId);
     recipe.username = user.name + " " + user.surname;
     recipe.userImage = user.photoUrl;
+    const rating = await getRecipeRating(recipeId)
     const data = recipe.media.map((m) => m.data);
     res.status(200).json({
       ...recipe,
@@ -142,6 +144,7 @@ const getById = async (req, res) => {
       userImage: user.photoUrl,
       media: data,
       isFavorite: isValidFavorite,
+      rating: rating
     });
   } catch (error) {
     console.error(` ${error}`);
