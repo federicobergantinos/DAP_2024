@@ -19,7 +19,7 @@ const dbConnection = async () => {
     await sequelize.authenticate();
     console.log("Database connected!");
 
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
 
     // Sincronizar modelos con la base de datos
     await User.sync();

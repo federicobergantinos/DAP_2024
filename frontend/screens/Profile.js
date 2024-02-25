@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -15,6 +15,7 @@ import { Button, Header } from "../components";
 import { Images, yummlyTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
 import { openImagePickerAsync } from "../components/ImagePicker.js";
+import backendGateway from "../api/backendGateway";
 
 const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
@@ -26,6 +27,23 @@ export default class Profile extends React.Component {
       show: false,
     };
   }
+
+  /*async componentDidMount() {
+    try {
+      // Aquí debes obtener el ID del usuario actual
+      const userId = getUserId(); // Por ejemplo, reemplaza esto con la función para obtener el ID del usuario actual
+      const response = await backendGateway.users.getFavoriteCount(userId);
+      if (response.statusCode === 200) {
+        this.setState({ favoriteCount: response.response.favoriteCount });
+      } else {
+        console.error("Error al obtener la cantidad de favoritos:", response);
+      }
+    } catch (error) {
+      console.error("Error al obtener la cantidad de favoritos:", error);
+    }
+  }
+  */
+ 
   render() {
     const { navigation } = this.props;
     return (
@@ -49,21 +67,22 @@ export default class Profile extends React.Component {
                   <View style={styles.parent}>
                     <TouchableOpacity
                       style={styles.container}
-                      onPress={() => { this.setState({ show: true }) }}
+                      onPress={() => {
+                        this.setState({ show: true });
+                      }}
                     >
                       <Text>Adjuntar Imagen</Text>
                     </TouchableOpacity>
-                    <Text>       </Text>
+                    <Text> </Text>
                     <TouchableOpacity
                       style={styles.container}
-                      onPress={() => navigation.navigate('Home')} /* PONER SCREEN MODIFICAR PERFIL */
+                      onPress={() =>
+                        navigation.navigate("Home")
+                      } /* PONER SCREEN MODIFICAR PERFIL */
                     >
                       <Text>Modificar Perfil</Text>
                     </TouchableOpacity>
-
                   </View>
-
-                  
                 </Block>
                 <Modal transparent={true} visible={this.state.show}>
                   <View style={styles.editarPerfilPopup}>
