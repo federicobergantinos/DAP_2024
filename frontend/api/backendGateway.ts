@@ -6,7 +6,7 @@ import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
 // const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
-const api = axios.create({ baseURL: "http://192.168.0.189:8080" });
+const api = axios.create({ baseURL: "http://192.168.1.189:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
@@ -77,10 +77,25 @@ const recipesGateway = {
       : `${recipeBaseUrl}/?page=${page}&limit=10`;
     return requests.get(url);
   },
-  searchRecipes: (searchTerm = "", page = 0, limit = 10,): Promise<{
-    response: RecipesSearchDTO;
-    statusCode: number
-  }> => requests.get(`${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${searchTerm}`)
+  searchRecipes: (
+    searchTerm = "",
+    page = 0,
+    limit = 10,
+  ): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
+    const url = `${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${searchTerm}`;
+    return requests.get(url);
+  },
+  updateRecipe: async (id: number, recipeData: any): Promise<{ response: any; statusCode: number }> => {
+    try {
+      const url = `${recipeBaseUrl}/${id}`;
+      const response = await requests.put(url, recipeData);
+      
+      return response;
+    } catch (error) {
+      console.error('Error al actualizar la receta:', error);
+      throw error;
+    }
+  }
 };
 
 const users = {

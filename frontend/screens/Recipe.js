@@ -49,7 +49,7 @@ export default function Recipe(props) {
   const scrollX = new Animated.Value(0);
   const [loading, setLoading] = useState(true);
   const { recipe, setRecipe } = useContext(RecipeContext);
-  const [ recipeRating ,setRecipeRating ] = useState(0)
+  const [recipeRating, setRecipeRating] = useState(0);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -57,7 +57,7 @@ export default function Recipe(props) {
         const fetchedRecipe = await getAsyncRecipe(route.params.recipeId);
         setRecipe(fetchedRecipe);
         setLoading(false);
-        setRecipeRating(fetchedRecipe.rating)
+        setRecipeRating(fetchedRecipe.rating);
       } catch (error) {
         console.error("Error al obtener la receta");
         navigation.replace("Home");
@@ -96,14 +96,14 @@ export default function Recipe(props) {
         showsHorizontalScrollIndicator={false}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false },
+          { useNativeDriver: false }
         )}
       >
         <RatingModal
-            isVisible={modalVisible}
-            onClose={closeModal}
-            recipeId = {recipe.id}
-            setRecipeRating={setRecipeRating}
+          isVisible={modalVisible}
+          onClose={closeModal}
+          recipeId={recipe.id}
+          setRecipeRating={setRecipeRating}
         />
         {recipeImages.map((image, index) => (
           <TouchableWithoutFeedback
@@ -170,219 +170,227 @@ export default function Recipe(props) {
             </Block>
           </Block>
           <Block flex style={styles.options}>
-
-              <Block
-                style={{
-                  paddingHorizontal: theme.SIZES.BASE,
-                  paddingTop: theme.SIZES.BASE * 2,
-                }}
+            <Block
+              style={{
+                paddingHorizontal: theme.SIZES.BASE,
+                paddingTop: theme.SIZES.BASE * 2,
+              }}
+            >
+              <Text
+                size={28}
+                style={{ paddingBottom: 3, fontFamily: "open-sans-regular" }}
+                color={yummlyTheme.COLORS.TEXT}
               >
-                <Text
-                  size={28}
-                  style={{ paddingBottom: 3, fontFamily: "open-sans-regular" }}
-                  color={yummlyTheme.COLORS.TEXT}
-                >
-                  {recipe.title}
-                </Text>
-                <Text
-                  size={18}
-                  style={{ paddingBottom: 10, fontFamily: "open-sans-regular" }}
-                  color={yummlyTheme.COLORS.MUTED}
-                >
-                  {recipe.description}
-                </Text>
-                <TouchableOpacity onPress={openModal}>
-                  <Block flex
-                         flexDirection="row"
-                         style={{ justifyContent: "flex-start", alignItems: "center"}} >
-                      <AirbnbRating
-                        count={5}
-                        defaultRating={recipeRating}
-                        isDisabled={true}
-                        selectedColor={yummlyTheme.COLORS.GRADIENT_START}
-                        size={20}
-                        showRating={false}
-                        style={{ paddingVertical: 10, width: 100 }}
-                      />
-                      <Text
-                          size={15}
-                          family="MaterialIcons"
-                          name="edit"
-                          color={yummlyTheme.COLORS.GRADIENT_START}>
-                        Calificar
-                      </Text>
-                  </Block>
-                </TouchableOpacity>
+                {recipe.title}
+              </Text>
+              <Text
+                size={18}
+                style={{ paddingBottom: 10, fontFamily: "open-sans-regular" }}
+                color={yummlyTheme.COLORS.MUTED}
+              >
+                {recipe.description}
+              </Text>
+              <TouchableOpacity onPress={openModal}>
                 <Block
                   flex
                   flexDirection="row"
-                  flexWrap="wrap"
-                  style={{ paddingTop: 10, paddingBottom: 10, gap: 5 }}
+                  style={{ justifyContent: "flex-start", alignItems: "center" }}
                 >
-                  {recipe.tags.map((tag, index) => (
-                    <PillContainer key={index}>
-                      {tagsTranslations[tag]}{" "}
-                    </PillContainer>
-                  ))}
-                </Block>
-                <Block
-                  flex
-                  flexDirection="row"
-                  style={{ justifyContent: "flex-start" }} >
-                  <Block
-                    flex
-                    flexDirection="row"
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                      gap: 5,
-                    }}
-                  >
-                    <Icon
-                      family="MaterialIcons"
-                      name="access-time"
-                      size={30}
-                      color={yummlyTheme.COLORS.MUTED}
-                    />
-                    <Text color={yummlyTheme.COLORS.MUTED}>
-                      {recipe.preparationTime}
-                    </Text>
-                  </Block>
-                  <Block
-                    flex
-                    flexDirection="row"
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                      gap: 5,
-                    }}
-                  >
-                    <Icon
-                      family="MaterialIcons"
-                      name="people"
-                      size={30}
-                      color={yummlyTheme.COLORS.MUTED}
-                    />
-                    <Text color={yummlyTheme.COLORS.MUTED}>
-                      {recipe.servingCount}
-                    </Text>
-                  </Block>
-                </Block>
-                <Block style={{ paddingTop: theme.SIZES.BASE }}>
-                  <Block
-                    flex
-                    style={{
-                      width: "100%",
-                      borderWidth: 1,
-                      borderColor: theme.COLORS.GREY,
-                      paddingBottom: theme.SIZES.BASE,
-                    }}
-                  >
-                    <Block
-                      flex
-                      flexDirection="row"
-                      style={{ padding: 0, margin: 0, gap: 0 }}
-                    >
-                      <Button
-                        disabled={isStepsAvailable}
-                        shadowless
-                        borderless
-                        style={[styles.buttonTab, buttonStyle1]}
-                        onPress={toggleStepsAvailability}
-                      >
-                        <Text size={20} color={textColor1}>
-                          Pasos
-                        </Text>
-                      </Button>
-                      <Button
-                        disabled={!isStepsAvailable}
-                        shadowless
-                        borderless
-                        style={[styles.buttonTab, buttonStyle2]}
-                        onPress={toggleStepsAvailability}
-                      >
-                        <Text size={20} color={textColor2}>
-                          Ingredientes
-                        </Text>
-                      </Button>
-                    </Block>
-                    <Text
-                      size={15}
-                      style={{
-                        paddingTop: 10,
-                        paddingHorizontal: 10,
-                        fontFamily: "open-sans-regular",
-                      }}
-                      color={yummlyTheme.COLORS.TEXT}
-                    >
-                      {isStepsAvailable
-                        ? recipe.steps.map((step, index) => (
-                            <Text key={index}>
-                              {index + 1 + ". " + step}
-                              {"\n"}
-                            </Text>
-                          ))
-                        : recipe.ingredients.map((ingredient, index) => (
-                            <Text key={index}>
-                              {index + 1 + ". " + ingredient}
-                              {"\n"}
-                            </Text>
-                          ))}
-                    </Text>
-                  </Block>
-                  <Block
-                    style={{ marginTop: 15, fontFamily: "open-sans-regular" }}
-                  >
-                    <Text
-                      size={15}
-                      style={{
-                        fontWeight: "bold",
-                        paddingBottom: 3,
-                        fontFamily: "open-sans-regular",
-                      }}
-                      color={yummlyTheme.COLORS.TEXT}
-                    >
-                      Calorias: {recipe.calories}
-                    </Text>
-                    <Text
-                      size={15}
-                      style={{
-                        fontWeight: "bold",
-                        paddingBottom: 3,
-                        fontFamily: "open-sans-regular",
-                      }}
-                      color={yummlyTheme.COLORS.TEXT}
-                    >
-                      Proteinas: {recipe.proteins}
-                    </Text>
-                    <Text
-                      size={15}
-                      style={{
-                        fontWeight: "bold",
-                        paddingBottom: 3,
-                        fontFamily: "open-sans-regular",
-                      }}
-                      color={yummlyTheme.COLORS.TEXT}
-                    >
-                      Grasas totales: {recipe.totalFats}
-                    </Text>
-                  </Block>
-                </Block>
-                <Block
-                  flex
-                  flexDirection="row"
-                  style={{ paddingTop:10, paddingBottom: 5, alignItems: "center", justifyContent: "flex-start" }}
-                >
-                  <Image src={recipe.userImage} style={styles.avatar} />
+                  <AirbnbRating
+                    count={5}
+                    defaultRating={recipeRating}
+                    isDisabled={true}
+                    selectedColor={yummlyTheme.COLORS.GRADIENT_START}
+                    size={20}
+                    showRating={false}
+                    style={{ paddingVertical: 10, width: 100 }}
+                  />
                   <Text
-                    style={{ fontFamily: "open-sans-regular", height: 40 }}
-                    size={14}
-                    color={yummlyTheme.COLORS.TEXT}
+                    size={15}
+                    family="MaterialIcons"
+                    name="edit"
+                    color={yummlyTheme.COLORS.GRADIENT_START}
                   >
-                    {recipe.username}
+                    Calificar
+                  </Text>
+                </Block>
+              </TouchableOpacity>
+              <Block
+                flex
+                flexDirection="row"
+                flexWrap="wrap"
+                style={{ paddingTop: 10, paddingBottom: 10, gap: 5 }}
+              >
+                {recipe.tags.map((tag, index) => (
+                  <PillContainer key={index}>
+                    {tagsTranslations[tag]}{" "}
+                  </PillContainer>
+                ))}
+              </Block>
+              <Block
+                flex
+                flexDirection="row"
+                style={{ justifyContent: "flex-start" }}
+              >
+                <Block
+                  flex
+                  flexDirection="row"
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    gap: 5,
+                  }}
+                >
+                  <Icon
+                    family="MaterialIcons"
+                    name="access-time"
+                    size={30}
+                    color={yummlyTheme.COLORS.MUTED}
+                  />
+                  <Text color={yummlyTheme.COLORS.MUTED}>
+                    {recipe.preparationTime}
+                  </Text>
+                </Block>
+                <Block
+                  flex
+                  flexDirection="row"
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    gap: 5,
+                  }}
+                >
+                  <Icon
+                    family="MaterialIcons"
+                    name="people"
+                    size={30}
+                    color={yummlyTheme.COLORS.MUTED}
+                  />
+                  <Text color={yummlyTheme.COLORS.MUTED}>
+                    {recipe.servingCount}
                   </Text>
                 </Block>
               </Block>
+              <Block style={{ paddingTop: theme.SIZES.BASE }}>
+                <Block
+                  flex
+                  style={{
+                    width: "100%",
+                    borderWidth: 1,
+                    borderColor: theme.COLORS.GREY,
+                    paddingBottom: theme.SIZES.BASE,
+                  }}
+                >
+                  <Block
+                    flex
+                    flexDirection="row"
+                    style={{ padding: 0, margin: 0, gap: 0 }}
+                  >
+                    <Button
+                      disabled={isStepsAvailable}
+                      shadowless
+                      borderless
+                      style={[styles.buttonTab, buttonStyle1]}
+                      onPress={toggleStepsAvailability}
+                    >
+                      <Text size={20} color={textColor1}>
+                        Pasos
+                      </Text>
+                    </Button>
+                    <Button
+                      disabled={!isStepsAvailable}
+                      shadowless
+                      borderless
+                      style={[styles.buttonTab, buttonStyle2]}
+                      onPress={toggleStepsAvailability}
+                    >
+                      <Text size={20} color={textColor2}>
+                        Ingredientes
+                      </Text>
+                    </Button>
+                  </Block>
+                  <Text
+                    size={15}
+                    style={{
+                      paddingTop: 10,
+                      paddingHorizontal: 10,
+                      fontFamily: "open-sans-regular",
+                    }}
+                    color={yummlyTheme.COLORS.TEXT}
+                  >
+                    {isStepsAvailable
+                      ? recipe.steps.map((step, index) => (
+                          <Text key={index}>
+                            {index + 1 + ". " + step}
+                            {"\n"}
+                          </Text>
+                        ))
+                      : recipe.ingredients.map((ingredient, index) => (
+                          <Text key={index}>
+                            {index + 1 + ". " + ingredient}
+                            {"\n"}
+                          </Text>
+                        ))}
+                  </Text>
+                </Block>
+                <Block
+                  style={{ marginTop: 15, fontFamily: "open-sans-regular" }}
+                >
+                  <Text
+                    size={15}
+                    style={{
+                      fontWeight: "bold",
+                      paddingBottom: 3,
+                      fontFamily: "open-sans-regular",
+                    }}
+                    color={yummlyTheme.COLORS.TEXT}
+                  >
+                    Calorias: {recipe.calories}
+                  </Text>
+                  <Text
+                    size={15}
+                    style={{
+                      fontWeight: "bold",
+                      paddingBottom: 3,
+                      fontFamily: "open-sans-regular",
+                    }}
+                    color={yummlyTheme.COLORS.TEXT}
+                  >
+                    Proteinas: {recipe.proteins}
+                  </Text>
+                  <Text
+                    size={15}
+                    style={{
+                      fontWeight: "bold",
+                      paddingBottom: 3,
+                      fontFamily: "open-sans-regular",
+                    }}
+                    color={yummlyTheme.COLORS.TEXT}
+                  >
+                    Grasas totales: {recipe.totalFats}
+                  </Text>
+                </Block>
+              </Block>
+              <Block
+                flex
+                flexDirection="row"
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 5,
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <Image src={recipe.userImage} style={styles.avatar} />
+                <Text
+                  style={{ fontFamily: "open-sans-regular", height: 40 }}
+                  size={14}
+                  color={yummlyTheme.COLORS.TEXT}
+                >
+                  {recipe.username}
+                </Text>
+              </Block>
+            </Block>
           </Block>
         </Block>
       </ScrollView>
@@ -440,5 +448,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: theme.SIZES.BASE,
     marginRight: 8,
-  }
+  },
 });

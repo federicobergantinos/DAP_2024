@@ -83,7 +83,7 @@ const Header = ({
 
   useEffect(() => {
     const checkOwner = async () => {
-      if(recipe !== null) {
+      if (recipe !== null) {
         const userId = await getUserId();
         setCurrentUserId(userId);
         setIsOwner(userId.toString() === recipe.userId.toString());
@@ -127,14 +127,15 @@ const Header = ({
     }
   };
 
-  const RenderEditButton = () => {
-    if (!isOwner) return null;
+  const RenderEditButton = ({ recipeId }) => {
+    // if (!isOwner) return null;
     return (
       <TouchableOpacity style={{ paddingHorizontal: 5 }}>
         <Icon
           family="MaterialIcons"
           name="edit"
           size={25}
+          onPress={() => navigation.navigate("CreateRecipe", { recipeId })}
           color={yummlyTheme.COLORS.WHITE}
         />
       </TouchableOpacity>
@@ -179,9 +180,13 @@ const Header = ({
   const renderRight = () => {
     if (title === "Recipe") {
       return [
-        <RenderEditButton key="edit-button" isOwner={isOwner} />,
+        <RenderEditButton
+          key="edit-recipe"
+          recipeId={props.recipeId}
+          isOwner={isOwner}
+        />,
         <RenderShareButton key="share-button" />,
-        <RenderFavoriteButton key="favorite-button"/>,
+        <RenderFavoriteButton key="favorite-button" />,
       ];
     }
 

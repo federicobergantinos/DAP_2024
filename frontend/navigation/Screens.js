@@ -31,13 +31,6 @@ function HomeStack(props) {
       }}
     >
       <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name="Home"
         component={Home}
         options={{
@@ -54,21 +47,28 @@ function HomeStack(props) {
         }}
       />
       <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="Recipe"
         component={Recipe}
-        options={{
-          header: ({ navigation, scene }) => (
+        options={({ route }) => ({
+          header: ({ navigation }) => (
             <Header
               title="Recipe"
               white
               back
+              recipeId={route.params.recipeId}
               transparent
               navigation={navigation}
-              scene={scene}
             />
           ),
           headerTransparent: true,
-        }}
+        })}
       />
       <Stack.Screen
         name="Gallery"
