@@ -20,6 +20,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import { useNavigation } from "@react-navigation/native";
 import RecipeContext from "../navigation/RecipeContext";
 import RatingModal from "../components/RatingModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const tagsTranslations = {
   RAPID_PREPARATION: "Preparación rápida",
@@ -36,8 +37,9 @@ const tagsTranslations = {
 const { height, width } = Dimensions.get("window");
 
 const getAsyncRecipe = async (recipeId) => {
+  const userId = await AsyncStorage.getItem("userId")
   const { response, statusCode } =
-    await backendApi.recipesGateway.getRecipeById(recipeId);
+    await backendApi.recipesGateway.getRecipeById(recipeId,userId);
   return response;
 };
 export default function Recipe(props) {

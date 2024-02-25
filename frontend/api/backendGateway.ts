@@ -70,7 +70,7 @@ const recipesGateway = {
     }
   },
 
-  getRecipeById: ( id: number,): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id),
+  getRecipeById: ( id: number, userId: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id + "?userId=" + userId),
   getAll: (page = 0, tag,): Promise<{ response: RecipesDTO; statusCode: number }> => {
     const url = tag
       ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}`
@@ -89,7 +89,7 @@ const recipesGateway = {
     try {
       const url = `${recipeBaseUrl}/${id}`;
       const response = await requests.put(url, recipeData);
-      
+
       return response;
     } catch (error) {
       console.error('Error al actualizar la receta:', error);
