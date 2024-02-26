@@ -10,6 +10,7 @@ const { isValidUser } = require("./userService");
 const NotFound = require("../Errors/NotFound");
 const { Op } = require("sequelize");
 const sequelize = require("../configurations/database/sequelizeConnection");
+const {getRecipeRating} = require("./ratingService");
 
 // Función para crear una receta y asociarla con tags y medios
 const createRecipe = async (recipeData) => {
@@ -117,7 +118,6 @@ const createRecipe = async (recipeData) => {
 };
 
 const getRecipes = async (queryData) => {
-  // Inicializa las opciones de inclusión con relaciones que siempre se incluirán
   let includeOptions = [
     {
       model: Media,
@@ -132,23 +132,26 @@ const getRecipes = async (queryData) => {
     },
   ];
 
-  // Si se proporcionó un tag, ajusta la consulta para filtrar por ese tag
   if (queryData.tag) {
     includeOptions.push({
       model: Tag,
       as: "tags",
       where: { key: queryData.tag },
-      required: true, // Asegura que solo se retornen recetas que tengan el tag especificado
+      required: true,
     });
   }
 
-  // Realiza la consulta con las opciones de inclusión
   const recipes = await Recipe.findAll({
     limit: queryData.limit,
     offset: queryData.offset,
     include: includeOptions,
   });
-  return recipes;
+
+  const ratingPromise = recipes.map(async it => {
+    it.rating = await getRecipeRating(it.id)
+    return it
+  })
+  return await Promise.all(ratingPromise)
 };
 
 const updateRecipe = async (recipeId, updateData) => {

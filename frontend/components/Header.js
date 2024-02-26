@@ -213,56 +213,7 @@ const Header = ({
     }
   };
 
-  const renderSearch = () => {
-    return (
-      <Input
-        right
-        color="black"
-        style={styles.search}
-        placeholder="Qué estás buscando?"
-        placeholderTextColor={"#8898AA"}
-        onFocus={() => {
-          Keyboard.dismiss();
-          navigation.navigate("Search");
-        }}
-        iconContent={
-          <Icon
-            size={16}
-            color={theme.COLORS.MUTED}
-            name="search-zoom-in"
-            family="YummlyExtra"
-          />
-        }
-      />
-    );
-  };
-
-  const renderTabs = () => {
-    const defaultTab = tabs && tabs[0] && tabs[0].id;
-
-    if (!tabs) return null;
-
-    return (
-      <Tabs
-        data={tabs || []}
-        initialIndex={tabIndex || defaultTab}
-        onChange={(id) => navigation.setParams({ tabId: id })}
-      />
-    );
-  };
-
-  const renderHeader = () => {
-    if (search || tabs) {
-      return (
-        <Block center>
-          {search ? renderSearch() : null}
-          {tabs ? renderTabs() : null}
-        </Block>
-      );
-    }
-  };
-
-  const noShadow = ["Search", "Perfil"].includes(title);
+  const noShadow = ["Search", "Perfil", "Home"].includes(title);
   const headerStyles = [
     !noShadow ? styles.shadow : null,
     transparent ? { backgroundColor: "rgba(0,0,0,0)" } : null,
@@ -300,7 +251,6 @@ const Header = ({
         ]}
         {...props}
       />
-      {renderHeader()}
     </Block>
   );
 };
