@@ -172,9 +172,15 @@ const Header = ({
   };
 
   const renderLeft = () => {
-    return back
-      ? () => navigation.dispatch(CommonActions.goBack())
-      : () => navigation.navigate("Home");
+    if (title === "Recipe") {
+      // Si el título es "Recipe", navegar directamente al Home
+      return () => navigation.navigate("Home");
+    } else {
+      // Para cualquier otro caso, utilizar la acción goBack
+      return back
+        ? () => navigation.dispatch(CommonActions.goBack())
+        : () => navigation.navigate("Home");
+    }
   };
 
   const renderRight = () => {

@@ -30,12 +30,11 @@ function HomeStack(props) {
         headerShown: "screen",
       }}
     >
-
       <Stack.Screen
         name="Login"
         component={Login}
         options={{
-            headerShown: false,
+          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -104,7 +103,7 @@ function HomeStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              title="Crear receta"
+              title="Datos de la receta"
               back
               scene={scene}
               navigation={navigation}

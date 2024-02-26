@@ -38,25 +38,6 @@ class CreateRecipe extends React.Component {
     isLoading: false,
     recipeId: null,
   };
-  // TODO
-  // state = {
-  //   selectedTags: ["RAPID_PREPARATION"], // Asume que "1" es un ID válido para un tag existente
-  //   isMultiSelectOpen: false,
-  //   ingredients: ["Pan de papa", "Carne picada", "Chedar"],
-  //   steps: ["Cortar el pan", "Cocinar las hamburgesas", "Poner el chedar"],
-  //   title: "Hamburgesa Crispy",
-  //   description: "Una de las hambursas mas ricas que hay, una delicia.",
-  //   preparationTime: "20",
-  //   images: [],
-  //   servingCount: 1,
-  //   calories: 500,
-  //   proteins: 30.5,
-  //   totalFats: 20.5,
-  //   video:
-  //     "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
-  //   recipeId: null,
-  //   isLoading: false,
-  // };
 
   componentDidMount() {
     const { route } = this.props;
@@ -66,10 +47,11 @@ class CreateRecipe extends React.Component {
   }
 
   getAsyncRecipe = async (recipeId) => {
+    const userId = await AsyncStorage.getItem("userId");
     const { response, statusCode } =
-      await backendApi.recipesGateway.getRecipeById(recipeId);
-    console.log("STATUS:", statusCode);
-    console.log("RESPONSE:", response);
+      await backendApi.recipesGateway.getRecipeById(recipeId, userId);
+
+    console.log(response);
     if (statusCode != 200) {
     }
     return response;
@@ -152,9 +134,8 @@ class CreateRecipe extends React.Component {
       try {
         const response =
           await backendApi.recipesGateway.createRecipe(recipeData);
-
         if (response.statusCode === 201) {
-          this.props.navigation.replace("Recipe", {
+          this.props.navigation.navigate("Recipe", {
             recipeId: response.response.id,
           });
         } else {
@@ -174,10 +155,9 @@ class CreateRecipe extends React.Component {
         );
 
         if (response.statusCode === 200) {
-          alert("Receta actualizada con éxito.");
-          // this.props.navigation.replace("Recipe", {
-          //   recipeId: route.params.recipeId,
-          // });
+          this.props.navigation.navigate("Recipe", {
+            recipeId: route.params.recipeId,
+          });
         } else {
           alert(
             "No se pudo actualizar la receta. Por favor, inténtalo de nuevo."
