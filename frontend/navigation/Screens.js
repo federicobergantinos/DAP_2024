@@ -42,12 +42,7 @@ function HomeStack(props) {
         component={Home}
         options={{
           header: ({ navigation, scene }) => (
-            <Header
-              title="Home"
-              search
-              navigation={navigation}
-              scene={scene}
-            />
+            <Header title="Home" search navigation={navigation} scene={scene} />
           ),
           cardStyle: { backgroundColor: "#F8F9FE" },
         }}

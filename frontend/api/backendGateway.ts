@@ -77,7 +77,7 @@ const recipesGateway = {
   },
   
   getRecipeById: ( id: number, userId: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id + "?userId=" + userId),
-  getAll: (page = 0, tag, userId = ""): Promise<{ response: RecipesDTO; statusCode: number }> => {
+  getAll: (page = 0, tag, userId): Promise<{ response: RecipesDTO; statusCode: number }> => {
     
     let url = `${recipeBaseUrl}/?page=${page}&limit=10`;
     if (tag) {
