@@ -54,7 +54,8 @@ const authUser = {
   authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> =>
     requests.post('/v1/auth', auth),
   refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> =>
-    requests.put('/v1/auth', { refreshToken: refreshToken })
+    requests.put('/v1/auth', { refreshToken: refreshToken }),
+  deleteCredential: () => requests.delete('/v1/auth'),
 };
 
 const rating = {
@@ -126,7 +127,13 @@ const users = {
     requests.delete(usersBaseUrl + "/" + userId + "/favorites/" + recipeId),
   favorites: (userId: number): Promise<{ response: any; statusCode: number  }> =>
     requests.get(usersBaseUrl + "/" + userId + "/favorites"),
+    getUser: (
+      userId: number,
+    ): Promise<{ response: any; statusCode: number }> =>
+      requests.get(usersBaseUrl + "/" + userId),
   };
+
+  
 
 // Función para obtener el encabezado de autenticación
 const getAuthHeader = async (config) => {
