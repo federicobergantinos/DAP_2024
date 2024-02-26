@@ -47,8 +47,11 @@ class CreateRecipe extends React.Component {
   }
 
   getAsyncRecipe = async (recipeId) => {
+    const userId = await AsyncStorage.getItem("userId");
     const { response, statusCode } =
-      await backendApi.recipesGateway.getRecipeById(recipeId);
+      await backendApi.recipesGateway.getRecipeById(recipeId, userId);
+
+    console.log(response);
     if (statusCode != 200) {
     }
     return response;

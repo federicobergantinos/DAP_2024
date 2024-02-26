@@ -74,12 +74,17 @@ const recipesGateway = {
       throw error;
     }
   },
-
+  
   getRecipeById: ( id: number, userId: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id + "?userId=" + userId),
-  getAll: (page = 0, tag, userId=""): Promise<{ response: RecipesDTO; statusCode: number }> => {
-    const url = tag
-      ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}&userId=${userId}`
-      : `${recipeBaseUrl}/?page=${page}&limit=10&userId=${userId}` ;
+  getAll: (page = 0, tag, userId = ""): Promise<{ response: RecipesDTO; statusCode: number }> => {
+    
+    let url = `${recipeBaseUrl}/?page=${page}&limit=10`;
+    if (tag) {
+      url += `&tag=${tag}`;
+    }
+    if (userId) {
+      url += `&userId=${userId}`;
+    }
     return requests.get(url);
   },
 
