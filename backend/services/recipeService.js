@@ -148,10 +148,14 @@ const getRecipes = async (queryData) => {
   });
 
   const ratingPromise = recipes.map(async it => {
-    it.rating = await getRecipeRating(it.id)
-    return it
-  })
-  return await Promise.all(ratingPromise)
+    it.rating = await getRecipeRating(it.id);
+    return it;
+  });
+
+  const updatedRecipes = await Promise.all(ratingPromise);
+  updatedRecipes.sort((a, b) => b.rating - a.rating);
+
+  return updatedRecipes;
 };
 
 const updateRecipe = async (recipeId, updateData) => {

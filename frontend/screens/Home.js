@@ -137,16 +137,8 @@ const Home = () => {
       />
       <Block>
         <Block style={styles.header}>
-          <Block style={{ flexDirection: 'row', alignItems: 'center', gap:10 }}>
+          <Block style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Block flex={1}><SearchBar></SearchBar></Block>
-            <TouchableOpacity onPress={openModal}>
-              <Icon
-                  family="MaterialIcons"
-                  size={35}
-                  name="sort"
-                  color={theme.COLORS.MUTED}
-              />
-            </TouchableOpacity>
           </Block>
           <Tabs
               data={tabs }
