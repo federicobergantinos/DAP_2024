@@ -122,9 +122,9 @@ const searchAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     const { recipeId } = req.params;
-
+    const userId = req.query.userId
     const recipe = await getRecipe(recipeId);
-    const user = await findUserById(recipe.userId);
+    const user = await findUserById(userId);
     const isValidFavorite = await isFavorite(user.id, recipeId);
 
     // Se filtran los elementos de media según su tipo y se agregan a los atributos correspondientes.
