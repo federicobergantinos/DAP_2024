@@ -62,11 +62,6 @@ const rating = {
   getUserRate: (recipeId: number, userId: number): Promise<{ response:any; statusCode: number }> => requests.get('/v1/recipes/'+recipeId+'/users/'+userId+'/ratings')
 };
 
-const rating = {
-  rate: (userId: number, recipeId: number, value: number): Promise<{ response: any; statusCode: number }>  => requests.put('/v1/recipes/'+recipeId+'/ratings', { userId: userId, value: value}),
-  getUserRate: (recipeId: number, userId: number): Promise<{ response:any; statusCode: number }> => requests.get('/v1/recipes/'+recipeId+'/users/'+userId+'/ratings')
-};
-
 // Objeto para funciones relacionadas con recetas
 const recipesGateway = {
   createRecipe: async (recipeData) => {
@@ -84,7 +79,7 @@ const recipesGateway = {
   getAll: (page = 0, tag, userId=""): Promise<{ response: RecipesDTO; statusCode: number }> => {
     const url = tag
       ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}&userId=${userId}`
-      : `${recipeBaseUrl}/?page=${page}&limit=10&userId=${userId}` ;  
+      : `${recipeBaseUrl}/?page=${page}&limit=10&userId=${userId}` ;
     return requests.get(url);
   },
 
@@ -113,7 +108,7 @@ const users = {
     ),
   dislike: ( userId: number, recipeId: number,): Promise<{ response: any; statusCode: number }> =>
     requests.delete(usersBaseUrl + "/" + userId + "/favorites/" + recipeId),
-  favorites: (userId: number): Promise<{ response: any; statusCode: number  }> => 
+  favorites: (userId: number): Promise<{ response: any; statusCode: number  }> =>
     requests.get(usersBaseUrl + "/" + userId + "/favorites"),
   };
 
