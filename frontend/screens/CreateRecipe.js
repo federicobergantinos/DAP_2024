@@ -59,7 +59,6 @@ class CreateRecipe extends React.Component {
       const fetchedRecipe = await this.getAsyncRecipe(recipeId);
 
       if (fetchedRecipe) {
-        console.log(fetchedRecipe);
         this.setState({
           ...fetchedRecipe,
           images: fetchedRecipe.media,
@@ -132,9 +131,8 @@ class CreateRecipe extends React.Component {
       try {
         const response =
           await backendApi.recipesGateway.createRecipe(recipeData);
-
         if (response.statusCode === 201) {
-          this.props.navigation.replace("Recipe", {
+          this.props.navigation.navigate("Recipe", {
             recipeId: response.response.id,
           });
         } else {
@@ -154,8 +152,7 @@ class CreateRecipe extends React.Component {
         );
 
         if (response.statusCode === 200) {
-          alert("Receta actualizada con éxito.");
-          this.props.navigation.replace("Recipe", {
+          this.props.navigation.navigate("Recipe", {
             recipeId: route.params.recipeId,
           });
         } else {

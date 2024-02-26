@@ -69,7 +69,6 @@ const recipesGateway = {
       throw error;
     }
   },
-
   getRecipeById: ( id: number,): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id),
   getAll: (page = 0, tag,): Promise<{ response: RecipesDTO; statusCode: number }> => {
     const url = tag
@@ -95,7 +94,18 @@ const recipesGateway = {
       console.error('Error al actualizar la receta:', error);
       throw error;
     }
-  }
+  },
+  uploadImage: async (image) => {
+    try {
+      const url = `${recipeBaseUrl}` + "/uploadImage"
+      const response = await requests.post(url, image);
+
+      return response;
+    } catch (error) {
+      console.error('Error al crear la receta:', error);
+      throw error;
+    }
+  },
 };
 
 const users = {

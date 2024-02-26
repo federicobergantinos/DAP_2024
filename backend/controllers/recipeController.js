@@ -7,6 +7,8 @@ const {
 } = require("../services/recipeService");
 const { findUserById } = require("../services/userService");
 const { isFavorite } = require("../services/favoriteService");
+const { v4: uuidv4 } = require("uuid");
+const { getRecipeRating } = require("../services/ratingService");
 
 const AWS = require("aws-sdk");
 AWS.config.update({
@@ -47,31 +49,16 @@ const uploadBase64ImageToS3 = async (base64Image, filename) => {
   }
 };
 
-const { v4: uuidv4 } = require("uuid");
-const { getRecipeRating } = require("../services/ratingService");
-
 const create = async (req, res) => {
   try {
-    let imageUrls = [];
-    if (req.body.images && req.body.images.length) {
-      // Iterar sobre todas las imágenes en el array y cargarlas a S3
-      const uploadPromises = req.body.images.map(async (imageBase64, index) => {
-        const filename = `${uuidv4()}_${index}.jpeg`; // Asegurar un nombre de archivo único para cada imagen
-        return uploadBase64ImageToS3(imageBase64.base64, filename);
-      });
-      imageUrls = await Promise.all(uploadPromises); // Esperar a que todas las promesas se resuelvan
-    }
     const recipeData = {
       ...req.body,
-      imageUrls: imageUrls, // Guardar el array de URLs de las imágenes
     };
-
-    const recipeId = await createRecipe(recipeData); // Asegúrate de que `createRecipe` maneje correctamente `imageUrls`
+    const recipeId = await createRecipe(recipeData);
 
     res.status(201).json({
       id: recipeId,
       message: "Receta creada con éxito",
-      imageUrls: imageUrls, // Devolver las URLs de las imágenes cargadas
     });
   } catch (error) {
     console.error(`Error en la creación de la receta: ${error}`);
@@ -170,47 +157,35 @@ const getById = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { recipeId } = req.params;
-    const { images, ...updateData } = req.body; // Asumiendo que las imágenes vienen en `images` en lugar de `newImages`
-
-    let processedImages = [];
-
-    if (images && images.length) {
-      const imageProcessingPromises = images.map(async (image, index) => {
-        // Verificar si el item es un objeto con un atributo base64
-        try {
-          if (image.base64) {
-            const filename = `${uuidv4()}_${index}.jpeg`; // Asegurar un nombre de archivo único
-            const imageUrl = await uploadBase64ImageToS3(
-              image.base64,
-              filename
-            ); // Subir y obtener la URL
-            return imageUrl; // Devolver la URL de la imagen cargada
-          } else {
-            throw new Error("No base64 attribute"); // Forzar caída al catch si no hay atributo base64
-          }
-        } catch (error) {
-          // Si el elemento no tiene atributo base64, se asume que es una URL o un objeto sin el atributo base64
-          return typeof image === "string" ? image : image.uri; // Devolver la URL directa o el uri del objeto
-        }
-      });
-
-      // Esperar que todas las promesas se resuelvan
-      processedImages = await Promise.all(imageProcessingPromises);
-    }
-
-    // Asignar las imágenes procesadas a `updateData`
-    updateData.images = processedImages;
-
-    console.log("Updated Data", updateData);
-
+    const updateData = {
+      ...req.body,
+    };
     await updateRecipe(recipeId, updateData);
 
     res.status(200).json({
       message: "Receta actualizada con éxito",
-      images: updateData.images, // Devolver las imágenes procesadas
+      images: req.body.images, // Devolver las URLs de las imágenes proporcionadas
     });
   } catch (error) {
     console.error(`Error al actualizar la receta: ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "Ha ocurrido una excepción",
+    });
+  }
+};
+
+const uploadImage = async (req, res) => {
+  const image = req.body.image;
+  try {
+    const filename = `${uuidv4()}.jpeg`; // Asegurar un nombre de archivo único
+    const imageUrl = await uploadBase64ImageToS3(image, filename); // Subir y obtener la URL
+
+    res.status(200).json({
+      message: "Imagen subida con éxito",
+      images: imageUrl,
+    });
+  } catch (error) {
+    console.error(`Hubo un problema al subir la imagen: ${error}`);
     res.status(error.code || 500).json({
       msg: error.message || "Ha ocurrido un error al actualizar la receta",
     });
@@ -223,4 +198,5 @@ module.exports = {
   getById,
   searchAll,
   update,
+  uploadImage,
 };

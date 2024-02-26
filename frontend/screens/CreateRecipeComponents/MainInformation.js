@@ -1,12 +1,18 @@
 import { openImagePickerAsync } from "../../components/ImagePicker.js";
 import React from "react";
-import { TouchableOpacity, FlatList, View, Image } from "react-native";
+import {
+  TouchableOpacity,
+  FlatList,
+  View,
+  Image,
+} from "react-native";
 import { Block, Text } from "galio-framework";
 
 import { yummlyTheme } from "../../constants/index.js";
 import Icon from "../../components/Icon.js";
 import Input from "../../components/Input.js";
 import styles from "./CreateRecipeStyles.js";
+import backendApi from "../../api/backendGateway";
 
 export default renderMainInformation = ({
   images,
@@ -65,31 +71,39 @@ export default renderMainInformation = ({
     );
   };
 
-  handleImagePicked = async () => {
+  const handleImagePicked = async () => {
     try {
       const newImage = await openImagePickerAsync();
       if (newImage) {
-        onUpdate((prevState) => {
-          // Verificar si la imagen ya está en el array comparando la cadena base64
-          const imageAlreadyExists = prevState.images.some(
-            (image) => image.base64 === newImage.base64
-          );
-
-          if (!imageAlreadyExists) {
-            // Si la imagen no existe, añadirla al array
-            return { images: [...prevState.images, newImage] };
-          } else {
-            // Opcional: Mostrar un mensaje indicando que la imagen ya está seleccionada
-            alert("Esta imagen ya ha sido seleccionada.");
-            return {}; // No actualizar el estado si la imagen ya existe
+        try {
+          const response = await backendApi.recipesGateway.uploadImage({
+            image: newImage.base64,
+          });
+          if (response.statusCode === 200) {
+            onUpdate((prevState) => {
+              const imageUrl = response.response.images;
+              const imageAlreadyExists = prevState.images.some(
+                (image) => image === imageUrl
+              );
+              if (!imageAlreadyExists) {
+                // Aquí actualizamos el estado para incluir la URL en lugar de la base64
+                return { images: [...prevState.images, imageUrl] };
+              } else {
+                alert("Esta imagen ya ha sido seleccionada.");
+                return {};
+              }
+            });
           }
-        });
+        } catch (error) {
+          console.error("Error al subir la imagen:", error);
+        }
       }
     } catch (error) {
       console.error("Error al seleccionar la imagen:", error);
       alert("No se pudo seleccionar la imagen.");
     }
   };
+
   return (
     <Block flex style={styles.CreateRecipeCard}>
       <Block style={styles.info}>

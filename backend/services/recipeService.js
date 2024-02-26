@@ -25,7 +25,7 @@ const createRecipe = async (recipeData) => {
     proteins,
     totalFats,
     tags,
-    imageUrls,
+    images,
     video,
   } = recipeData;
   // Verificar si el usuario es válido
@@ -59,8 +59,8 @@ const createRecipe = async (recipeData) => {
     );
 
     // Insertar cada URL de imagen en la base de datos
-    if (imageUrls && imageUrls.length > 0) {
-      const mediaPromises = imageUrls.map((url) =>
+    if (images && images.length > 0) {
+      const mediaPromises = images.map((url) =>
         Media.create(
           {
             recipeId: recipe.id,
@@ -291,6 +291,14 @@ const getRecipe = async (recipeId) => {
   recipe.steps = recipe.steps.split("|");
   recipe.ingredients = recipe.ingredients.split("|");
   recipe.dataValues.tags = tags.map((t) => t.key);
+  recipe.dataValues.media.sort((a, b) => {
+    if (a.type === "image" && b.type === "video") {
+      return -1;
+    } else if (a.type === "video" && b.type === "image") {
+      return 1;
+    }
+    return 0;
+  });
 
   return recipe.dataValues;
 };

@@ -78,7 +78,7 @@ const recipesData = [
     totalFats: 4.0,
     proteins: 5.0,
     image:
-      "https://www.recetasnestle.com.ar/sites/default/files/styles/rn_recipe_hero/public/2022-06/ingredientes-comida-de-mar-parrilla.jpg",
+      "https://cdn.aarp.net/content/dam/aarp/health/caregiving/2018/03/1140-nutrients-food-loved-ones-caregiving-esp.jpg",
     tags: ["VEGAN", "GLUTEN_FREE"],
     video:
       "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
@@ -164,7 +164,7 @@ const recipesData = [
     totalFats: 9.0,
     proteins: 18.0,
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7r2oM3kD7FhUHvz7oqHhZMq-3XQZFe_nXUg&usqp=CAU",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4FR8wrs9_0hB3XpxnrggBXRjt1D6F2cLOqQ&usqp=CAU",
     tags: ["VEGAN", "LOW_CALORIES"],
     video:
       "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
@@ -254,7 +254,7 @@ const recipesData = [
     totalFats: 8.0,
     proteins: 9.0,
     image:
-      "https://www.recetasnestle.com.co/sites/default/files/styles/recipe_image/public/media/risotto_de_setas.jpg?itok=f8E8P2Fj",
+      "https://www.cocinacaserayfacil.net/wp-content/uploads/2020/04/Recetas-de-comidas-para-ni%C3%B1os.jpg",
     tags: ["LOW_CARB", "HIGH_FIBER"],
     video:
       "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
