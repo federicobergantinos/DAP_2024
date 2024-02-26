@@ -1,4 +1,4 @@
-export default tabs = {
+export const tabs = {
   tags: [
     { id: "ALL", title: "All" },
     { id: "VEGETARIAN", title: "Vegetariana" },
@@ -12,3 +12,5 @@ export default tabs = {
     { id: "LOW_CARB", title: "Baja en carbohidratos" },
   ],
 };
+
+module.exports = tabs.tags

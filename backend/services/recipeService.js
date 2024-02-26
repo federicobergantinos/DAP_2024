@@ -10,6 +10,7 @@ const { isValidUser } = require("./userService");
 const NotFound = require("../Errors/NotFound");
 const { Op } = require("sequelize");
 const sequelize = require("../configurations/database/sequelizeConnection");
+const { getRecipeRating } = require("./ratingService");
 
 // Función para crear una receta y asociarla con tags y medios
 const createRecipe = async (recipeData) => {
@@ -156,9 +157,11 @@ const getRecipes = async (queryData) => {
     include: includeOptions,
   });
 
-  console.log(recipes);
-
-  return recipes;
+  const ratingPromise = recipes.map(async (it) => {
+    it.rating = await getRecipeRating(it.id);
+    return it;
+  });
+  return await Promise.all(ratingPromise);
 };
 
 const updateRecipe = async (recipeId, updateData) => {

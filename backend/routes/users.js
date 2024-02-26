@@ -5,12 +5,12 @@ const {
   createFav,
   deleteFav,
   getFav,
-  getUserInfo,
+  getUser,
 } = require("../controllers/userController");
 
 router.post("/:userId/favorites", createFav);
 router.delete("/:userId/favorites/:recipeId", deleteFav);
 router.get("/:userId/favorites", getFav);
-router.get("/:userId", getUserInfo);
+router.get("/:userId", getUser);
 
 module.exports = router;

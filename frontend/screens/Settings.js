@@ -1,52 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
   View,
   TextInput,
+  Dimensions,
 } from "react-native";
-import { Block, Text, theme, Icon } from "galio-framework";
-import { useNavigation } from "@react-navigation/native";
-
+import { Block, Text, theme } from "galio-framework";
+import { Switch } from "../components";
 import yummlyTheme from "../constants/Theme";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import asyncStorage from "@react-native-async-storage/async-storage/src/AsyncStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import backendGateway from "../api/backendGateway";
+import backendApi from "../api/backendGateway";
 
-export default class Settings extends React.Component {
-  state = {
-    nombre: "",
-    apellido: "",
+const { width } = Dimensions.get("window");
+
+export default function Settings() {
+  const navigation = useNavigation();
+  const logOut = async () => {
+    await AsyncStorage.clear();
+    await GoogleSignin.signOut();
+    navigation.navigate("Login");
   };
 
-  toggleSwitch = (switchNumber) =>
-    this.setState({ [switchNumber]: !this.state[switchNumber] });
-
-  logOut = async () => {
-    try {
-      await asyncStorage.clear();
-      await GoogleSignin.signOut();
-      this.props.navigation.replace("Login");
-    } catch (error) {
-      console.error(error);
-    }
+  const deleteAccount = async () => {
+    await AsyncStorage.clear();
+    await backendGateway.authUser.deleteCredential();
+    navigation.navigate("Login");
   };
 
-  renderItem = ({ item }) => {
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("userId");
+        const { response, statusCode } =
+          await backendGateway.users.getUser(userId);
+        this.state = {
+          nombre: response.user.name,
+          apellido: response.user.surname,
+          email: response.user.email,
+        };
+      } catch (error) {
+        console.error("Error al obtener usuario");
+        navigation.replace("Home");
+      }
+    };
+    getUser();
+  }, []);
+
+  const renderItem = ({ item }) => {
     switch (item.type) {
       case "deleteAccount":
         return (
-          <TouchableOpacity
-            onPress={() => {
-              /* Lógica para eliminar la cuenta */
-            }}
-          >
+          <TouchableOpacity onPress={deleteAccount}>
             <View style={styles.deleteButton}>
               <Text style={{ color: "red" }}>Eliminar Cuenta</Text>
             </View>
           </TouchableOpacity>
         );
-
       case "nameInput":
         return (
           <Block row middle space="between" style={styles.rows}>
@@ -97,19 +111,14 @@ export default class Settings extends React.Component {
             </Text>
             <TextInput
               style={[styles.inputContainer, { color: "#BFBFBF" }]}
-              //value={this.state.email}
-              value={"test@gmail.com"}
+              value={this.state.email}
               editable={false}
             />
           </Block>
         );
       case "logout":
         return (
-          <TouchableOpacity
-            onPress={() => {
-              this.logOut();
-            }}
-          >
+          <TouchableOpacity onPress={logOut}>
             <View style={styles.logoutButton}>
               <Text style={{ color: "red" }}>Cerrar sesión</Text>
             </View>
@@ -120,66 +129,66 @@ export default class Settings extends React.Component {
     }
   };
 
-  render() {
-    const recommended = [
-      { title: "Nombre", id: "nombre", type: "nameInput" },
-      { title: "Apellido", id: "apellido", type: "lastNameInput" },
-      { title: "Mail", id: "mail", type: "mailInput" },
-      { title: "Cerrar Sesión", id: "sesion", type: "logout" },
-    ];
+  const recommended = [
+    { title: "Nombre", id: "nombre", type: "nameInput" },
+    { title: "Apellido", id: "apellido", type: "lastNameInput" },
+    { title: "Mail", id: "mail", type: "mailInput" },
+    { title: "Cerrar Sesión", id: "sesion", type: "logout" },
+  ];
 
-    const payment = [
-      { title: "Eliminar Cuenta", id: "delete", type: "deleteAccount" },
-    ];
+  const payment = [
+    { title: "Eliminar Cuenta", id: "delete", type: "deleteAccount" },
+  ];
 
-    return (
-      <View
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.settings}
-      >
-        <FlatList
-          data={recommended}
-          keyExtractor={(item, index) => item.id}
-          renderItem={this.renderItem}
-          ListHeaderComponent={
-            <Block center style={styles.title}>
-              <Text
-                style={{ fontFamily: "open-sans", paddingBottom: 5 }}
-                size={theme.SIZES.BASE}
-                color={yummlyTheme.COLORS.TEXT}
-              >
-                Configuración Recomendada
-              </Text>
-            </Block>
-          }
-        />
-        <Block center style={styles.title}>
-          <Text
-            style={{
-              fontFamily: "open-sans-bold",
-              paddingBottom: 10,
-              color: "red",
-            }}
-            size={theme.SIZES.BASE}
-            color={yummlyTheme.COLORS.TEXT}
-          >
-            Danger Zone
-          </Text>
-        </Block>
-
-        <FlatList
-          data={payment}
-          keyExtractor={(item, index) => item.id}
-          renderItem={this.renderItem}
-        />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Block center style={styles.title}>
+        <Text
+          style={{ fontFamily: "open-sans", paddingBottom: 5 }}
+          size={theme.SIZES.BASE}
+          color={yummlyTheme.COLORS.TEXT}
+        >
+          Configuración Recomendada
+        </Text>
+      </Block>
+      <FlatList
+        data={recommended}
+        keyExtractor={(item, index) => item.id}
+        renderItem={renderItem}
+        style={styles.list}
+      />
+      <Block center style={styles.title}>
+        <Text
+          style={{
+            fontFamily: "open-sans-bold",
+            paddingBottom: 10,
+            color: "red",
+          }}
+          size={theme.SIZES.BASE}
+          color={yummlyTheme.COLORS.TEXT}
+        >
+          Danger Zone
+        </Text>
+      </Block>
+      <FlatList
+        data={payment}
+        keyExtractor={(item, index) => item.id}
+        renderItem={renderItem}
+        style={styles.list}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  settings: {
-    paddingVertical: theme.SIZES.BASE / 3,
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  list: {
+    width: width - theme.SIZES.BASE * 2,
+    alignSelf: "center",
   },
   title: {
     paddingTop: theme.SIZES.BASE,
@@ -196,7 +205,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     marginRight: 10,
-    width: 300,
+    width: "70%",
     flexShrink: 1,
     borderWidth: 1,
     borderColor: "gray",
@@ -208,7 +217,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "gray",
     marginRight: 10,
-    width: 300,
+    width: "70%",
     flexShrink: 1,
     borderWidth: 1,
     borderColor: "gray",
@@ -224,7 +233,6 @@ const styles = StyleSheet.create({
     borderColor: "red",
     marginLeft: 10,
   },
-
   deleteButton: {
     paddingHorizontal: 10,
     width: 150,
