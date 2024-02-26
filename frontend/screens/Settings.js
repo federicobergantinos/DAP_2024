@@ -7,19 +7,26 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import backendGateway from "../api/backendGateway";
+import backendApi from "../api/backendGateway";
+
 
 const { width } = Dimensions.get("window");
 
 
 export default function Settings() {
   const navigation = useNavigation();
-
   const logOut = async () => {
     await AsyncStorage.clear();
     await GoogleSignin.signOut();
     navigation.navigate("Login");
   };
 
+  const deleteAccount = async () => {
+    await AsyncStorage.clear();
+    await backendGateway.authUser.deleteCredential();
+    navigation.navigate("Login");
+  };
+  
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -47,7 +54,7 @@ export default function Settings() {
     switch (item.type) {
       case "deleteAccount":
         return (
-          <TouchableOpacity onPress={() => {/* Lógica para eliminar la cuenta */}}>
+          <TouchableOpacity onPress={deleteAccount}>
             <View style={styles.deleteButton}>
               <Text style={{ color: 'red' }}>Eliminar Cuenta</Text>
             </View>

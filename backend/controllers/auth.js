@@ -83,7 +83,6 @@ const deleteCredential = async (req, res) => {
 };
 
 
-
 module.exports = {
   authenticate,
   refresh,
