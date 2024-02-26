@@ -9,14 +9,16 @@ const {
   getById,
   searchAll,
   update,
+  uploadImage,
 } = require("../controllers/recipeController");
 const { rate, getRate } = require("../controllers/ratingController");
 
-router.post("/create", upload.single("image"), create);
+router.post("/create", create);
+router.post("/uploadImage", upload.single("image"), uploadImage);
 router.get("/", getAll);
 router.get("/search", searchAll);
 router.get("/:recipeId", getById);
-router.put("/:recipeId", upload.single("image"), update);
+router.put("/:recipeId", update);
 router.put("/:recipeId/ratings", rate);
 router.get("/:recipeId/users/:userId/ratings", getRate);
 

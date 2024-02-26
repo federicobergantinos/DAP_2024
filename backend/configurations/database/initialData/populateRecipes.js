@@ -21,6 +21,7 @@ const populateRecipes = async () => {
         totalFats,
         proteins,
         image,
+        video,
         tags,
         userId,
       } = recipeData;
@@ -53,6 +54,14 @@ const populateRecipes = async () => {
         type: "image",
       });
 
+      // Si se proporciona un video, crear un registro de Media para el video y asociarlo con la receta
+      if (video) {
+        await Media.create({
+          data: video,
+          recipeId: recipe.id,
+          type: "video",
+        });
+      }
       // Buscar y asociar etiquetas existentes con la receta
       const tagInstances = await Promise.all(
         tags.map(async (tagName) => {
