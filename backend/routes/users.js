@@ -9,6 +9,6 @@ const {
 
 router.post("/:userId/favorites", createFav);
 router.delete("/:userId/favorites/:recipeId", deleteFav);
-router.get("/:userId/favorites/:recipeId", getFav);
+router.get("/:userId/favorites", getFav);
 
 module.exports = router;

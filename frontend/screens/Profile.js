@@ -15,37 +15,50 @@ import { Button, Header } from "../components";
 import { Images, yummlyTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
 import { openImagePickerAsync } from "../components/ImagePicker.js";
+import { useNavigation } from "@react-navigation/native";
 import backendGateway from "../api/backendGateway";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
 
-export default class Profile extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      show: false,
-    };
-  }
 
-  /*async componentDidMount() {
-    try {
-      // Aquí debes obtener el ID del usuario actual
-      const userId = getUserId(); // Por ejemplo, reemplaza esto con la función para obtener el ID del usuario actual
-      const response = await backendGateway.users.getFavoriteCount(userId);
-      if (response.statusCode === 200) {
-        this.setState({ favoriteCount: response.response.favoriteCount });
-      } else {
-        console.error("Error al obtener la cantidad de favoritos:", response);
+export default function Profile() {
+    const navigation = useNavigation();
+    const userId = 5; // Ver como lo hizo nico
+    const [showModal, setShowModal] = useState(false);
+    const [favoritesCount, setFavoritesCount] = useState(0);
+    const [imagesList, setImagesList] = useState([]);
+
+    useEffect(() => {
+    const getFavorites = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("userId");
+        const favorites = await backendGateway.users.favorites(userId);
+        setFavoritesCount(favorites.response.total);
+        console.log(favorites.response.favorites[0].media[0].data);
+        console.log(favorites.response); 
+        const firstMediaUrls = favorites.response.favorites.map((favorite) => {
+          return favorite.media[0].data;
+        });
+        setImagesList(firstMediaUrls)
+        console.log(firstMediaUrls);
+        const recipes = await backendGateway.recipesGateway.getAll({userId:0});
+        // console.log(recipes)
+        // Preguntar a fede lo del paginado
+      } catch (error) {
+        console.error("Error al obtener la cantidad de likes");
+        console.log(error);
       }
-    } catch (error) {
-      console.error("Error al obtener la cantidad de favoritos:", error);
-    }
-  }
-  */
+    };
+    
+    getFavorites();
+  }, []);
+
+
+  
  
-  render() {
-    const { navigation } = this.props;
+
     return (
       <Block flex style={styles.profile}>
         <Block flex>
@@ -67,9 +80,7 @@ export default class Profile extends React.Component {
                   <View style={styles.parent}>
                     <TouchableOpacity
                       style={styles.container}
-                      onPress={() => {
-                        this.setState({ show: true });
-                      }}
+                      onPress={() => setShowModal(true)}
                     >
                       <Text>Adjuntar Imagen</Text>
                     </TouchableOpacity>
@@ -84,7 +95,7 @@ export default class Profile extends React.Component {
                     </TouchableOpacity>
                   </View>
                 </Block>
-                <Modal transparent={true} visible={this.state.show}>
+                <Modal transparent={true} visible={showModal}>
                   <View style={styles.editarPerfilPopup}>
                     <View style={styles.editarPerfilPopupInterno}>
                       <Image
@@ -95,8 +106,7 @@ export default class Profile extends React.Component {
                       <TouchableOpacity
                         style={styles.containerInterno}
                         onPress={() => {
-                          openImagePickerAsync(),
-                            this.setState({ show: false });
+                          openImagePickerAsync();
                         }}
                       >
                         <Text>Adjuntar Imagen</Text>
@@ -149,7 +159,7 @@ export default class Profile extends React.Component {
                           fontFamily: "open-sans-bold",
                         }}
                       >
-                        504
+                        {favoritesCount}
                       </Text>
                       <Text
                         style={{ fontFamily: "open-sans-regular" }}
@@ -179,7 +189,7 @@ export default class Profile extends React.Component {
                       color="transparent"
                       textStyle={{ color: "#5E72E4", fontSize: 14 }}
                       onPress={() => {
-                        this.props.navigation.navigate("ProfileRecetas");
+                        navigation.navigate("ProfileRecetas");
                       }}
                     >
                       Ver más
@@ -188,7 +198,7 @@ export default class Profile extends React.Component {
 
                   <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
                     <Block row space="between" style={{ flexWrap: "wrap" }}>
-                      {Images.Viewed.map((img, imgIndex) => (
+                      {imagesList.map((img, imgIndex) => (
                         <Image
                           source={{ uri: img }}
                           key={`viewed-${img}`}
@@ -218,7 +228,7 @@ export default class Profile extends React.Component {
                       color="transparent"
                       textStyle={{ color: "#5E72E4", fontSize: 14 }}
                       onPress={() => {
-                        this.props.navigation.navigate("ProfileFavoritos");
+                        navigation.navigate("ProfileFavoritos");
                       }}
                     >
                       Ver más
@@ -246,7 +256,6 @@ export default class Profile extends React.Component {
       </Block>
     );
   }
-}
 
 const styles = StyleSheet.create({
   profile: {
@@ -339,3 +348,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+
+
+
+
