@@ -56,7 +56,7 @@ export default function Profile() {
     const fetchFavorites = async () => {
       try {
         const userId = await AsyncStorage.getItem("userId");
-        const response = await backendGateway.users.favorites(userId);
+        const response = await backendApi.users.favorites(userId);
         setFavorites(response.response.favorites);
       } catch (error) {
         console.error("Error al obtener los favoritos", error);
@@ -73,9 +73,10 @@ export default function Profile() {
         const page = 1;
         const { response: recipes } = await backendApi.recipesGateway.getAll(
           page == page,
-          userId == 1
+          userId == 3
         );
         setRecipes(recipes);
+        console.log(recipes[0].media);
         console.log(recipes[0].media[0]);
       } catch (error) {
         console.error("Error al obtener las recetas", error);
@@ -117,12 +118,6 @@ export default function Profile() {
                     <Text>Adjuntar Imagen</Text>
                   </TouchableOpacity>
                   <Text> </Text>
-                  <TouchableOpacity
-                    style={styles.container}
-                    onPress={() => navigation.navigate("Settings")}
-                  >
-                    <Text>Modificar Perfil</Text>
-                  </TouchableOpacity>
                 </View>
               </Block>
               <Block style={styles.info}>
@@ -210,7 +205,7 @@ export default function Profile() {
                         onPress={() => navigateToRecipe(recipes.id)}
                       >
                         <Image
-                          source={{ uri: recipes.media[0].data }}
+                          source={{ uri: recipes.media }}
                           style={styles.thumb}
                         />
                       </TouchableOpacity>
