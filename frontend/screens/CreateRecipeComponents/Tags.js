@@ -49,7 +49,7 @@ export default renderTags = ({ selectedTags, onUpdate }) => {
       </Text>
       <MultiSelect
         hideTags
-        items={tags.tags}
+        items={tags}
         uniqueKey="id"
         onSelectedItemsChange={this.onSelectedItemsChange}
         selectedItems={selectedTags}
@@ -70,7 +70,7 @@ export default renderTags = ({ selectedTags, onUpdate }) => {
       <RenderSelectedTags
         selectedTags={selectedTags}
         removeTag={removeTag}
-        tags={tags.tags}
+        tags={tags}
       />
     </Block>
   );

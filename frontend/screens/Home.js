@@ -184,9 +184,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   recipes: {
-    justifyContent: "space-between",
     width: width - theme.SIZES.BASE,
-    paddingVertical: theme.SIZES.BASE,
+    paddingVertical: 5,
   },
   fab: {
     position: "absolute",

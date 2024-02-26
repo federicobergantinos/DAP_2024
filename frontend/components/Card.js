@@ -14,27 +14,33 @@ const { height, width } = Dimensions.get("window");
 
 const Card = ({
   item,
+  horizontal,
+  full,
   style,
+  ctaColor,
+  imageStyle,
+  ctaRight,
 }) => {
   const navigation = useNavigation(); // Usa el hook useNavigation
 
   const imageStyles = [
-    styles.horizontalImage,
+    full ? styles.fullImage : styles.horizontalImage,
+    imageStyle,
   ];
   const cardContainer = [
     styles.card,
     styles.shadow,
-    styles.cardVertical,
+    horizontal ? null : styles.cardVertical,
     style,
   ];
   const imgContainer = [
     styles.imageContainer,
-    styles.verticalStyles,
+    horizontal ? styles.horizontalStyles : styles.verticalStyles,
     styles.shadow,
   ];
 
   return (
-      <Block card flex style={cardContainer}>
+      <Block row={horizontal} card flex style={cardContainer}>
         <TouchableWithoutFeedback
             onPress={() => navigation.navigate("Recipe", {recipeId: item.id})}
         >
@@ -127,6 +133,9 @@ const styles = StyleSheet.create({
   verticalStyles: {
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
+  },
+  fullImage: {
+    height: 215,
   },
   shadow: {
     shadowColor: "#8898AA",
