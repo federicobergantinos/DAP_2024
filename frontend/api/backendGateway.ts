@@ -6,7 +6,7 @@ import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
 // const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
-const api = axios.create({ baseURL: "http://192.168.0.189:8080" });
+const api = axios.create({ baseURL: "http://172.20.16.1:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
@@ -102,6 +102,10 @@ const users = {
     recipeId: number,
   ): Promise<{ response: any; statusCode: number }> =>
     requests.delete(usersBaseUrl + "/" + userId + "/favorites/" + recipeId),
+  getUser: (
+    userId: number,
+  ): Promise<{ response: any; statusCode: number }> =>
+    requests.get(usersBaseUrl + "/" + userId),
 };
 
 const getAuthHeader = async (config) => {

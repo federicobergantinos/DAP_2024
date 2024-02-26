@@ -1,29 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, FlatList, TouchableOpacity, View, TextInput, Dimensions } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 import { Switch } from "../components";
 import yummlyTheme from "../constants/Theme";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import backendGateway from "../api/backendGateway";
 
 const { width } = Dimensions.get("window");
 
-export default class Settings extends React.Component {
-  state = {
-    nombre: "",
-    apellido: "",
-    mail: "",
+
+export default function Settings() {
+  const navigation = useNavigation();
+
+  const logOut = async () => {
+    await AsyncStorage.clear();
+    await GoogleSignin.signOut();
+    navigation.navigate("Login");
   };
 
-  toggleSwitch = (switchNumber) =>
-    this.setState({ [switchNumber]: !this.state[switchNumber] });
-
-  renderItem = ({ item }) => {
-    const logOut = async () => {
-      await AsyncStorage.clear();
-      await GoogleSignin.signOut();
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("userId");
+        const { response, statusCode } = await backendGateway.users.getUser(userId);
+        console.log(response)
+        this.state = {
+          nombre: response.user.name,
+          apellido: response.user.surname,
+          email: response.user.email
+        };
+        console.log(response.user.name)
+        console.log(response.user.surname)
+        console.log(response.user.email)
+        
+      } catch (error) {
+        console.error("Error al obtener usuario");
+        navigation.replace("Home");
+      }
     };
+    getUser();
+  }, []);
 
+  const renderItem = ({ item }) => {
     switch (item.type) {
       case "deleteAccount":
         return (
@@ -33,7 +53,6 @@ export default class Settings extends React.Component {
             </View>
           </TouchableOpacity>
         );
-
       case "nameInput":
         return (
           <Block row middle space="between" style={styles.rows}>
@@ -66,15 +85,14 @@ export default class Settings extends React.Component {
             <Text style={{ fontFamily: 'open-sans-regular' }} size={14} color="#525F7F">{item.title}</Text>
             <TextInput
               style={[styles.inputContainer, { color: '#BFBFBF' }]}
-              //value={this.state.email}
-              value={'test@gmail.com'}
+              value={this.state.email}
               editable={false}
             />
           </Block>
         );
       case "logout":
         return (
-          <TouchableOpacity onPress={() => { logOut() }}>
+          <TouchableOpacity onPress={logOut}>
             <View style={styles.logoutButton}>
               <Text style={{ color: 'red' }}>Cerrar sesión</Text>
             </View>
@@ -85,45 +103,43 @@ export default class Settings extends React.Component {
     }
   };
 
-  render() {
-    const recommended = [
-      { title: "Nombre", id: "nombre", type: "nameInput" },
-      { title: "Apellido", id: "apellido", type: "lastNameInput" },
-      { title: "Mail", id: "mail", type: "mailInput" },
-      { title: "Cerrar Sesión", id: "sesion", type: "logout" }
-    ];
+  const recommended = [
+    { title: "Nombre", id: "nombre", type: "nameInput" },
+    { title: "Apellido", id: "apellido", type: "lastNameInput" },
+    { title: "Mail", id: "mail", type: "mailInput" },
+    { title: "Cerrar Sesión", id: "sesion", type: "logout" }
+  ];
 
-    const payment = [
-      { title: "Eliminar Cuenta", id: "delete", type: "deleteAccount" },
-    ];
+  const payment = [
+    { title: "Eliminar Cuenta", id: "delete", type: "deleteAccount" },
+  ];
 
-    return (
-      <View style={styles.container}>
-        <Block center style={styles.title}>
-          <Text style={{ fontFamily: 'open-sans', paddingBottom: 5 }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
-            Configuración Recomendada
-          </Text>
-        </Block>
-        <FlatList
-          data={recommended}
-          keyExtractor={(item, index) => item.id}
-          renderItem={this.renderItem}
-          style={styles.list}
-        />
-        <Block center style={styles.title}>
-          <Text style={{ fontFamily: 'open-sans-bold', paddingBottom: 10, color: 'red' }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
-            Danger Zone
-          </Text>
-        </Block>
-        <FlatList
-          data={payment}
-          keyExtractor={(item, index) => item.id}
-          renderItem={this.renderItem}
-          style={styles.list}
-        />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Block center style={styles.title}>
+        <Text style={{ fontFamily: 'open-sans', paddingBottom: 5 }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
+          Configuración Recomendada
+        </Text>
+      </Block>
+      <FlatList
+        data={recommended}
+        keyExtractor={(item, index) => item.id}
+        renderItem={renderItem}
+        style={styles.list}
+      />
+      <Block center style={styles.title}>
+        <Text style={{ fontFamily: 'open-sans-bold', paddingBottom: 10, color: 'red' }} size={theme.SIZES.BASE} color={yummlyTheme.COLORS.TEXT}>
+          Danger Zone
+        </Text>
+      </Block>
+      <FlatList
+        data={payment}
+        keyExtractor={(item, index) => item.id}
+        renderItem={renderItem}
+        style={styles.list}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
