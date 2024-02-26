@@ -1,6 +1,7 @@
 const {
   createFavorite,
   deleteFavorite,
+  getFavorites,
 } = require("../services/favoriteService");
 const createFav = async (req, res) => {
   try {
@@ -38,7 +39,24 @@ const deleteFav = async (req, res) => {
   }
 };
 
+const getFav = async (req, res) => {
+  try {
+    // const countFav = await Favorite.count({ where: { userId } });
+    const favorite = await getFavorites(req.params.userId)
+    console.log(favorite)
+    res.status(200).json({ favorites: favorite.recipies, total: favorite.total });
+
+  } catch (error) {
+    console.error(` ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "An exception has ocurred",
+    });
+  }
+};
+
+
 module.exports = {
   createFav,
   deleteFav,
+  getFav,
 };

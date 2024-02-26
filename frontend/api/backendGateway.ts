@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { createAuthDTO, Credentials } from "./authDTO";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createAuthDTO, Credentials } from "./authDTO";
 import { RecipeDTO } from "./RecipeDTO";
 import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
@@ -10,13 +10,14 @@ const api = axios.create({ baseURL: "http://192.168.1.189:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
+// Interceptores de solicitud y respuesta
 api.interceptors.request.use(
-  (config) => {
+  (config: AxiosRequestConfig) => {
     return getAuthHeader(config);
   },
   (error) => {
     return Promise.reject(error);
-  },
+  }
 );
 
 api.interceptors.response.use(
@@ -32,12 +33,14 @@ api.interceptors.response.use(
     }
 );
 
-const responseBodyWithStatusCode = (response: AxiosResponse): {response: any, statusCode: any} => ({
+// Función para agregar el código de estado a la respuesta
+const responseBodyWithStatusCode = (response: AxiosResponse): { response: any, statusCode: any } => ({
   response: response.data,
   statusCode: response.status,
 });
 
 
+// Definición de funciones de solicitud HTTP
 const requests = {
   get: (url: string) => api.get(url).then(responseBodyWithStatusCode),
   post: (url: string, body?: any) =>
@@ -48,8 +51,10 @@ const requests = {
     api.delete(url).then(responseBodyWithStatusCode),
 };
 const authUser = {
-    authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> => requests.post('/v1/auth', auth),
-    refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> => requests.put('/v1/auth', {refreshToken: refreshToken})
+  authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> =>
+    requests.post('/v1/auth', auth),
+  refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> =>
+    requests.put('/v1/auth', { refreshToken: refreshToken })
 };
 
 const rating = {
@@ -57,12 +62,17 @@ const rating = {
   getUserRate: (recipeId: number, userId: number): Promise<{ response:any; statusCode: number }> => requests.get('/v1/recipes/'+recipeId+'/users/'+userId+'/ratings')
 };
 
+const rating = {
+  rate: (userId: number, recipeId: number, value: number): Promise<{ response: any; statusCode: number }>  => requests.put('/v1/recipes/'+recipeId+'/ratings', { userId: userId, value: value}),
+  getUserRate: (recipeId: number, userId: number): Promise<{ response:any; statusCode: number }> => requests.get('/v1/recipes/'+recipeId+'/users/'+userId+'/ratings')
+};
+
+// Objeto para funciones relacionadas con recetas
 const recipesGateway = {
   createRecipe: async (recipeData) => {
     try {
       const url = `${recipeBaseUrl}` + "/create"
       const response = await requests.post(url, recipeData);
-
       return response;
     } catch (error) {
       console.error('Error al crear la receta:', error);
@@ -71,17 +81,14 @@ const recipesGateway = {
   },
 
   getRecipeById: ( id: number, userId: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id + "?userId=" + userId),
-  getAll: (page = 0, tag,): Promise<{ response: RecipesDTO; statusCode: number }> => {
+  getAll: (page = 0, tag, userId=""): Promise<{ response: RecipesDTO; statusCode: number }> => {
     const url = tag
-      ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}`
-      : `${recipeBaseUrl}/?page=${page}&limit=10`;
+      ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}&userId=${userId}`
+      : `${recipeBaseUrl}/?page=${page}&limit=10&userId=${userId}` ;  
     return requests.get(url);
   },
-  searchRecipes: (
-    searchTerm = "",
-    page = 0,
-    limit = 10,
-  ): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
+
+  searchRecipes: (searchTerm = "", page = 0, limit = 10): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
     const url = `${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${searchTerm}`;
     return requests.get(url);
   },
@@ -98,6 +105,7 @@ const recipesGateway = {
   }
 };
 
+// Objeto para funciones relacionadas con usuarios
 const users = {
   like: ( userId: number, recipeId: number,): Promise<{ response: any; statusCode: number }> =>
     requests.post(usersBaseUrl + "/" + userId + "/favorites",
@@ -105,8 +113,11 @@ const users = {
     ),
   dislike: ( userId: number, recipeId: number,): Promise<{ response: any; statusCode: number }> =>
     requests.delete(usersBaseUrl + "/" + userId + "/favorites/" + recipeId),
-};
+  favorites: (userId: number): Promise<{ response: any; statusCode: number  }> => 
+    requests.get(usersBaseUrl + "/" + userId + "/favorites"),
+  };
 
+// Función para obtener el encabezado de autenticación
 const getAuthHeader = async (config) => {
   const token = await getToken();
   if (token) {
@@ -115,6 +126,7 @@ const getAuthHeader = async (config) => {
   return config;
 };
 
+// Función para obtener el token de autenticación del almacenamiento local
 const getToken = async (): Promise<string> => {
   try {
     const token = await AsyncStorage.getItem("token");
