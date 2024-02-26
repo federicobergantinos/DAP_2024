@@ -88,22 +88,20 @@ const getAll = async (req, res) => {
   const tag = req.query.tag;
 
   try {
-    // Ajusta getRecipes para aceptar un parámetro de tag y lo usa para filtrar las recetas
-    const recipes = await getRecipes({ limit, offset, tag }); // Asegúrate de que getRecipes maneje el parámetro de tag adecuadamente
+    const recipes = await getRecipes({ limit, offset, tag });
     const response = recipes.map((recipe) => {
-      const { id, title, media, tags } = recipe;
-
+      const { id, title, media, tags, rating } = recipe;
       const filteredMedia = media.filter((m) => m.type === "image");
       const firstImage = filteredMedia.length > 0 ? filteredMedia[0].data : "";
 
-      // Mapea los tags a la forma deseada, por ejemplo, un arreglo de nombres de tags
       const tagsArray = tags.map((tag) => tag.key);
 
       return {
         id,
         title,
-        media: firstImage, // Solo devuelve la primera imagen filtrada
-        tags: tagsArray, // Incluye los tags asociados
+        media: firstImage,
+        tags: tagsArray,
+        rating: rating,
       };
     });
     res.status(200).json(response);
@@ -114,6 +112,7 @@ const getAll = async (req, res) => {
     });
   }
 };
+
 
 const searchAll = async (req, res) => {
   const searchTerm = req.query.searchTerm || "";
