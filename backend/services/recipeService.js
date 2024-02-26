@@ -117,7 +117,6 @@ const createRecipe = async (recipeData) => {
 };
 
 const getRecipes = async (queryData) => {
-  // Inicializa las opciones de inclusión con relaciones que siempre se incluirán
   let includeOptions = [
     {
       model: Media,
@@ -132,22 +131,33 @@ const getRecipes = async (queryData) => {
     },
   ];
 
-  // Si se proporcionó un tag, ajusta la consulta para filtrar por ese tag
   if (queryData.tag) {
     includeOptions.push({
       model: Tag,
       as: "tags",
       where: { key: queryData.tag },
-      required: true, // Asegura que solo se retornen recetas que tengan el tag especificado
+      required: true,
     });
   }
 
-  // Realiza la consulta con las opciones de inclusión
+  // Agrega un filtro por userId si se proporciona
+  if (queryData.userId) {
+    includeOptions.push({
+      model: User,
+      as: "user",
+      where: { id: queryData.userId },
+      required: true, // Solo incluye recetas que pertenecen al userId especificado
+    });
+  }
+
   const recipes = await Recipe.findAll({
     limit: queryData.limit,
     offset: queryData.offset,
     include: includeOptions,
   });
+
+  console.log(recipes);
+
   return recipes;
 };
 

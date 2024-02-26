@@ -128,7 +128,7 @@ const Header = ({
   };
 
   const RenderEditButton = ({ recipeId }) => {
-    // if (!isOwner) return null;
+    if (!isOwner) return null;
     return (
       <TouchableOpacity style={{ paddingHorizontal: 5 }}>
         <Icon
