@@ -9,85 +9,76 @@ import {
 import { Block, Text, theme } from "galio-framework";
 import { useNavigation } from "@react-navigation/native"; // Importa useNavigation
 import { yummlyTheme } from "../constants";
+import {AirbnbRating} from "react-native-ratings";
 const { height, width } = Dimensions.get("window");
 
 const Card = ({
   item,
-  horizontal,
-  full,
   style,
-  ctaColor,
-  imageStyle,
-  ctaRight,
 }) => {
   const navigation = useNavigation(); // Usa el hook useNavigation
 
   const imageStyles = [
-    full ? styles.fullImage : styles.horizontalImage,
-    imageStyle,
+    styles.horizontalImage,
   ];
   const cardContainer = [
     styles.card,
     styles.shadow,
-    horizontal ? null : styles.cardVertical,
+    styles.cardVertical,
     style,
   ];
   const imgContainer = [
     styles.imageContainer,
-    horizontal ? styles.horizontalStyles : styles.verticalStyles,
+    styles.verticalStyles,
     styles.shadow,
   ];
 
   return (
-    <Block row={horizontal} card flex style={cardContainer}>
-      <TouchableWithoutFeedback
-        onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
-      >
-        <Block flex style={imgContainer}>
-          <Image source={{ uri: item.media }} style={imageStyles} />
-        </Block>
-      </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback
-        onPress={() => navigation.navigate("Recipe", { recipeId: item.id })}
-      >
-        <Block flex space="between" style={styles.cardDescription}>
+      <Block card flex style={cardContainer}>
+        <TouchableWithoutFeedback
+            onPress={() => navigation.navigate("Recipe", {recipeId: item.id})}
+        >
           <Block flex>
-            <Text
-              style={{ fontFamily: "open-sans-regular" }}
-              size={14}
-              style={styles.cardTitle}
-              color={yummlyTheme.COLORS.TEXT}
-            >
-              {item.title}
-            </Text>
-            {item.description ? (
-              <Block flex left>
+            <Block style={imgContainer}>
+              <Image source={{uri: item.media}} style={imageStyles}/>
+            </Block>
+            <Block flex style={styles.cardDescription}>
+              <Block flex>
                 <Text
-                  style={{ fontFamily: "open-sans-regular" }}
-                  size={12}
-                  color={yummlyTheme.COLORS.TEXT}
+                    size={14}
+                    style={styles.cardTitle}
+                    color={yummlyTheme.COLORS.TEXT}
                 >
-                  {item.description}
+                  {item.title}
                 </Text>
               </Block>
-            ) : (
-              <Block />
-            )}
+              <Block flex>
+                <Block flex top right flexDirection="row-reverse">
+                  <AirbnbRating
+                      count={5}
+                      defaultRating={item.rating? item.rating : 0}
+                      selectedColor={yummlyTheme.COLORS.GRADIENT_START}
+                      size={10}
+                      showRating={false}
+
+                      style={{paddingVertical: 10, width: 100}}
+                  />
+                </Block>
+                <Block flexDirection="row-reverse" alignItems="flex-end">
+                  <Text
+                      style={{textAlign: 'right', alignSelf:'flex-end', fontFamily: "open-sans-bold"}}
+                      size={12}
+                      color={yummlyTheme.COLORS.ACTIVE}
+                      bold
+                  >
+                    Ver receta
+                  </Text>
+                </Block>
+              </Block>
+            </Block>
           </Block>
-          <Block right={ctaRight ? true : false}>
-            <Text
-              style={{ fontFamily: "open-sans-bold" }}
-              size={12}
-              muted={!ctaColor}
-              color={ctaColor || yummlyTheme.COLORS.ACTIVE}
-              bold
-            >
-              Ver receta
-            </Text>
-          </Block>
-        </Block>
-      </TouchableWithoutFeedback>
-    </Block>
+        </TouchableWithoutFeedback>
+      </Block>
   );
 };
 
@@ -112,20 +103,18 @@ const styles = StyleSheet.create({
     maxWidth: width / 2 - theme.SIZES.BASE,
   },
   cardTitle: {
-    // flex: 1,
-    // flexWrap: "wrap",
     paddingBottom: 6,
+    fontFamily: "open-sans-regular",
   },
   cardDescription: {
+    justifyContent: 'space-betweenm',
     padding: theme.SIZES.BASE / 2,
+    borderWidth:0
   },
   imageContainer: {
     borderRadius: 3,
     elevation: 1,
     overflow: "hidden",
-  },
-  image: {
-    // borderRadius: 3,
   },
   horizontalImage: {
     height: 122,
@@ -138,9 +127,6 @@ const styles = StyleSheet.create({
   verticalStyles: {
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
-  },
-  fullImage: {
-    height: 215,
   },
   shadow: {
     shadowColor: "#8898AA",

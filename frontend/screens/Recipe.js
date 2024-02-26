@@ -7,6 +7,7 @@ import {
   Image,
   Animated,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import { Block, Text, Button, theme } from "galio-framework";
 import yummlyTheme from "../constants/Theme";
@@ -18,6 +19,8 @@ import backendApi from "../api/backendGateway";
 import LoadingScreen from "../components/LoadingScreen";
 import { useNavigation } from "@react-navigation/native";
 import RecipeContext from "../navigation/RecipeContext";
+import RatingModal from "../components/RatingModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const tagsTranslations = {
   RAPID_PREPARATION: "Preparación rápida",
@@ -31,56 +34,32 @@ const tagsTranslations = {
   LOW_CARB: "Bajo en carbohidratos",
 };
 
-const recipe = {
-  userId: 123,
-  userName: "Juan Perez",
-  userImage:
-    "https://www.recetasnestle.com.ar/sites/default/files/2022-06/ingredientes-comida-de-mar-parrilla.jpg",
-  title: "Delicious Recipe",
-  description: "Esto es una breve descripción de la receta",
-  media: [
-    "https://www.recetasnestle.com.ar/sites/default/files/2022-06/ingredientes-comida-de-mar-parrilla.jpg",
-    "https://static-cse.canva.com/blob/598703/Fotografiadecomida.jpg",
-    "https://www.youtube.com/watch?v=zfdzfDGc-1k&ab_channel=PaulinaCocina",
-  ],
-  preparationTime: "60 minutos",
-  servingCount: 4,
-  ingredients: ["ingredient1", "ingredient2"],
-  steps: ["Step 1", "Step 2"],
-  tags: ["VEGETARIAN", "VEGAN"],
-  calories: 500,
-  proteins: 20.5,
-  totalFats: 15.3,
-  rating: 4,
-};
-
 const { height, width } = Dimensions.get("window");
 
 const getAsyncRecipe = async (recipeId) => {
+  const userId = await AsyncStorage.getItem("userId")
   const { response, statusCode } =
-    await backendApi.recipesGateway.getRecipeById(recipeId);
-  console.log("STATUS:", statusCode);
-  console.log("RESPONSE:", response);
-  if (statusCode != 200) {
-    //TODO Debe tirar error
-  }
+    await backendApi.recipesGateway.getRecipeById(recipeId,userId);
   return response;
 };
 export default function Recipe(props) {
   const { route } = props;
   const navigation = useNavigation();
   const [isStepsAvailable, setIsStepsAvailable] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+
   const scrollX = new Animated.Value(0);
   const [loading, setLoading] = useState(true);
   const { recipe, setRecipe } = useContext(RecipeContext);
+  const [recipeRating, setRecipeRating] = useState(0);
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        console.log(route.params.recipeId);
         const fetchedRecipe = await getAsyncRecipe(route.params.recipeId);
         setRecipe(fetchedRecipe);
         setLoading(false);
+        setRecipeRating(fetchedRecipe.rating);
       } catch (error) {
         console.error("Error al obtener la receta");
         navigation.replace("Home");
@@ -88,6 +67,14 @@ export default function Recipe(props) {
     };
     fetchRecipe();
   }, []);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const buttonStyle1 = isStepsAvailable
     ? styles.buttonSelected
@@ -114,6 +101,12 @@ export default function Recipe(props) {
           { useNativeDriver: false }
         )}
       >
+        <RatingModal
+          isVisible={modalVisible}
+          onClose={closeModal}
+          recipeId={recipe.id}
+          setRecipeRating={setRecipeRating}
+        />
         {recipeImages.map((image, index) => (
           <TouchableWithoutFeedback
             key={`recipe-image-${index}`}
@@ -170,15 +163,15 @@ export default function Recipe(props) {
     return <LoadingScreen visible={loading} />;
   } else {
     return (
-      <Block flex style={styles.recipe}>
-        <Block flex style={{ position: "relative" }}>
-          {renderGallery()}
-          <Block center style={styles.dotsContainer}>
-            {renderProgress()}
+      <ScrollView vertical={true} showsVerticalScrollIndicator={false}>
+        <Block flex style={styles.recipe}>
+          <Block flex style={{ position: "relative" }}>
+            {renderGallery()}
+            <Block center style={styles.dotsContainer}>
+              {renderProgress()}
+            </Block>
           </Block>
-        </Block>
-        <Block flex style={styles.options}>
-          <ScrollView vertical={true} showsVerticalScrollIndicator={false}>
+          <Block flex style={styles.options}>
             <Block
               style={{
                 paddingHorizontal: theme.SIZES.BASE,
@@ -199,17 +192,31 @@ export default function Recipe(props) {
               >
                 {recipe.description}
               </Text>
-              <Block row>
-                <AirbnbRating
-                  count={5}
-                  defaultRating={1}
-                  isDisabled={true}
-                  selectedColor={yummlyTheme.COLORS.GRADIENT_START}
-                  size={20}
-                  showRating={false}
-                  style={{ paddingVertical: 10, width: 100 }}
-                />
-              </Block>
+              <TouchableOpacity onPress={openModal}>
+                <Block
+                  flex
+                  flexDirection="row"
+                  style={{ justifyContent: "flex-start", alignItems: "center" }}
+                >
+                  <AirbnbRating
+                    count={5}
+                    defaultRating={recipeRating}
+                    isDisabled={true}
+                    selectedColor={yummlyTheme.COLORS.GRADIENT_START}
+                    size={20}
+                    showRating={false}
+                    style={{ paddingVertical: 10, width: 100 }}
+                  />
+                  <Text
+                    size={15}
+                    family="MaterialIcons"
+                    name="edit"
+                    color={yummlyTheme.COLORS.GRADIENT_START}
+                  >
+                    Calificar
+                  </Text>
+                </Block>
+              </TouchableOpacity>
               <Block
                 flex
                 flexDirection="row"
@@ -225,7 +232,7 @@ export default function Recipe(props) {
               <Block
                 flex
                 flexDirection="row"
-                style={{ justifyContent: "flex-start", gap: -50 }}
+                style={{ justifyContent: "flex-start" }}
               >
                 <Block
                   flex
@@ -369,7 +376,12 @@ export default function Recipe(props) {
               <Block
                 flex
                 flexDirection="row"
-                style={{ alignItems: "center", justifyContent: "flex-start" }}
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 5,
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                }}
               >
                 <Image src={recipe.userImage} style={styles.avatar} />
                 <Text
@@ -377,13 +389,13 @@ export default function Recipe(props) {
                   size={14}
                   color={yummlyTheme.COLORS.TEXT}
                 >
-                  {recipe.userName}
+                  {recipe.username}
                 </Text>
               </Block>
             </Block>
-          </ScrollView>
+          </Block>
         </Block>
-      </Block>
+      </ScrollView>
     );
   }
 }
@@ -432,58 +444,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  addToCart: {
-    width: width - theme.SIZES.BASE * 4,
-    marginTop: theme.SIZES.BASE * 2,
-    shadowColor: "rgba(0, 0, 0, 0.2)",
-    backgroundColor: "#FFF",
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    shadowOpacity: 1,
-  },
   avatar: {
     height: 40,
     width: 40,
     borderRadius: 20,
     marginBottom: theme.SIZES.BASE,
     marginRight: 8,
-  },
-  size: {
-    height: theme.SIZES.BASE * 3,
-    width: (width - theme.SIZES.BASE * 2) / 3,
-    borderBottomWidth: 0.5,
-    borderBottomColor: yummlyTheme.COLORS.BORDER_COLOR,
-    overflow: "hidden",
-  },
-  sizeButton: {
-    height: theme.SIZES.BASE * 3,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  active: {
-    backgroundColor: yummlyTheme.COLORS.PRICE_COLOR,
-  },
-  roundTopLeft: {
-    borderTopLeftRadius: 4,
-    borderRightColor: yummlyTheme.COLORS.BORDER_COLOR,
-    borderRightWidth: 0.5,
-  },
-  roundBottomLeft: {
-    borderBottomLeftRadius: 4,
-    borderRightColor: yummlyTheme.COLORS.BORDER_COLOR,
-    borderRightWidth: 0.5,
-    borderBottomWidth: 0,
-  },
-  roundTopRight: {
-    borderTopRightRadius: 4,
-    borderLeftColor: yummlyTheme.COLORS.BORDER_COLOR,
-    borderLeftWidth: 0.5,
-  },
-  roundBottomRight: {
-    borderBottomRightRadius: 4,
-    borderLeftColor: yummlyTheme.COLORS.BORDER_COLOR,
-    borderLeftWidth: 0.5,
-    borderBottomWidth: 0,
   },
 });

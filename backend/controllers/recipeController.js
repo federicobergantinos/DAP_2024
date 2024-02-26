@@ -2,10 +2,13 @@ const {
   createRecipe,
   getRecipes,
   getRecipe,
+  updateRecipe,
   searchRecipes,
 } = require("../services/recipeService");
 const { findUserById } = require("../services/userService");
 const { isFavorite } = require("../services/favoriteService");
+const { v4: uuidv4 } = require("uuid");
+const { getRecipeRating } = require("../services/ratingService");
 
 const AWS = require("aws-sdk");
 AWS.config.update({
@@ -16,6 +19,11 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 const uploadBase64ImageToS3 = async (base64Image, filename) => {
+  // Asegúrate de que base64Image es una cadena
+  if (typeof base64Image !== "string") {
+    throw new TypeError("El argumento base64Image debe ser una cadena");
+  }
+
   // Corrige la expresión regular para eliminar correctamente el prefijo de la cadena base64
   const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
   const buffer = Buffer.from(base64Data, "base64");
@@ -41,30 +49,16 @@ const uploadBase64ImageToS3 = async (base64Image, filename) => {
   }
 };
 
-const { v4: uuidv4 } = require("uuid");
-
 const create = async (req, res) => {
   try {
-    let imageUrls = [];
-    if (req.body.images && req.body.images.length) {
-      // Iterar sobre todas las imágenes en el array y cargarlas a S3
-      const uploadPromises = req.body.images.map(async (imageBase64, index) => {
-        const filename = `${uuidv4()}_${index}.jpeg`; // Asegurar un nombre de archivo único para cada imagen
-        return uploadBase64ImageToS3(imageBase64, filename);
-      });
-      imageUrls = await Promise.all(uploadPromises); // Esperar a que todas las promesas se resuelvan
-    }
     const recipeData = {
       ...req.body,
-      imageUrls: imageUrls, // Guardar el array de URLs de las imágenes
     };
-
-    const recipeId = await createRecipe(recipeData); // Asegúrate de que `createRecipe` maneje correctamente `imageUrls`
+    const recipeId = await createRecipe(recipeData);
 
     res.status(201).json({
       id: recipeId,
       message: "Receta creada con éxito",
-      imageUrls: imageUrls, // Devolver las URLs de las imágenes cargadas
     });
   } catch (error) {
     console.error(`Error en la creación de la receta: ${error}`);
@@ -81,23 +75,20 @@ const getAll = async (req, res) => {
   const tag = req.query.tag;
 
   try {
-    // Ajusta getRecipes para aceptar un parámetro de tag y lo usa para filtrar las recetas
-    const recipes = await getRecipes({ limit, offset, tag }); // Asegúrate de que getRecipes maneje el parámetro de tag adecuadamente
+    const recipes = await getRecipes({ limit, offset, tag });
     const response = recipes.map((recipe) => {
-      const { id, title, media, tags } = recipe;
-
-      // Filtra los elementos de media que contienen 'youtube' en su URL y selecciona la primera imagen, si existe
-      const filteredMedia = media.filter((m) => !m.data.includes("youtube"));
+      const { id, title, media, tags, rating } = recipe;
+      const filteredMedia = media.filter((m) => m.type === "image");
       const firstImage = filteredMedia.length > 0 ? filteredMedia[0].data : "";
 
-      // Mapea los tags a la forma deseada, por ejemplo, un arreglo de nombres de tags
       const tagsArray = tags.map((tag) => tag.key);
 
       return {
         id,
         title,
-        media: firstImage, // Solo devuelve la primera imagen filtrada
-        tags: tagsArray, // Incluye los tags asociados
+        media: firstImage,
+        tags: tagsArray,
+        rating: rating,
       };
     });
     res.status(200).json(response);
@@ -108,6 +99,7 @@ const getAll = async (req, res) => {
     });
   }
 };
+
 
 const searchAll = async (req, res) => {
   const searchTerm = req.query.searchTerm || "";
@@ -129,24 +121,72 @@ const searchAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     const { recipeId } = req.params;
-
+    const userId = req.query.userId;
     const recipe = await getRecipe(recipeId);
     const user = await findUserById(recipe.userId);
-    const isValidFavorite = await isFavorite(user.id, recipeId);
-    recipe.username = user.name + " " + user.surname;
-    recipe.userImage = user.photoUrl;
-    const data = recipe.media.map((m) => m.data);
+    const isValidFavorite = await isFavorite(userId, recipeId);
+
+    // Se filtran los elementos de media según su tipo y se agregan a los atributos correspondientes.
+    const images = recipe.media
+      .filter((m) => m.type === "image")
+      .map((m) => m.data);
+    const videos = recipe.media
+      .filter((m) => m.type === "video")
+      .map((m) => m.data)[0];
+
+    const rating = await getRecipeRating(recipeId);
+
     res.status(200).json({
       ...recipe,
       username: user.name + " " + user.surname,
       userImage: user.photoUrl,
-      media: data,
+      media: images,
+      video: videos,
       isFavorite: isValidFavorite,
+      rating: rating,
     });
   } catch (error) {
     console.error(` ${error}`);
     res.status(error.code || 500).json({
-      msg: error.message || "An exception has ocurred",
+      msg: error.message || "An exception has occurred",
+    });
+  }
+};
+
+const update = async (req, res) => {
+  try {
+    const { recipeId } = req.params;
+    const updateData = {
+      ...req.body,
+    };
+    await updateRecipe(recipeId, updateData);
+
+    res.status(200).json({
+      message: "Receta actualizada con éxito",
+      images: req.body.images, // Devolver las URLs de las imágenes proporcionadas
+    });
+  } catch (error) {
+    console.error(`Error al actualizar la receta: ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "Ha ocurrido una excepción",
+    });
+  }
+};
+
+const uploadImage = async (req, res) => {
+  const image = req.body.image;
+  try {
+    const filename = `${uuidv4()}.jpeg`; // Asegurar un nombre de archivo único
+    const imageUrl = await uploadBase64ImageToS3(image, filename); // Subir y obtener la URL
+
+    res.status(200).json({
+      message: "Imagen subida con éxito",
+      images: imageUrl,
+    });
+  } catch (error) {
+    console.error(`Hubo un problema al subir la imagen: ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "Ha ocurrido un error al actualizar la receta",
     });
   }
 };
@@ -156,4 +196,6 @@ module.exports = {
   getAll,
   getById,
   searchAll,
+  update,
+  uploadImage,
 };

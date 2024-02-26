@@ -10,6 +10,7 @@ const { isValidUser } = require("./userService");
 const NotFound = require("../Errors/NotFound");
 const { Op } = require("sequelize");
 const sequelize = require("../configurations/database/sequelizeConnection");
+const {getRecipeRating} = require("./ratingService");
 
 // Función para crear una receta y asociarla con tags y medios
 const createRecipe = async (recipeData) => {
@@ -25,7 +26,7 @@ const createRecipe = async (recipeData) => {
     proteins,
     totalFats,
     tags,
-    imageUrls,
+    images,
     video,
   } = recipeData;
   // Verificar si el usuario es válido
@@ -59,12 +60,13 @@ const createRecipe = async (recipeData) => {
     );
 
     // Insertar cada URL de imagen en la base de datos
-    if (imageUrls && imageUrls.length > 0) {
-      const mediaPromises = imageUrls.map((url) =>
+    if (images && images.length > 0) {
+      const mediaPromises = images.map((url) =>
         Media.create(
           {
             recipeId: recipe.id,
             data: url,
+            type: "image",
           },
           { transaction }
         )
@@ -78,6 +80,7 @@ const createRecipe = async (recipeData) => {
         {
           recipeId: recipe.id,
           data: video,
+          type: "video",
         },
         { transaction }
       );
@@ -115,12 +118,12 @@ const createRecipe = async (recipeData) => {
 };
 
 const getRecipes = async (queryData) => {
-  // Inicializa las opciones de inclusión con relaciones que siempre se incluirán
   let includeOptions = [
     {
       model: Media,
       as: "media",
-      attributes: ["data"],
+      attributes: ["data", "type"],
+      where: { type: "image" },
     },
     {
       model: Tag,
@@ -129,24 +132,105 @@ const getRecipes = async (queryData) => {
     },
   ];
 
-  // Si se proporcionó un tag, ajusta la consulta para filtrar por ese tag
   if (queryData.tag) {
     includeOptions.push({
       model: Tag,
       as: "tags",
       where: { key: queryData.tag },
-      required: true, // Asegura que solo se retornen recetas que tengan el tag especificado
+      required: true,
     });
   }
 
-  // Realiza la consulta con las opciones de inclusión
   const recipes = await Recipe.findAll({
     limit: queryData.limit,
     offset: queryData.offset,
     include: includeOptions,
   });
 
-  return recipes;
+  const ratingPromise = recipes.map(async it => {
+    it.rating = await getRecipeRating(it.id)
+    return it
+  })
+  return await Promise.all(ratingPromise)
+};
+
+const updateRecipe = async (recipeId, updateData) => {
+  const {
+    title,
+    description,
+    preparationTime,
+    servingCount,
+    ingredients,
+    steps,
+    calories,
+    proteins,
+    totalFats,
+    tags,
+    images,
+    video,
+  } = updateData;
+
+  // Convertir arrays a strings para almacenamiento, si es necesario
+  const ingredientsString = ingredients?.join("|");
+  const stepsString = steps?.join("|");
+
+  // Iniciar una transacción
+  const transaction = await sequelize.transaction();
+
+  try {
+    // Actualizar la receta básica
+    await Recipe.update(
+      {
+        title,
+        description,
+        preparationTime,
+        servingCount,
+        ingredients: ingredientsString,
+        steps: stepsString,
+        calories,
+        proteins,
+        totalFats,
+      },
+      { where: { id: recipeId } },
+      { transaction }
+    );
+
+    // Eliminar las asociaciones de tags y medios existentes
+    await RecipeTags.destroy({ where: { recipeId }, transaction });
+    await Media.destroy({ where: { recipeId }, transaction });
+
+    // Insertar nuevos tags y crear asociaciones
+    for (const tagName of tags) {
+      let [tag, created] = await Tag.findOrCreate({
+        where: { key: tagName },
+        transaction,
+      });
+      await RecipeTags.create({ recipeId, tagId: tag.id }, { transaction });
+    }
+
+    // Insertar nuevas imágenes
+    for (const url of images) {
+      await Media.create(
+        { recipeId, data: url, type: "image" },
+        { transaction }
+      );
+    }
+
+    // Insertar nuevo video si se proporciona
+    if (video) {
+      await Media.create(
+        { recipeId, data: video, type: "video" },
+        { transaction }
+      );
+    }
+
+    // Hacer commit de la transacción
+    await transaction.commit();
+  } catch (error) {
+    // Revertir la transacción en caso de error
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 const searchRecipes = async ({ searchTerm, limit, offset }) => {
@@ -163,7 +247,8 @@ const searchRecipes = async ({ searchTerm, limit, offset }) => {
       {
         model: Media,
         as: "media",
-        attributes: ["data"], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
+        attributes: ["data", "type"], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
+        where: { type: "image" },
         limit: 1, // Intenta limitar a 1 el resultado de media directamente en la consulta
       },
     ],
@@ -188,7 +273,7 @@ const getRecipe = async (recipeId) => {
       {
         model: Media,
         as: "media",
-        attributes: ["data"],
+        attributes: ["data", "type"],
       },
     ],
   });
@@ -209,6 +294,14 @@ const getRecipe = async (recipeId) => {
   recipe.steps = recipe.steps.split("|");
   recipe.ingredients = recipe.ingredients.split("|");
   recipe.dataValues.tags = tags.map((t) => t.key);
+  recipe.dataValues.media.sort((a, b) => {
+    if (a.type === "image" && b.type === "video") {
+      return -1;
+    } else if (a.type === "video" && b.type === "image") {
+      return 1;
+    }
+    return 0;
+  });
 
   return recipe.dataValues;
 };
@@ -218,4 +311,5 @@ module.exports = {
   getRecipes,
   getRecipe,
   searchRecipes,
+  updateRecipe,
 };
