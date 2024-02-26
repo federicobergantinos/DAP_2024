@@ -37,7 +37,9 @@ const Login = () => {
       (await AsyncStorage.getItem("userId")) !== null
     );
   };
+
   const [isLoading, setIsLoading] = useState(isLoggedUser);
+
   GoogleSignin.configure({
     webClientId:
       "445263022323-e0okjk06i01er8q0gcg51oensjp8h34o.apps.googleusercontent.com",
@@ -47,24 +49,6 @@ const Login = () => {
       "445263022323-u2nac6qhp2rupfsgc26gkbriup8n7ho5.apps.googleusercontent.com",
     scopes: ["profile", "email"],
   });
-
-  const refreshToken = async () => {
-    const { response, statusCode } = await backendApi.authUser.refresh(
-      AsyncStorage.getItem("refresh")
-    );
-    if (statusCode === 201) {
-      await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-      await AsyncStorage.setItem(
-        "refresh",
-        JSON.stringify(response.refreshToken)
-      );
-      await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-      setIsLoading(false);
-      navigation.replace("Home");
-    } else {
-      await logOut();
-    }
-  };
 
   useEffect(() => {
     const validateLoggedUser = async () => {
@@ -77,22 +61,41 @@ const Login = () => {
     validateLoggedUser();
   }, []);
 
+  const authenticate = async () => {
+    try {
+      setIsLoading(true);
+      const userInfo = await GoogleSignin.signIn();
+      const { idToken, user } = userInfo;
+
+      const { response, statusCode } = await backendApi.authUser.authenticate({
+        token: idToken,
+      });
+
+      if (statusCode === 201) {
+        await saveCredentials(
+          response.accessToken,
+          response.refreshToken,
+          response.id
+        );
+      }
+      setIsLoading(false);
+    } catch (error) {
+      await logOut();
+    }
+  };
+
   const reAuthenticate = async () => {
-    const userInfo = await GoogleSignin.signIn();
-    const { idToken, user } = userInfo;
+    setIsLoading(true);
     const { response, statusCode } = await backendApi.authUser.authenticate({
-      token: idToken,
+      token: null,
     });
 
     if (statusCode === 201) {
-      await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-      await AsyncStorage.setItem(
-        "refresh",
-        JSON.stringify(response.refreshToken)
+      await saveCredentials(
+        response.accessToken,
+        response.refreshToken,
+        response.id
       );
-      await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-      navigation.replace("Home");
-      setIsLoading(false);
     } else if (statusCode === undefined) {
       try {
         if ((await asyncStorage.getItem("token")) !== null) {
@@ -104,39 +107,19 @@ const Login = () => {
     }
   };
 
-  const authenticate = async () => {
-    try {
-      console.log("START LOGIN");
-      setIsLoading(true);
-      const userInfo = await GoogleSignin.signIn();
-
-      console.log("userInfo", userInfo);
-      const { idToken, user } = userInfo;
-      console.log("idToken", idToken);
-      const { response, statusCode } = await backendApi.authUser.authenticate({
-        token: idToken,
-      });
-      console.log("response", response);
-
-      if (statusCode === 201) {
-        await AsyncStorage.setItem(
-          "token",
-          JSON.stringify(response.accessToken)
-        );
-        await AsyncStorage.setItem(
-          "refresh",
-          JSON.stringify(response.refreshToken)
-        );
-        await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-        setIsLoading(false);
-        navigation.replace("Home");
-      }
-      setIsLoading(false);
-    } catch (error) {
+  const refreshToken = async () => {
+    const { response, statusCode } = await backendApi.authUser.refresh(
+      await AsyncStorage.getItem("refresh")
+    );
+    if (statusCode === 201) {
+      const userId = await AsyncStorage.getItem("userId");
+      await saveCredentials(
+        response.accessToken,
+        response.refreshToken,
+        userId
+      );
+    } else {
       await logOut();
-      console.error("CODE:" + error.code);
-      console.error("MESSAGE:" + error.message);
-      console.error("STACK:" + error.stack);
     }
   };
 
@@ -148,9 +131,16 @@ const Login = () => {
 
   const clearAsyncStorage = async () => {
     await AsyncStorage.clear();
-    await AsyncStorage.clear();
-    await AsyncStorage.clear();
   };
+
+  const saveCredentials = async (accessToken, refreshToken, userId) => {
+    navigation.replace("Home");
+    await AsyncStorage.setItem("token", accessToken);
+    await AsyncStorage.setItem("refresh", refreshToken);
+    await AsyncStorage.setItem("userId", JSON.stringify(userId));
+    setIsLoading(false);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <DismissKeyboard>

@@ -25,10 +25,9 @@ const createRecipe = async (recipeData) => {
     proteins,
     totalFats,
     tags,
-    imageUrl,
+    imageUrls,
     video,
   } = recipeData;
-
   // Verificar si el usuario es válido
   if (!(await isValidUser(userId))) {
     throw new BadRequest("Invalid User");
@@ -58,15 +57,20 @@ const createRecipe = async (recipeData) => {
       },
       { transaction }
     );
-    // Guardar la imagen en Media si existe
-    if (imageUrl) {
-      await Media.create(
-        {
-          recipeId: recipe.id,
-          data: imageUrl,
-        },
-        { transaction }
+
+    // Insertar cada URL de imagen en la base de datos
+    if (imageUrls && imageUrls.length > 0) {
+      const mediaPromises = imageUrls.map((url) =>
+        Media.create(
+          {
+            recipeId: recipe.id,
+            data: url,
+            type: "image",
+          },
+          { transaction }
+        )
       );
+      await Promise.all(mediaPromises);
     }
 
     // Guardar el video en Media si existe
@@ -75,6 +79,7 @@ const createRecipe = async (recipeData) => {
         {
           recipeId: recipe.id,
           data: video,
+          type: "video",
         },
         { transaction }
       );
@@ -117,7 +122,8 @@ const getRecipes = async (queryData) => {
     {
       model: Media,
       as: "media",
-      attributes: ["data"],
+      attributes: ["data", "type"],
+      where: { type: "image" },
     },
     {
       model: Tag,
@@ -142,8 +148,86 @@ const getRecipes = async (queryData) => {
     offset: queryData.offset,
     include: includeOptions,
   });
-
   return recipes;
+};
+
+const updateRecipe = async (recipeId, updateData) => {
+  const {
+    title,
+    description,
+    preparationTime,
+    servingCount,
+    ingredients,
+    steps,
+    calories,
+    proteins,
+    totalFats,
+    tags,
+    images,
+    video,
+  } = updateData;
+
+  // Convertir arrays a strings para almacenamiento, si es necesario
+  const ingredientsString = ingredients?.join("|");
+  const stepsString = steps?.join("|");
+
+  // Iniciar una transacción
+  const transaction = await sequelize.transaction();
+
+  try {
+    // Actualizar la receta básica
+    await Recipe.update(
+      {
+        title,
+        description,
+        preparationTime,
+        servingCount,
+        ingredients: ingredientsString,
+        steps: stepsString,
+        calories,
+        proteins,
+        totalFats,
+      },
+      { where: { id: recipeId } },
+      { transaction }
+    );
+
+    // Eliminar las asociaciones de tags y medios existentes
+    await RecipeTags.destroy({ where: { recipeId }, transaction });
+    await Media.destroy({ where: { recipeId }, transaction });
+
+    // Insertar nuevos tags y crear asociaciones
+    for (const tagName of tags) {
+      let [tag, created] = await Tag.findOrCreate({
+        where: { key: tagName },
+        transaction,
+      });
+      await RecipeTags.create({ recipeId, tagId: tag.id }, { transaction });
+    }
+
+    // Insertar nuevas imágenes
+    for (const url of images) {
+      await Media.create(
+        { recipeId, data: url, type: "image" },
+        { transaction }
+      );
+    }
+
+    // Insertar nuevo video si se proporciona
+    if (video) {
+      await Media.create(
+        { recipeId, data: video, type: "video" },
+        { transaction }
+      );
+    }
+
+    // Hacer commit de la transacción
+    await transaction.commit();
+  } catch (error) {
+    // Revertir la transacción en caso de error
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 const searchRecipes = async ({ searchTerm, limit, offset }) => {
@@ -160,24 +244,25 @@ const searchRecipes = async ({ searchTerm, limit, offset }) => {
       {
         model: Media,
         as: "media",
-        attributes: ["data"], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
+        attributes: ["data", "type"], // Asegúrate de que 'data' contiene la URL o referencia de la imagen
+        where: { type: "image" },
         limit: 1, // Intenta limitar a 1 el resultado de media directamente en la consulta
       },
-      ],
-    });
+    ],
+  });
 
-    return recipes.map((recipe) => {
-      // Asumiendo que `media` es un array, incluso si limitas los resultados en la consulta
-      const firstImage = recipe.media.length > 0 ? recipe.media[0].data : null;
+  return recipes.map((recipe) => {
+    // Asumiendo que `media` es un array, incluso si limitas los resultados en la consulta
+    const firstImage = recipe.media.length > 0 ? recipe.media[0].data : null;
 
-      return {
-        id: recipe.id,
-        title: recipe.title,
-        media: firstImage,
-        description: recipe.description,
-      };
-    });
-  };
+    return {
+      id: recipe.id,
+      title: recipe.title,
+      media: firstImage,
+      description: recipe.description,
+    };
+  });
+};
 
 const getRecipe = async (recipeId) => {
   const recipe = await Recipe.findByPk(recipeId, {
@@ -185,7 +270,7 @@ const getRecipe = async (recipeId) => {
       {
         model: Media,
         as: "media",
-        attributes: ["data"],
+        attributes: ["data", "type"],
       },
     ],
   });
@@ -215,4 +300,5 @@ module.exports = {
   getRecipes,
   getRecipe,
   searchRecipes,
+  updateRecipe,
 };

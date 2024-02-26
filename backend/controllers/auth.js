@@ -4,18 +4,42 @@ const {
   loginUser,
   refreshToken,
 } = require("../services/authService");
+const {verify} = require("jsonwebtoken");
+const Unauthorized = require("../Errors/Unauthorized");
 const authenticate = async (req, res) => {
   try {
-    const userData = await loginUser(
-      req.body.token,
-      req.headers["authorization"]
-    );
-    let user = await findUserByEmail(userData.email);
-    if (!user) {
-      user = await createUser(userData);
+    const googleToken = req.body.token
+    const accessToken = req.headers["authorization"]
+
+    let user = null
+    let tokens = null
+    if(googleToken !== null) {
+      const userData = await loginUser(
+          googleToken,
+          accessToken
+      );
+      user = await findUserByEmail(userData.email);
+      if (!user) {
+        user = await createUser(userData);
+      }
+      tokens = createAuthTokens(user);
+    } else if (accessToken !== null) {
+
+      const decode = verify(accessToken, process.env.CODE, (err, decoded) => {
+        if (err) {
+          console.log("ERROR", err)
+          throw new Unauthorized("Invalid credentials")
+        } else {
+          return decoded
+        }
+      });
+      const userData = await findUserByEmail(decode.email);
+      user = userData.dataValues
+      tokens = createAuthTokens(user);
+    } else {
+      res.status(400).json({msg: 'invalid credentials'})
+      return
     }
-    console.log("user", user);
-    const tokens = createAuthTokens(user);
 
     res.status(201).json({
       id: user.id,
@@ -32,6 +56,7 @@ const authenticate = async (req, res) => {
 
 const refresh = async (req, res) => {
   try {
+
     const accessToken = req.headers["authorization"];
     const refresh = req.body.refreshToken;
 

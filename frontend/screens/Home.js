@@ -14,7 +14,6 @@ import { Card } from "../components";
 import backendApi from "../api/backendGateway";
 
 const { width } = Dimensions.get("screen");
-const ITEMS_PER_PAGE = 6;
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -22,7 +21,6 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [selectedTag, setSelectedTag] = useState(null);
   const [allItemsLoaded, setAllItemsLoaded] = useState(false);
-  const [endReachedThreshold, setEndReachedThreshold] = useState(0.1); // Valor inicial
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -30,11 +28,9 @@ const Home = () => {
 
   useEffect(() => {
     setSelectedTag(tabId);
-    // Resetea los estados para manejar el nuevo tag
     setData([]);
     setCurrentPage(0);
     setAllItemsLoaded(false);
-    // Asegúrate de llamar a fetchRecipes aquí si es necesario para cargar inmediatamente después de cambiar el tag
   }, [tabId]);
 
   useEffect(() => {
@@ -50,7 +46,7 @@ const Home = () => {
       const tag = selectedTag !== "ALL" ? selectedTag : undefined;
       const { response: recipes } = await backendApi.recipesGateway.getAll(
         page,
-        tag,
+        tag
       );
 
       if (recipes.length > 0) {
@@ -122,7 +118,7 @@ const styles = StyleSheet.create({
   },
   recipes: {
     justifyContent: "space-between",
-    width: width - theme.SIZES.BASE * 2,
+    width: width - theme.SIZES.BASE,
     paddingVertical: theme.SIZES.BASE,
   },
   fab: {

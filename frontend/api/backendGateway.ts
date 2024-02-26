@@ -5,10 +5,8 @@ import { RecipeDTO } from "./RecipeDTO";
 import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
-// Establecer la URL base del servidor
-const api = axios.create({ baseURL: "http://192.168.0.100:8080" });
-
-// Definir las URLs base para las rutas de recetas y usuarios
+// const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
+const api = axios.create({ baseURL: "http://192.168.1.189:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
@@ -23,15 +21,16 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
-  },
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      return { response: error.response.data, status: error.response.statusCode };
+    (response: AxiosResponse) => {
+      return response;
+    },
+    (error) => {
+      if (error.response) {
+        return Promise.resolve({ response: null, statusCode: error.response.status });
+      }
+      console.error(error)
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
 );
 
 // Función para agregar el código de estado a la respuesta
@@ -40,7 +39,6 @@ const responseBodyWithStatusCode = (response: AxiosResponse): { response: any, s
   statusCode: response.status,
 });
 
-api.interceptors.response.use((response) => response);
 
 // Definición de funciones de solicitud HTTP
 const requests = {
@@ -52,13 +50,21 @@ const requests = {
   delete: (url: string) =>
     api.delete(url).then(responseBodyWithStatusCode),
 };
-
-// Objeto para funciones relacionadas con la autenticación
 const authUser = {
   authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> =>
     requests.post('/v1/auth', auth),
   refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> =>
     requests.put('/v1/auth', { refreshToken: refreshToken })
+};
+
+const rating = {
+  rate: (userId: number, recipeId: number, value: number): Promise<{ response: any; statusCode: number }>  => requests.put('/v1/recipes/'+recipeId+'/ratings', { userId: userId, value: value}),
+  getUserRate: (recipeId: number, userId: number): Promise<{ response:any; statusCode: number }> => requests.get('/v1/recipes/'+recipeId+'/users/'+userId+'/ratings')
+};
+
+const rating = {
+  rate: (userId: number, recipeId: number, value: number): Promise<{ response: any; statusCode: number }>  => requests.put('/v1/recipes/'+recipeId+'/ratings', { userId: userId, value: value}),
+  getUserRate: (recipeId: number, userId: number): Promise<{ response:any; statusCode: number }> => requests.get('/v1/recipes/'+recipeId+'/users/'+userId+'/ratings')
 };
 
 // Objeto para funciones relacionadas con recetas
@@ -74,9 +80,7 @@ const recipesGateway = {
     }
   },
 
-  getRecipeById: (id: number): Promise<{ response: RecipeDTO; statusCode: number }> =>
-    requests.get(recipeBaseUrl + "/" + id),
-
+  getRecipeById: ( id: number, userId: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id + "?userId=" + userId),
   getAll: (page = 0, tag, userId=""): Promise<{ response: RecipesDTO; statusCode: number }> => {
     const url = tag
       ? `${recipeBaseUrl}/?page=${page}&limit=10&tag=${tag}&userId=${userId}`
@@ -87,16 +91,27 @@ const recipesGateway = {
   searchRecipes: (searchTerm = "", page = 0, limit = 10): Promise<{ response: RecipesSearchDTO; statusCode: number }> => {
     const url = `${recipeBaseUrl}/search?page=${page}&limit=${limit}&searchTerm=${searchTerm}`;
     return requests.get(url);
+  },
+  updateRecipe: async (id: number, recipeData: any): Promise<{ response: any; statusCode: number }> => {
+    try {
+      const url = `${recipeBaseUrl}/${id}`;
+      const response = await requests.put(url, recipeData);
+
+      return response;
+    } catch (error) {
+      console.error('Error al actualizar la receta:', error);
+      throw error;
+    }
   }
 };
 
 // Objeto para funciones relacionadas con usuarios
 const users = {
-  like: (userId: number, recipeId: number): Promise<{ response: any; statusCode: number }> =>
-    requests.post(usersBaseUrl + "/" + userId + "/favorites", {
-      recipeId: recipeId,
-    }),
-  dislike: (userId: number, recipeId: number): Promise<{ response: any; statusCode: number }> =>
+  like: ( userId: number, recipeId: number,): Promise<{ response: any; statusCode: number }> =>
+    requests.post(usersBaseUrl + "/" + userId + "/favorites",
+        {recipeId: recipeId,}
+    ),
+  dislike: ( userId: number, recipeId: number,): Promise<{ response: any; statusCode: number }> =>
     requests.delete(usersBaseUrl + "/" + userId + "/favorites/" + recipeId),
   favorites: (userId: number): Promise<{ response: any; statusCode: number  }> => 
     requests.get(usersBaseUrl + "/" + userId + "/favorites"),
@@ -121,11 +136,4 @@ const getToken = async (): Promise<string> => {
     return "";
   }
 };
-
-
-// Exportar los objetos y funciones definidos
-export default {
-  authUser,
-  recipesGateway,
-  users,
-};
+export default { authUser, recipesGateway, users, rating };

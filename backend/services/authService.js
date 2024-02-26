@@ -6,7 +6,7 @@ const { findUserById } = require("./userService");
 const client = new OAuth2Client();
 
 const createAuthTokens = (user) => {
-  const payload = { userId: user.id, email: user.email };
+  const payload = { id: user.id, email: user.email };
   const accessOptions = { expiresIn: "1h" };
   const refreshOptions = { expiresIn: "30d" };
   const accessToken = jwt.sign(payload, process.env.CODE, accessOptions);
@@ -15,14 +15,7 @@ const createAuthTokens = (user) => {
   return { refreshToken, accessToken };
 };
 
-const loginUser = async (token, accessToken) => {
-  /*if(accessToken !== undefined && accessToken !== null) {
-        jwt.verify(accessToken, process.env.CODE, (err, decodedToken) => {
-            if (err) {
-                throw Unauthorized('Error in token')
-            }
-        });
-    }*/
+const loginUser = async (token) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
