@@ -31,25 +31,20 @@ function HomeStack(props) {
       }}
     >
       <Stack.Screen
-        name="Home"
-        component={Home}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              title="Home"
-              search
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-      <Stack.Screen
         name="Login"
         component={Login}
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Home" search navigation={navigation} scene={scene} />
+          ),
+          cardStyle: { backgroundColor: "#F8F9FE" },
         }}
       />
       <Stack.Screen
