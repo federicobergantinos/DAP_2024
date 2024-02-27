@@ -41,7 +41,20 @@ export default function Profile() {
           if (response.statusCode === 200) {
             const imageUrl = response.response.images;
             console.log(imageUrl);
-            return imageUrl; // Devolvemos la URL de la imagen subida
+            // Actualizar el perfil del usuario en el backend
+            const userData = { photoUrl: imageUrl };
+            const updateResponse = await backendApi.users.editProfile(
+              userId,
+              userData
+            );
+            if (updateResponse.statusCode === 200) {
+              // Actualizar el estado local y la UI
+              setUserInfo({ ...userInfo, photoUrl: imageUrl });
+              alert("Foto del perfil actualizada con éxito.");
+            } else {
+              console.error("Error al actualizar el perfil del usuario.");
+              alert("No se pudo actualizar la foto del perfil.");
+            }
           }
         } catch (error) {
           console.error("Error al subir la imagen:", error);
@@ -84,6 +97,27 @@ export default function Profile() {
         setFavoritesCount(response.response.favorites.length);
       } catch (error) {
         console.error("Error al obtener los favoritos", error);
+      }
+    };
+
+    const editProfile = async (userId, userData) => {
+      try {
+        // La variable userData debe ser un objeto que puede contener name, surname y/o photoUrl
+        const { response, statusCode } = await backendApi.users.editProfile(
+          userId,
+          userData
+        );
+
+        if (statusCode === 200) {
+          console.log("Perfil actualizado con éxito", response);
+        } else {
+          console.error(
+            `Error al actualizar el perfil. Código de estado: ${statusCode}`
+          );
+        }
+      } catch (error) {
+        console.error("Error al editar el perfil:", error);
+        throw error;
       }
     };
 

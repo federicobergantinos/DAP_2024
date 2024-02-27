@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { editProfile } = require("../controllers/userController");
 
 const {
   createFav,
