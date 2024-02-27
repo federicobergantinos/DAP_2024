@@ -17,6 +17,7 @@ import { openImagePickerAsync } from "../components/ImagePicker.js";
 import { useNavigation } from "@react-navigation/native";
 import backendApi from "../api/backendGateway";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Modal from "react-native-modal";
 
 const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
@@ -29,6 +30,8 @@ export default function Profile() {
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [recipesCount, setRecipesCount] = useState(0);
   const [recipes, setRecipes] = useState([]);
+  const [modalContent, setModalContent] = useState({ type: "", items: [] });
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const handleImagePicked = async () => {
     try {
@@ -64,6 +67,56 @@ export default function Profile() {
       console.error("Error al seleccionar la imagen:", error);
       alert("No se pudo seleccionar la imagen.");
     }
+  };
+
+  const handleOpenModal = (type) => {
+    setModalContent({
+      type: type,
+      items: type === "recipes" ? recipes : favorites,
+    });
+    setModalVisible(true);
+  };
+
+  // Función para cerrar el modal
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
+
+  const renderModalContent = () => {
+    return (
+      <Block
+        style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          // marginHorizontal: -theme.SIZES.BASE,
+          width: width * 0.86,
+        }}
+      >
+        {modalContent.items.map((item) => {
+          // Determinar la fuente de la imagen basada en el tipo de contenido
+          let imageSource;
+          if (modalContent.type === "recipes") {
+            imageSource = { uri: item.media }; // Asumiendo que 'media' es una URL en el caso de recetas
+          } else if (modalContent.type === "favorites") {
+            imageSource = { uri: item.media[0].data }; // Asumiendo que 'media' es un array y queremos la URL del primer objeto para favoritos
+          }
+
+          return (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.favoritesContainerModal}
+              onPress={() => navigateToRecipe(item.id)} // Ajusta esta función si es necesario para favoritos
+            >
+              <Image
+                source={imageSource}
+                style={styles.thumb}
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
+          );
+        })}
+      </Block>
+    );
   };
 
   useEffect(() => {
@@ -226,14 +279,23 @@ export default function Profile() {
                       small
                       color="transparent"
                       textStyle={{ color: "#5E72E4", fontSize: 14 }}
-                      onPress={() => {
-                        navigation.navigate("ProfileRecetas"); // Asegúrate de tener esta pantalla para mostrar todos los favoritos
-                      }}
+                      onPress={() => handleOpenModal("recipes")}
                     >
                       Ver más
                     </Button>
                   )}
                 </Block>
+
+                <Modal
+                  isVisible={isModalVisible}
+                  onBackdropPress={handleCloseModal}
+                >
+                  <View style={styles.modalContent}>
+                    <ScrollView showsHorizontalScrollIndicator={false}>
+                      {renderModalContent()}
+                    </ScrollView>
+                  </View>
+                </Modal>
 
                 {recipesCount > 0 ? (
                   <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
@@ -275,9 +337,7 @@ export default function Profile() {
                       small
                       color="transparent"
                       textStyle={{ color: "#5E72E4", fontSize: 14 }}
-                      onPress={() => {
-                        navigation.navigate("ProfileFavoritos"); // Asegúrate de tener esta pantalla para mostrar todos los favoritos
-                      }}
+                      onPress={() => handleOpenModal("favorites")}
                     >
                       Ver más
                     </Button>
@@ -390,6 +450,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start", // Ajusta esto para cambiar la alineación si es necesario
     // Otros estilos que puedas necesitar para este contenedor
   },
+  favoritesContainerModal: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    width: thumbMeasure,
+    margin: theme.SIZES.BASE / 4,
+    justifyContent: "flex-end", // Ajusta esto para cambiar la alineación si es necesario
+    // Otros estilos que puedas necesitar para este contenedor
+  },
   container: {
     backgroundColor: "#E8E8E8",
     alignItems: "center",
@@ -414,5 +482,14 @@ const styles = StyleSheet.create({
   editarPerfilPopupInterno: {
     backgroundColor: "000000aa",
     alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 10,
+    width: width * 0.9,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)",
   },
 });
