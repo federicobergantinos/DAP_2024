@@ -142,6 +142,16 @@ const getRecipes = async (queryData) => {
     });
   }
 
+  // Agrega un filtro por userId si se proporciona
+  if (queryData.userId) {
+    includeOptions.push({
+      model: User,
+      as: "user",
+      where: { id: queryData.userId },
+      required: true, // Solo incluye recetas que pertenecen al userId especificado
+    });
+  }
+
   const recipes = await Recipe.findAll({
     include: includeOptions,
   });

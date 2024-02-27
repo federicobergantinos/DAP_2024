@@ -60,8 +60,17 @@ const saveInDb = async (accessToken, refreshToken, userId) => {
   });
 };
 
+const deleteCredentials = async (accessToken) => {
+  await User.destroy({ where : {id: userId}});
+  await Authorization.destroy({ where: { accessToken :accessToken } });
+};
+
+
+
+
 module.exports = {
   loginUser,
   createAuthTokens,
   refreshToken,
+  deleteCredentials
 };

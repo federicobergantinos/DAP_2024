@@ -73,9 +73,10 @@ const getAll = async (req, res) => {
   const limit = parseInt(req.query.limit) || 20; // Límite de ítems por página
   const offset = page * limit;
   const tag = req.query.tag;
+  const userId = req.query.userId;
 
   try {
-    const recipes = await getRecipes({ limit, offset, tag });
+    const recipes = await getRecipes({ limit, offset, tag, userId });
     const response = recipes.map((recipe) => {
       const { id, title, media, tags, rating } = recipe;
       const filteredMedia = media.filter((m) => m.type === "image");
@@ -99,7 +100,6 @@ const getAll = async (req, res) => {
     });
   }
 };
-
 
 const searchAll = async (req, res) => {
   const searchTerm = req.query.searchTerm || "";

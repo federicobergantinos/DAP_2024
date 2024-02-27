@@ -5,7 +5,7 @@ import { RecipeDTO } from "./RecipeDTO";
 import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
-// const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
+//const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
 const api = axios.create({ baseURL: "http://192.168.1.189:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
@@ -54,7 +54,8 @@ const authUser = {
   authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> =>
     requests.post('/v1/auth', auth),
   refresh: (refreshToken: string): Promise<{ response: Credentials; statusCode: number }> =>
-    requests.put('/v1/auth', { refreshToken: refreshToken })
+    requests.put('/v1/auth', { refreshToken: refreshToken }),
+  deleteCredential: () => requests.delete('/v1/auth'),
 };
 
 const rating = {
@@ -76,7 +77,7 @@ const recipesGateway = {
   },
   
   getRecipeById: ( id: number, userId: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id + "?userId=" + userId),
-  getAll: (page = 0, tag, userId = ""): Promise<{ response: RecipesDTO; statusCode: number }> => {
+  getAll: (page = 0, tag, userId): Promise<{ response: RecipesDTO; statusCode: number }> => {
     
     let url = `${recipeBaseUrl}/?page=${page}&limit=10`;
     if (tag) {
@@ -126,7 +127,17 @@ const users = {
     requests.delete(usersBaseUrl + "/" + userId + "/favorites/" + recipeId),
   favorites: (userId: number): Promise<{ response: any; statusCode: number  }> =>
     requests.get(usersBaseUrl + "/" + userId + "/favorites"),
+  getUser: (
+    userId: number,
+  ): Promise<{ response: any; statusCode: number }> =>
+    requests.get(usersBaseUrl + "/" + userId),
+  editProfile: ( 
+      userId: number, userData: any,
+    ): Promise<{ response: any; statusCode: number }> =>
+      requests.put(usersBaseUrl + "/" + userId, userData),
   };
+
+  
 
 // Función para obtener el encabezado de autenticación
 const getAuthHeader = async (config) => {
