@@ -2,6 +2,7 @@ const {
   createFavorite,
   deleteFavorite,
   getFavorites,
+  editProfile,
 } = require("../services/favoriteService");
 const { findUserByEmail, findUserById } = require("../services/userService");
 const createFav = async (req, res) => {
@@ -68,10 +69,28 @@ const getUser = async (req, res) => {
   }
 };
 
+const editProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, surname } = req.body;
+
+    // Lógica para actualizar los datos del usuario en la base de datos
+    const updatedUser = await User.findByIdAndUpdate(userId, { name, surname }, { new: true });
+
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(error.code || 500).json({
+      msg: error.message || "An exception has occurred",
+    });
+  }
+};
+
 
 module.exports = {
   createFav,
   deleteFav,
   getFav, 
   getUser,
+  editProfile,
 };

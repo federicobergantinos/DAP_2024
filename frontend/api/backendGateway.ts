@@ -5,8 +5,8 @@ import { RecipeDTO } from "./RecipeDTO";
 import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
-// const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
-const api = axios.create({ baseURL: "http://192.168.1.189:8080" });
+//const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
+const api = axios.create({ baseURL: "http://172.20.16.1:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
@@ -127,10 +127,14 @@ const users = {
     requests.delete(usersBaseUrl + "/" + userId + "/favorites/" + recipeId),
   favorites: (userId: number): Promise<{ response: any; statusCode: number  }> =>
     requests.get(usersBaseUrl + "/" + userId + "/favorites"),
-    getUser: (
-      userId: number,
+  getUser: (
+    userId: number,
+  ): Promise<{ response: any; statusCode: number }> =>
+    requests.get(usersBaseUrl + "/" + userId),
+  editProfile: ( // MODIFICAR GALICIA
+      userId: number, newName: string, newSurname: string
     ): Promise<{ response: any; statusCode: number }> =>
-      requests.get(usersBaseUrl + "/" + userId),
+      requests.put(usersBaseUrl + "/" + userId, { name: newName, surname: newSurname }),
   };
 
   
