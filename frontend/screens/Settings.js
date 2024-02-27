@@ -20,6 +20,8 @@ const { width } = Dimensions.get("window");
 
 export default function Settings() {
   const navigation = useNavigation();
+  const [nombre, setNombre] = useState('')
+  const [apellido, setApellido] = useState('')
   const logOut = async () => {
     await AsyncStorage.clear();
     await GoogleSignin.signOut();
@@ -32,6 +34,18 @@ export default function Settings() {
     navigation.navigate("Login");
   };
 
+  const editProfile = async (userId, newName, newSurname) => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+        const { response, statusCode } = await backendGateway.users.getUser(userId);
+        setNombre(response.user.name); // Actualiza el estado con el nombre del usuario
+        setApellido(response.user.surname);
+    } catch (error) {
+      console.error("Error al editar el perfil:", error);
+      throw error; // Puedes relanzar el error para que sea manejado en otro lugar si es necesario
+    }
+  };
+  
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -45,7 +59,7 @@ export default function Settings() {
         };
       } catch (error) {
         console.error("Error al obtener usuario");
-        navigation.replace("Home");
+        // navigation.replace("Home");  galicia
       }
     };
     getUser();
@@ -73,8 +87,13 @@ export default function Settings() {
             </Text>
             <TextInput
               style={styles.input}
+<<<<<<< HEAD
               onChangeText={(text) => this.setState({ nombre: text })}
               value={this.state.nombre}
+=======
+              onChangeText={text => this.setState({ nombre: text })}
+              // value={this.state.nombre}  galicia
+>>>>>>> e74d5e9ab4d5f202fb2a435130d1a1ead9cddf7d
               placeholder={item.title}
               placeholderTextColor="#BFBFBF"
             />
@@ -92,8 +111,13 @@ export default function Settings() {
             </Text>
             <TextInput
               style={styles.input}
+<<<<<<< HEAD
               onChangeText={(text) => this.setState({ apellido: text })}
               value={this.state.apellido}
+=======
+              onChangeText={text => this.setState({ apellido: text })}
+              // value={this.state.apellido}  galicia 
+>>>>>>> e74d5e9ab4d5f202fb2a435130d1a1ead9cddf7d
               placeholder={item.title}
               placeholderTextColor="#BFBFBF"
             />
@@ -110,8 +134,13 @@ export default function Settings() {
               {item.title}
             </Text>
             <TextInput
+<<<<<<< HEAD
               style={[styles.inputContainer, { color: "#BFBFBF" }]}
               value={this.state.email}
+=======
+              style={[styles.inputContainer, { color: '#BFBFBF' }]}
+              // value={this.state.email}  galicia
+>>>>>>> e74d5e9ab4d5f202fb2a435130d1a1ead9cddf7d
               editable={false}
             />
           </Block>
@@ -124,6 +153,14 @@ export default function Settings() {
             </View>
           </TouchableOpacity>
         );
+        case "editProfile":
+          return (
+            <TouchableOpacity onPress={editProfile}>
+              <View style={styles.editProfile}>
+                <Text style={{ color: 'red' }}>Guardar Cambios</Text>
+              </View>
+            </TouchableOpacity>
+          );
       default:
         break;
     }
@@ -133,7 +170,12 @@ export default function Settings() {
     { title: "Nombre", id: "nombre", type: "nameInput" },
     { title: "Apellido", id: "apellido", type: "lastNameInput" },
     { title: "Mail", id: "mail", type: "mailInput" },
+<<<<<<< HEAD
     { title: "Cerrar Sesión", id: "sesion", type: "logout" },
+=======
+    { title: "Guardar Cambios", id: "editProfile", type: "editProfile" },
+    { title: "Cerrar Sesión", id: "sesion", type: "logout" }
+>>>>>>> e74d5e9ab4d5f202fb2a435130d1a1ead9cddf7d
   ];
 
   const payment = [
@@ -244,4 +286,19 @@ const styles = StyleSheet.create({
     borderColor: "red",
     marginLeft: 10,
   },
+<<<<<<< HEAD
 });
+=======
+  editProfile: {
+    paddingHorizontal: 10,
+    width: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: 'red',
+    marginLeft: 10
+  },
+});
+>>>>>>> e74d5e9ab4d5f202fb2a435130d1a1ead9cddf7d
