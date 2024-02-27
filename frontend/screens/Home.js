@@ -48,7 +48,7 @@ const Home = () => {
     setLoading(true);
     try {
       const page = currentPage;
-      console.log(page)
+
       const tag = selectedTag !== "ALL" ? selectedTag : undefined;
       const { response: recipes } = await backendApi.recipesGateway.getAll(
         page,
