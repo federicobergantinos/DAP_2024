@@ -6,7 +6,7 @@ import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
 const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
-// const api = axios.create({ baseURL: "http://192.168.1.189:8080" });
+// const api = axios.create({ baseURL: "http://172.20.10.2:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 
@@ -43,12 +43,18 @@ const responseBodyWithStatusCode = (response: AxiosResponse): { response: any, s
 // Definición de funciones de solicitud HTTP
 const requests = {
   get: (url: string) => api.get(url).then(responseBodyWithStatusCode),
-  post: (url: string, body?: any) =>
-    api.post(url, body).then(responseBodyWithStatusCode),
-  put: (url: string, body?: any) =>
-    api.put(url, body).then(responseBodyWithStatusCode),
-  delete: (url: string) =>
-    api.delete(url).then(responseBodyWithStatusCode),
+  post: (url: string, body?: any) => {
+    console.log(`Making POST request to: ${api.defaults.baseURL}${url}`); // Esta línea imprime la URL
+    return api.post(url, body).then(responseBodyWithStatusCode);
+  },
+  put: (url: string, body?: any) => {
+    console.log(`Making PUT request to: ${api.defaults.baseURL}${url}`); // Imprimir para solicitudes PUT
+    return api.put(url, body).then(responseBodyWithStatusCode);
+  },
+  delete: (url: string) => {
+    console.log(`Making DELETE request to: ${api.defaults.baseURL}${url}`); // Imprimir para solicitudes DELETE
+    return api.delete(url).then(responseBodyWithStatusCode);
+  },
 };
 const authUser = {
   authenticate: (auth: createAuthDTO): Promise<{ response: any; statusCode: number }> =>
@@ -65,6 +71,7 @@ const rating = {
 
 // Objeto para funciones relacionadas con recetas
 const recipesGateway = {
+  deleteRecipe: async (recipeId: number) => requests.delete(recipeBaseUrl + "/" + recipeId),
   createRecipe: async (recipeData) => {
     try {
       const url = `${recipeBaseUrl}` + "/create"
@@ -75,10 +82,10 @@ const recipesGateway = {
       throw error;
     }
   },
-  
+
   getRecipeById: ( id: number, userId: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id + "?userId=" + userId),
   getAll: (page = 0, tag, userId): Promise<{ response: RecipesDTO; statusCode: number }> => {
-    
+
     let url = `${recipeBaseUrl}/?page=${page}&limit=10`;
     if (tag) {
       url += `&tag=${tag}`;
@@ -131,13 +138,13 @@ const users = {
     userId: number,
   ): Promise<{ response: any; statusCode: number }> =>
     requests.get(usersBaseUrl + "/" + userId),
-  editProfile: ( 
+  editProfile: (
       userId: number, userData: any,
     ): Promise<{ response: any; statusCode: number }> =>
       requests.put(usersBaseUrl + "/" + userId, userData),
   };
 
-  
+
 
 // Función para obtener el encabezado de autenticación
 const getAuthHeader = async (config) => {
