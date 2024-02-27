@@ -71,6 +71,7 @@ const rating = {
 
 // Objeto para funciones relacionadas con recetas
 const recipesGateway = {
+  deleteRecipe: async (recipeId: number) => requests.delete(recipeBaseUrl + "/" + recipeId),
   createRecipe: async (recipeData) => {
     try {
       const url = `${recipeBaseUrl}` + "/create"
@@ -81,10 +82,10 @@ const recipesGateway = {
       throw error;
     }
   },
-  
+
   getRecipeById: ( id: number, userId: number): Promise<{ response: RecipeDTO; statusCode: number }> => requests.get(recipeBaseUrl + "/" + id + "?userId=" + userId),
   getAll: (page = 0, tag, userId): Promise<{ response: RecipesDTO; statusCode: number }> => {
-    
+
     let url = `${recipeBaseUrl}/?page=${page}&limit=10`;
     if (tag) {
       url += `&tag=${tag}`;
@@ -137,13 +138,13 @@ const users = {
     userId: number,
   ): Promise<{ response: any; statusCode: number }> =>
     requests.get(usersBaseUrl + "/" + userId),
-  editProfile: ( 
+  editProfile: (
       userId: number, userData: any,
     ): Promise<{ response: any; statusCode: number }> =>
       requests.put(usersBaseUrl + "/" + userId, userData),
   };
 
-  
+
 
 // Función para obtener el encabezado de autenticación
 const getAuthHeader = async (config) => {
