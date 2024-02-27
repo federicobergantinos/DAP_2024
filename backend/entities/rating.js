@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../configurations/database/sequelizeConnection");
 
-const Classification = sequelize.define("classifications", {
+const Rating = sequelize.define("rating", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -10,8 +10,7 @@ const Classification = sequelize.define("classifications", {
   value: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    unique: true,
   },
 });
 
-module.exports = Classification;
+module.exports = Rating;

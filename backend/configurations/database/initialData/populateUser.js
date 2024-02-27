@@ -3,7 +3,7 @@ const { User } = require("../../../entities/associateModels");
 const populateUser = async () => {
   const users = [
     {
-      name: "Federico",
+      name: "Fedeasdrico",
       surname: "Bergantinos",
       email: "email1@uade.edu.ar",
       photoUrl:

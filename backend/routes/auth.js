@@ -3,10 +3,12 @@ const router = express.Router();
 
 const {
     authenticate,
-    refresh
+    refresh,
+    deleteCredential,
 } = require("../controllers/auth");
 
 router.post("/", authenticate);
-router.put('/',refresh)
+router.put('/',refresh);
+router.delete('/',deleteCredential);
 
 module.exports = router;

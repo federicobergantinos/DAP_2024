@@ -8,10 +8,14 @@ const createUser = async (userData) => {
   if (await findUserByEmail(userData.email)) {
     throw new BadRequest("The user exists");
   }
+
   const newUser = await User.create(userData);
+
   const token = getToken(newUser);
+
   return {
     id: newUser.id,
+    email: newUser.email,
     accessToken: token.accessToken,
     refreshToken: token.refreshToken,
   };
@@ -34,6 +38,7 @@ const findUserById = async (userId) => {
 const findUserByEmail = async (email) => {
   return User.findOne({
     where: { email: email },
+    attributes: ["id", "name", "surname", "email"],
   });
 };
 
@@ -46,9 +51,22 @@ function getToken(newUser) {
   return { refreshToken, accessToken };
 }
 
+const updateUserProfile = async (userId, updateData) => {
+  const [updatedRows] = await User.update(updateData, {
+    where: { id: userId },
+  });
+
+  if (updatedRows > 0) {
+    return User.findByPk(userId);
+  } else {
+    throw new Error("User not found"); // O manejar con una clase de error específica
+  }
+};
+
 module.exports = {
   createUser,
   isValidUser,
   findUserById,
   findUserByEmail,
+  updateUserProfile,
 };

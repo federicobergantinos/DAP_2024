@@ -32,12 +32,14 @@ const Login = () => {
   const navigation = useNavigation();
   const isLoggedUser = async () => {
     return (
-        await AsyncStorage.getItem("token") !== null &&
-        await AsyncStorage.getItem("refresh") !== null &&
-        await AsyncStorage.getItem("userId") !== null
+      (await AsyncStorage.getItem("token")) !== null &&
+      (await AsyncStorage.getItem("refresh")) !== null &&
+      (await AsyncStorage.getItem("userId")) !== null
     );
   };
+
   const [isLoading, setIsLoading] = useState(isLoggedUser);
+
   GoogleSignin.configure({
     webClientId:
       "445263022323-e0okjk06i01er8q0gcg51oensjp8h34o.apps.googleusercontent.com",
@@ -48,97 +50,97 @@ const Login = () => {
     scopes: ["profile", "email"],
   });
 
-  const refreshToken = async () => {
-
-    const {response, statusCode} = await backendApi.authUser.refresh(AsyncStorage.getItem('refresh'))
-    if (statusCode === 201) {
-      await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-      await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
-      await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-      setIsLoading(false);
-      navigation.replace("Home");
-    } else {
-      await logOut()
-    }
-  }
-
   useEffect(() => {
     const validateLoggedUser = async () => {
       if (await isLoggedUser()) {
-        reAuthenticate()
+        reAuthenticate();
       } else {
         setIsLoading(false);
       }
-    }
-    validateLoggedUser()
+    };
+    validateLoggedUser();
   }, []);
-
-  const reAuthenticate = async () => {
-    const userInfo = await GoogleSignin.signIn();
-    const { idToken, user } = userInfo;
-    const { response, statusCode } = await backendApi.authUser.authenticate({
-      token: idToken,
-    });
-
-    if (statusCode === 201) {
-      await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-      await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
-      await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-      navigation.replace("Home");
-      setIsLoading(false);
-    } else if ( statusCode === undefined) {
-      try {
-
-        if(await asyncStorage.getItem('token') !== null) {
-          await refreshToken()
-        }
-        else
-          await logOut()
-
-      } catch (e) {
-        await logOut()
-      }
-    }
-  }
 
   const authenticate = async () => {
     try {
-      console.log("START LOGIN")
       setIsLoading(true);
       const userInfo = await GoogleSignin.signIn();
-
       const { idToken, user } = userInfo;
+
       const { response, statusCode } = await backendApi.authUser.authenticate({
         token: idToken,
       });
 
       if (statusCode === 201) {
-        await AsyncStorage.setItem("token", JSON.stringify(response.accessToken));
-        await AsyncStorage.setItem("refresh", JSON.stringify(response.refreshToken),);
-        await AsyncStorage.setItem("userId", JSON.stringify(response.id));
-        setIsLoading(false);
-        navigation.replace("Home");
+        await saveCredentials(
+          response.accessToken,
+          response.refreshToken,
+          response.id
+        );
       }
       setIsLoading(false);
     } catch (error) {
-      await logOut()
-      console.error("CODE:" + error.code);
-      console.error("MESSAGE:" + error.message);
-      console.error("STACK:" + error.stack);
+      await logOut();
+    }
+  };
+
+  const reAuthenticate = async () => {
+    setIsLoading(true);
+    const { response, statusCode } = await backendApi.authUser.authenticate({
+      token: null,
+    });
+
+    if (statusCode === 201) {
+      await saveCredentials(
+        response.accessToken,
+        response.refreshToken,
+        response.id
+      );
+    } else if (statusCode === undefined) {
+      try {
+        if ((await asyncStorage.getItem("token")) !== null) {
+          await refreshToken();
+        } else await logOut();
+      } catch (e) {
+        await logOut();
+      }
+    }
+  };
+
+  const refreshToken = async () => {
+    const { response, statusCode } = await backendApi.authUser.refresh(
+      await AsyncStorage.getItem("refresh")
+    );
+    if (statusCode === 201) {
+      const userId = await AsyncStorage.getItem("userId");
+      await saveCredentials(
+        response.accessToken,
+        response.refreshToken,
+        userId
+      );
+    } else {
+      await logOut();
     }
   };
 
   const logOut = async () => {
-    await clearAsyncStorage()
-    await GoogleSignin.signOut()
+    await clearAsyncStorage();
+    await GoogleSignin.signOut();
     setIsLoading(false);
-  }
+  };
 
   const clearAsyncStorage = async () => {
-    await AsyncStorage.clear()
-    await AsyncStorage.clear()
-    await AsyncStorage.clear()
-  }
+    await AsyncStorage.clear();
+  };
+
+  const saveCredentials = async (accessToken, refreshToken, userId) => {
+    navigation.replace("Home");
+    await AsyncStorage.setItem("token", accessToken);
+    await AsyncStorage.setItem("refresh", refreshToken);
+    await AsyncStorage.setItem("userId", JSON.stringify(userId));
+    setIsLoading(false);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <DismissKeyboard>

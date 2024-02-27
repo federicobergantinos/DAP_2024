@@ -9,8 +9,6 @@ import Home from "../screens/Home";
 // Notifications
 import Recipe from "../screens/Recipe";
 import Profile from "../screens/Profile";
-import ProfileFavoritos from "../screens/ProfileFavoritos";
-import ProfileRecetas from "../screens/ProfileRecetas";
 import CreateRecipe from "../screens/CreateRecipe";
 import React from "react";
 import Login from "../screens/Login";
@@ -42,13 +40,7 @@ function HomeStack(props) {
         component={Home}
         options={{
           header: ({ navigation, scene }) => (
-            <Header
-              title="Home"
-              search
-              tabs={tabs.tags}
-              navigation={navigation}
-              scene={scene}
-            />
+            <Header title="Home" search navigation={navigation} scene={scene} />
           ),
           cardStyle: { backgroundColor: "#F8F9FE" },
         }}
@@ -56,18 +48,19 @@ function HomeStack(props) {
       <Stack.Screen
         name="Recipe"
         component={Recipe}
-        options={{
-          header: ({ navigation, scene }) => (
+        options={({ route }) => ({
+          header: ({ navigation }) => (
             <Header
               title="Recipe"
               white
+              back
+              recipeId={route.params.recipeId}
               transparent
               navigation={navigation}
-              scene={scene}
             />
           ),
           headerTransparent: true,
-        }}
+        })}
       />
       <Stack.Screen
         name="Gallery"
@@ -102,7 +95,7 @@ function HomeStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              title="Crear receta"
+              title="Datos de la receta"
               back
               scene={scene}
               navigation={navigation}
@@ -141,38 +134,6 @@ function HomeStack(props) {
             />
           ),
           cardStyle: { backgroundColor: "#F8F9FE" },
-        }}
-      />
-      <Stack.Screen
-        name="ProfileFavoritos"
-        component={ProfileFavoritos}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              title="Favoritos"
-              back
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: false,
-        }}
-      />
-      <Stack.Screen
-        name="ProfileRecetas"
-        component={ProfileRecetas}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header
-              title="Recetas"
-              back
-              navigation={navigation}
-              scene={scene}
-            />
-          ),
-          cardStyle: { backgroundColor: "#FFFFFF" },
-          headerTransparent: false,
         }}
       />
     </Stack.Navigator>

@@ -1,55 +1,32 @@
 import * as ImagePicker from "expo-image-picker";
 
-// Función para abrir la biblioteca de imágenes
+// Función para abrir la biblioteca de imágenes y seleccionar una imagen
 export const openImagePickerAsync = async () => {
   let permissionResult =
     await ImagePicker.requestMediaLibraryPermissionsAsync();
-
   if (!permissionResult.granted) {
-    alert("Permission to access camera roll is required!");
+    alert("Se requiere permiso para acceder al carrete de la cámara.");
     return;
   }
 
-  // Incluir la opción `base64` en la configuración
   let pickerResult = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
     base64: true,
   });
+
   if (pickerResult.canceled) {
     return;
   }
 
-  // Acceder a la URI y a la cadena base64 de la imagen seleccionada
-  const imageUri = pickerResult.assets ? pickerResult.assets[0].uri : null;
-  const imageBase64 = pickerResult.assets
-    ? pickerResult.assets[0].base64
-    : null;
-
-  // Devolver tanto la URI como la cadena base64 de la imagen seleccionada
-  return { uri: imageUri, base64: imageBase64 };
-};
-
-export const openCameraAsync = async () => {
-  let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
-  if (!permissionResult.granted) {
-    alert("Permission to access camera is required!");
+  // Accede a la imagen seleccionada a través del array "assets"
+  if (pickerResult.assets && pickerResult.assets.length > 0) {
+    const selectedAsset = pickerResult.assets[0];
+    const imageUri = selectedAsset.uri;
+    const imageBase64 = selectedAsset.base64;
+    return { uri: imageUri, base64: imageBase64 };
+  } else {
+    // Manejar el caso de que no haya activos seleccionados o disponibles
+    alert("No se pudo seleccionar la imagen.");
     return;
   }
-
-  // Incluir la opción `base64` en la configuración
-  let pickerResult = await ImagePicker.launchCameraAsync({
-    base64: true,
-  });
-  if (pickerResult.canceled) {
-    return;
-  }
-
-  // Acceder a la URI y a la cadena base64 de la imagen capturada
-  const imageUri = pickerResult.assets ? pickerResult.assets[0].uri : null;
-  const imageBase64 = pickerResult.assets
-    ? pickerResult.assets[0].base64
-    : null;
-
-  // Devolver tanto la URI como la cadena base64 de la imagen capturada
-  return { uri: imageUri, base64: imageBase64 };
 };

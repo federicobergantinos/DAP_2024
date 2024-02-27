@@ -5,7 +5,7 @@ const {
   Recipe,
   Media,
   Tag,
-  Classification,
+  Rating,
   RecipeTags,
 } = require("../../entities/associateModels");
 const {
@@ -17,16 +17,15 @@ const {
 const dbConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log("Database connected!");
 
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ });
 
     // Sincronizar modelos con la base de datos
     await User.sync();
     await Recipe.sync();
     await Media.sync();
     await Tag.sync();
-    await Classification.sync();
+    await Rating.sync();
     await RecipeTags.sync();
 
     // Poblar la base de datos con datos iniciales
