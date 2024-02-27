@@ -34,16 +34,29 @@ export default function Settings() {
     navigation.navigate("Login");
   };
 
-  const editProfile = async (userId, newName, newSurname) => {
+  const editProfile = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
-      const { response, statusCode } =
-        await backendGateway.users.getUser(userId);
-      setNombre(response.user.name); // Actualiza el estado con el nombre del usuario
-      setApellido(response.user.surname);
+      if (!userId) throw new Error("Usuario no encontrado");
+
+      const userData = {
+        name: nombre,
+        surname: apellido,
+      };
+
+      const updateResponse = await backendApi.users.editProfile(
+        userId,
+        userData
+      );
+      if (updateResponse.statusCode === 200) {
+        alert("Perfil actualizado con éxito.");
+      } else {
+        console.error("Error al actualizar el perfil:", updateResponse);
+        alert("Error al actualizar el perfil.");
+      }
     } catch (error) {
       console.error("Error al editar el perfil:", error);
-      throw error; // Puedes relanzar el error para que sea manejado en otro lugar si es necesario
+      alert("Error al editar el perfil.");
     }
   };
 
@@ -53,14 +66,13 @@ export default function Settings() {
         const userId = await AsyncStorage.getItem("userId");
         const { response, statusCode } =
           await backendGateway.users.getUser(userId);
-        this.state = {
-          nombre: response.user.name,
-          apellido: response.user.surname,
-          email: response.user.email,
-        };
+        if (statusCode === 200) {
+          setNombre(response.user.name);
+          setApellido(response.user.surname);
+        }
       } catch (error) {
-        console.error("Error al obtener usuario");
-        // navigation.replace("Home");  galicia
+        console.error("Error al obtener usuario", error);
+        // Handle error or navigation if needed
       }
     };
     getUser();
@@ -88,8 +100,8 @@ export default function Settings() {
             </Text>
             <TextInput
               style={styles.input}
-              onChangeText={(text) => this.setState({ nombre: text })}
-              // value={this.state.nombre}  galicia
+              onChangeText={(text) => setNombre(text)}
+              value={nombre}
               placeholder={item.title}
               placeholderTextColor="#BFBFBF"
             />
@@ -107,8 +119,8 @@ export default function Settings() {
             </Text>
             <TextInput
               style={styles.input}
-              onChangeText={(text) => this.setState({ apellido: text })}
-              // value={this.state.apellido}  galicia
+              onChangeText={(text) => setApellido(text)}
+              value={apellido}
               placeholder={item.title}
               placeholderTextColor="#BFBFBF"
             />
@@ -126,26 +138,25 @@ export default function Settings() {
             </Text>
             <TextInput
               style={[styles.inputContainer, { color: "#BFBFBF" }]}
-              // value={this.state.email}  galicia
+              value={this.state.email}
               editable={false}
             />
           </Block>
         );
-      case "logout":
+      case "actionRow":
         return (
-          <TouchableOpacity onPress={logOut}>
-            <View style={styles.logoutButton}>
-              <Text style={{ color: "red" }}>Cerrar sesión</Text>
-            </View>
-          </TouchableOpacity>
-        );
-      case "editProfile":
-        return (
-          <TouchableOpacity onPress={editProfile}>
-            <View style={styles.editProfile}>
-              <Text style={{ color: "red" }}>Guardar Cambios</Text>
-            </View>
-          </TouchableOpacity>
+          <View style={styles.actionRow}>
+            <TouchableOpacity onPress={editProfile} style={{ marginRight: 10 }}>
+              <View style={styles.editProfile}>
+                <Text style={{ color: "white" }}>Guardar Cambios</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={logOut}>
+              <View style={styles.logoutButton}>
+                <Text style={{ color: "grey" }}>Cerrar sesión</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         );
       default:
         break;
@@ -156,8 +167,8 @@ export default function Settings() {
     { title: "Nombre", id: "nombre", type: "nameInput" },
     { title: "Apellido", id: "apellido", type: "lastNameInput" },
     { title: "Mail", id: "mail", type: "mailInput" },
-    { title: "Guardar Cambios", id: "editProfile", type: "editProfile" },
-    { title: "Cerrar Sesión", id: "sesion", type: "logout" },
+    // { title: "Guardar Cambios", id: "editProfile", type: "editProfile" },
+    { title: "Cerrar Sesión", id: "sesion", type: "actionRow" },
   ];
 
   const payment = [
@@ -228,8 +239,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 10,
     justifyContent: "center",
-    marginRight: 10,
-    width: "70%",
+    width: width * 0.65,
     flexShrink: 1,
     borderWidth: 1,
     borderColor: "gray",
@@ -240,8 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     backgroundColor: "gray",
-    marginRight: 10,
-    width: "70%",
+    width: width * 0.65,
     flexShrink: 1,
     borderWidth: 1,
     borderColor: "gray",
@@ -254,29 +263,39 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderWidth: 1,
     borderRadius: 20,
-    borderColor: "red",
+    borderColor: "grey",
+    height: 30,
     marginLeft: 10,
   },
   deleteButton: {
     paddingHorizontal: 10,
-    width: 150,
+    width: 150, // O puedes usar 'width: '80%' para que el botón tenga un ancho relativo al contenedor
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,
     borderWidth: 1,
     borderRadius: 20,
     borderColor: "red",
-    marginLeft: 10,
+    alignSelf: "center", // Asegura que el botón esté centrado dentro de su contenedor
+    height: 30,
   },
   editProfile: {
     paddingHorizontal: 10,
+    height: 30,
     width: 150,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,
     borderWidth: 1,
     borderRadius: 20,
-    borderColor: "red",
-    marginLeft: 10,
+    backgroundColor: "#5a46b4",
+    borderColor: "#5a46b4",
+  },
+  actionRow: {
+    flexDirection: "row", // Alinea los elementos en fila
+    justifyContent: "center", // Centra los elementos en el eje principal
+    alignItems: "center", // Centra los elementos en el eje cruzado
+    marginTop: 10,
+    marginBottom: 10,
   },
 });
