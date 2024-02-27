@@ -12,13 +12,12 @@ import { Block, NavBar, theme } from "galio-framework";
 import { CommonActions, useNavigation } from "@react-navigation/native"; // Importa useNavigation de '@react-navigation/native'
 
 import Icon from "./Icon";
-import Input from "./Input";
-import Tabs from "./Tabs";
 import yummlyTheme from "../constants/Theme";
 import RecipeContext from "../navigation/RecipeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import backendGateway from "../api/backendGateway";
 import ConfirmationModal from "./ConfirmationModal";
+import DropdownMenu from "./DropdownMenu";
 
 const { height, width } = Dimensions.get("window");
 const iPhoneX = () =>
@@ -129,33 +128,11 @@ const Header = ({
     }
   };
 
-  const RenderEditButton = ({ recipeId }) => {
-    if (!isOwner) return null;
-    return (
-      <TouchableOpacity style={{ paddingHorizontal: 5 }}>
-        <Icon
-          family="MaterialIcons"
-          name="edit"
-          size={25}
-          onPress={() => navigation.navigate("CreateRecipe", { recipeId })}
-          color={yummlyTheme.COLORS.WHITE}
-        />
-      </TouchableOpacity>
-    );
-  };
-
   const RenderDeleteButton = ({ recipeId }) => {
     if (!isOwner) return null;
     return (
         <TouchableOpacity style={{ paddingHorizontal: 5 }}>
-          <ConfirmationModal recipeId={recipeId} visible={showModal} setShowModal={setShowModal}/>
-          <Icon
-              family="MaterialIcons"
-              name="delete"
-              size={25}
-              onPress={() => setShowModal(true)}
-              color={yummlyTheme.COLORS.WHITE}
-          />
+          <DropdownMenu recipeId={recipeId}/>
         </TouchableOpacity>
     );
   };
@@ -163,7 +140,7 @@ const Header = ({
   const RenderFavoriteButton = () => {
     return (
       <TouchableOpacity
-        style={{ paddingHorizontal: 5, marginRight: 20 }}
+        style={{ paddingHorizontal: 5, marginRight: 25 }}
         onPress={handleFavorite}
       >
         <Icon
@@ -205,14 +182,9 @@ const Header = ({
     if (title === "Recipe") {
       return [
         <RenderDeleteButton
-            key="delete-recipe"
-            recipeId={props.recipeId}
-            isOwner={isOwner}/>,
-        <RenderEditButton
-          key="edit-recipe"
-          recipeId={props.recipeId}
-          isOwner={isOwner}
-        />,
+        key="delete-recipe"
+        recipeId={props.recipeId}
+        isOwner={isOwner}/>,
         <RenderShareButton key="share-button" />,
         <RenderFavoriteButton key="favorite-button" />,
       ];
