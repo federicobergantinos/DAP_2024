@@ -17,7 +17,7 @@ import Tabs from "../components/Tabs";
 import tabs from "../constants/tabs";
 import yummlyTheme from "../constants/Theme";
 
-const { width } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -48,7 +48,7 @@ const Home = () => {
     setLoading(true);
     try {
       const page = currentPage;
-      console.log(page)
+
       const tag = selectedTag !== "ALL" ? selectedTag : undefined;
       const { response: recipes } = await backendApi.recipesGateway.getAll(
         page,
@@ -97,7 +97,7 @@ const Home = () => {
 
   return (
     <Block flex style={styles.home}>
-      <Block>
+      <Block flex row={false}>
         <Block style={styles.header}>
           <Block style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Block flex={1}><SearchBar></SearchBar></Block>
@@ -109,7 +109,7 @@ const Home = () => {
           />
 
         </Block>
-        <Block center>
+        <Block center style={{height: '80%'}}>
           <FlatList
               data={data}
               renderItem={renderRecipe}
@@ -135,6 +135,7 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   home: {
+    height: height,
     width: "100%",
   },
   recipes: {

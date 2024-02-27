@@ -16,7 +16,7 @@ const DropdownMenu = (recipeId) => {
 
     const editRecipe = () => {
         const id = recipeId.recipeId
-        navigation.navigate("CreateRecipe", { id })
+        navigation.navigate("CreateRecipe", { recipeId: id })
         setMenuVisible(false);
     };
 
