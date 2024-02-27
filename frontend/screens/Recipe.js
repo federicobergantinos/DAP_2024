@@ -37,9 +37,9 @@ const tagsTranslations = {
 const { height, width } = Dimensions.get("window");
 
 const getAsyncRecipe = async (recipeId) => {
-  const userId = await AsyncStorage.getItem("userId")
+  const userId = await AsyncStorage.getItem("userId");
   const { response, statusCode } =
-    await backendApi.recipesGateway.getRecipeById(recipeId,userId);
+    await backendApi.recipesGateway.getRecipeById(recipeId, userId);
   return response;
 };
 export default function Recipe(props) {
@@ -87,7 +87,9 @@ export default function Recipe(props) {
 
   const renderGallery = () => {
     const { navigation } = props;
-    const recipeImages = recipe.media;
+    const recipeMedia = recipe.video
+      ? [...recipe.media, recipe.video]
+      : [...recipe.media];
 
     return (
       <ScrollView
@@ -107,11 +109,11 @@ export default function Recipe(props) {
           recipeId={recipe.id}
           setRecipeRating={setRecipeRating}
         />
-        {recipeImages.map((image, index) => (
+        {recipeMedia.map((image, index) => (
           <TouchableWithoutFeedback
             key={`recipe-image-${index}`}
             onPress={() =>
-              navigation.navigate("Gallery", { images: recipeImages, index })
+              navigation.navigate("Gallery", { images: recipeMedia, index })
             }
           >
             <Image
@@ -129,13 +131,15 @@ export default function Recipe(props) {
   };
 
   const renderProgress = () => {
-    const recipeImages = recipe.media;
+    const recipeMedia = recipe.video
+      ? [...recipe.media, recipe.video]
+      : [...recipe.media];
 
     const position = Animated.divide(scrollX, width);
 
     return (
       <Block row>
-        {recipeImages.map((_, i) => {
+        {recipeMedia.map((_, i) => {
           const opacity = position.interpolate({
             inputRange: [i - 1, i, i + 1],
             outputRange: [0.5, 1, 0.5],
@@ -358,7 +362,7 @@ export default function Recipe(props) {
                     }}
                     color={yummlyTheme.COLORS.TEXT}
                   >
-                    Proteinas: {recipe.proteins} g
+                    Proteinas: {recipe.proteins} gr
                   </Text>
                   <Text
                     size={15}
@@ -369,7 +373,7 @@ export default function Recipe(props) {
                     }}
                     color={yummlyTheme.COLORS.TEXT}
                   >
-                    Grasas totales: {recipe.totalFats} g
+                    Grasas totales: {recipe.totalFats} gr
                   </Text>
                 </Block>
               </Block>

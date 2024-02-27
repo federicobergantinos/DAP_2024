@@ -22,6 +22,7 @@ export default function Settings() {
   const navigation = useNavigation();
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
+  const [email, setEmail] = useState("");
   const logOut = async () => {
     await AsyncStorage.clear();
     await GoogleSignin.signOut();
@@ -69,6 +70,7 @@ export default function Settings() {
         if (statusCode === 200) {
           setNombre(response.user.name);
           setApellido(response.user.surname);
+          setEmail(response.user.email);
         }
       } catch (error) {
         console.error("Error al obtener usuario", error);
@@ -138,7 +140,7 @@ export default function Settings() {
             </Text>
             <TextInput
               style={[styles.inputContainer, { color: "#BFBFBF" }]}
-              value={this.state.email}
+              value={email}
               editable={false}
             />
           </Block>

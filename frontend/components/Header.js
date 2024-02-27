@@ -140,7 +140,7 @@ const Header = ({
   const RenderFavoriteButton = () => {
     return (
       <TouchableOpacity
-        style={{ paddingHorizontal: 5, marginRight: 25 }}
+        style={{ paddingHorizontal: 5 }}
         onPress={handleFavorite}
       >
         <Icon
@@ -198,7 +198,6 @@ const Header = ({
         ];
       case "Perfil":
         return [<SettingsButton key="settings-title" isWhite={white} />];
-      case "Recipe":
       case "Search":
       case "Configuracion":
         return [<ProfileButton key="profile-title" isWhite={white} />];
@@ -223,7 +222,7 @@ const Header = ({
         style={navbarStyles}
         transparent={transparent}
         right={renderRight()}
-        rightStyle={{ alignItems: "center" }}
+        rightStyle={{ alignItems: "center", marginRight: isOwner ? 50 : 20 }}
         left={
           <Icon
             name={back ? "chevron-left" : "home"}
