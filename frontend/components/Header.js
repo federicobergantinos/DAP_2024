@@ -235,10 +235,8 @@ const Header = ({
           <SettingsButton key="settings-title" isWhite={white} />,
         ];
       case "Perfil":
-        return [<SettingsButton key="settings-title" isWhite={white} />];
       case "Search":
       case "Configuracion":
-        return [<ProfileButton key="profile-title" isWhite={white} />];
       default:
         return null;
     }
