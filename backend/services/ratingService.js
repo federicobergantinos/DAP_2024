@@ -32,7 +32,14 @@ const getRecipeRating = async (recipeId) => {
     })
     let ratingSum = 0
     ratings.forEach(it => { ratingSum = ratingSum + it.dataValues.value})
-    return ratingSum/ ratings.length
+    return ratingSum/ ratings.length || 0
 }
 
-module.exports = { rateRecipe, getUserRating, getRecipeRating };
+const deleteRatingByRecipeId = async (recipeId) => {
+    return Rating.destroy({
+        where: { recipeId },
+    });
+};
+
+
+module.exports = { rateRecipe, getUserRating, getRecipeRating, deleteRatingByRecipeId };
