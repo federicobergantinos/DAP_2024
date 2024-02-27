@@ -254,7 +254,7 @@ export default function Recipe(props) {
                     color={yummlyTheme.COLORS.MUTED}
                   />
                   <Text color={yummlyTheme.COLORS.MUTED}>
-                    {recipe.preparationTime} mins
+                    {recipe.preparationTime + ' Minutos'}
                   </Text>
                 </Block>
                 <Block
@@ -273,7 +273,7 @@ export default function Recipe(props) {
                     color={yummlyTheme.COLORS.MUTED}
                   />
                   <Text color={yummlyTheme.COLORS.MUTED}>
-                    {recipe.servingCount} personas
+                    {recipe.servingCount===1? recipe.servingCount + ' Persona' : recipe.servingCount + ' Personas'}
                   </Text>
                 </Block>
               </Block>
@@ -351,7 +351,7 @@ export default function Recipe(props) {
                     }}
                     color={yummlyTheme.COLORS.TEXT}
                   >
-                    Calorias: {recipe.calories} kcal
+                    Calorias: {recipe.calories} Kcal
                   </Text>
                   <Text
                     size={15}

@@ -12,13 +12,12 @@ import { Block, NavBar, theme } from "galio-framework";
 import { CommonActions, useNavigation } from "@react-navigation/native"; // Importa useNavigation de '@react-navigation/native'
 
 import Icon from "./Icon";
-import Input from "./Input";
-import Tabs from "./Tabs";
 import yummlyTheme from "../constants/Theme";
 import RecipeContext from "../navigation/RecipeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import backendGateway from "../api/backendGateway";
 import ConfirmationModal from "./ConfirmationModal";
+import DropdownMenu from "./DropdownMenu";
 
 const { height, width } = Dimensions.get("window");
 const iPhoneX = () =>
@@ -129,38 +128,12 @@ const Header = ({
     }
   };
 
-  const RenderEditButton = ({ recipeId }) => {
-    if (!isOwner) return null;
-    return (
-      <TouchableOpacity style={{ paddingHorizontal: 5 }}>
-        <Icon
-          family="MaterialIcons"
-          name="edit"
-          size={25}
-          onPress={() => navigation.navigate("CreateRecipe", { recipeId })}
-          color={yummlyTheme.COLORS.WHITE}
-        />
-      </TouchableOpacity>
-    );
-  };
-
   const RenderDeleteButton = ({ recipeId }) => {
     if (!isOwner) return null;
     return (
-      <TouchableOpacity style={{ paddingHorizontal: 5 }}>
-        <ConfirmationModal
-          recipeId={recipeId}
-          visible={showModal}
-          setShowModal={setShowModal}
-        />
-        <Icon
-          family="MaterialIcons"
-          name="delete"
-          size={25}
-          onPress={() => setShowModal(true)}
-          color={yummlyTheme.COLORS.WHITE}
-        />
-      </TouchableOpacity>
+        <TouchableOpacity style={{ paddingHorizontal: 5 }}>
+          <DropdownMenu recipeId={recipeId}/>
+        </TouchableOpacity>
     );
   };
 
@@ -206,29 +179,18 @@ const Header = ({
   };
 
   const renderRight = () => {
+    if (title === "Recipe") {
+      return [
+        <RenderDeleteButton
+        key="delete-recipe"
+        recipeId={props.recipeId}
+        isOwner={isOwner}/>,
+        <RenderShareButton key="share-button" />,
+        <RenderFavoriteButton key="favorite-button" />,
+      ];
+    }
+
     switch (title) {
-      case "Recipe":
-        if (isOwner) {
-          return [
-            <RenderShareButton key="share-button" />,
-            <RenderFavoriteButton key="favorite-button" />,
-            <RenderDeleteButton
-              key="delete-recipe"
-              recipeId={props.recipeId}
-              isOwner={isOwner}
-            />,
-            <RenderEditButton
-              key="edit-recipe"
-              recipeId={props.recipeId}
-              isOwner={isOwner}
-            />,
-          ];
-        } else {
-          return [
-            <RenderShareButton key="share-button" />,
-            <RenderFavoriteButton key="favorite-button" />,
-          ];
-        }
       case "Home":
         return [
           <ProfileButton key="profile-title" isWhite={white} />,
