@@ -7,7 +7,6 @@ import {
   ImageBackground,
   Platform,
   TouchableOpacity,
-  Modal,
   View,
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
@@ -24,8 +23,11 @@ const thumbMeasure = (width - 48 - 32) / 3;
 
 export default function Profile() {
   const navigation = useNavigation();
+  const [userId, setUserId] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [favoritesCount, setFavoritesCount] = useState(0);
+  const [recipesCount, setRecipesCount] = useState(0);
   const [recipes, setRecipes] = useState([]);
 
   const handleImagePicked = async () => {
@@ -39,7 +41,20 @@ export default function Profile() {
           if (response.statusCode === 200) {
             const imageUrl = response.response.images;
             console.log(imageUrl);
-            return imageUrl; // Devolvemos la URL de la imagen subida
+            // Actualizar el perfil del usuario en el backend
+            const userData = { photoUrl: imageUrl };
+            const updateResponse = await backendApi.users.editProfile(
+              userId,
+              userData
+            );
+            if (updateResponse.statusCode === 200) {
+              // Actualizar el estado local y la UI
+              setUserInfo({ ...userInfo, photoUrl: imageUrl });
+              alert("Foto del perfil actualizada con éxito.");
+            } else {
+              console.error("Error al actualizar el perfil del usuario.");
+              alert("No se pudo actualizar la foto del perfil.");
+            }
           }
         } catch (error) {
           console.error("Error al subir la imagen:", error);
@@ -53,38 +68,80 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    const fetchFavorites = async () => {
+    const init = async () => {
       try {
-        const userId = await AsyncStorage.getItem("userId");
+        // Obtener el userId una sola vez
+        const storedUserId = await AsyncStorage.getItem("userId");
+        const { response, statusCode } =
+          await backendApi.users.getUser(storedUserId);
+        console.log(response.user);
+        setUserId(storedUserId); // Almacenar userId en el estado
+        setUserInfo(response.user); // Almacenar userId en el estado
+
+        // Llamadas a la API pueden ser movidas aquí si dependen de userId
+        // Asegúrate de verificar que userId no sea null antes de hacer las llamadas
+      } catch (error) {
+        console.error("Error inicializando el perfil:", error);
+      }
+    };
+
+    init();
+  }, []);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!userId) return; // Asegurar que userId esté disponible
+      try {
         const response = await backendApi.users.favorites(userId);
         setFavorites(response.response.favorites);
+        setFavoritesCount(response.response.favorites.length);
       } catch (error) {
         console.error("Error al obtener los favoritos", error);
       }
     };
 
-    fetchFavorites();
-  }, []);
-
-  useEffect(() => {
-    const fetchRecipes = async () => {
+    const editProfile = async (userId, userData) => {
       try {
-        const userId = await AsyncStorage.getItem("userId");
+        // La variable userData debe ser un objeto que puede contener name, surname y/o photoUrl
+        const { response, statusCode } = await backendApi.users.editProfile(
+          userId,
+          userData
+        );
+
+        if (statusCode === 200) {
+          console.log("Perfil actualizado con éxito", response);
+        } else {
+          console.error(
+            `Error al actualizar el perfil. Código de estado: ${statusCode}`
+          );
+        }
+      } catch (error) {
+        console.error("Error al editar el perfil:", error);
+        throw error;
+      }
+    };
+
+    const fetchRecipes = async () => {
+      if (!userId) return; // Asegurar que userId esté disponible
+      try {
         const page = 1;
         const { response: recipes } = await backendApi.recipesGateway.getAll(
-          page == page,
-          userId == 3
+          page,
+          "",
+          userId
         );
         setRecipes(recipes);
-        console.log(recipes[0].media);
-        console.log(recipes[0].media[0]);
+        setRecipesCount(recipes.length);
       } catch (error) {
         console.error("Error al obtener las recetas", error);
       }
     };
 
-    fetchRecipes();
-  }, []);
+    if (userId) {
+      fetchFavorites();
+      fetchRecipes();
+    }
+  }, [userId]);
 
   const navigateToRecipe = (recipeId) => {
     navigation.navigate("Recipe", {
@@ -105,11 +162,12 @@ export default function Profile() {
           >
             <Block flex style={styles.profileCard}>
               <Block middle style={styles.avatarContainer}>
-                <Image
-                  source={Images.ProfilePicture}
-                  style={styles.avatar}
-                  size={40}
-                />
+                {userInfo && (
+                  <Image
+                    source={{ uri: userInfo.photoUrl }}
+                    style={styles.avatar}
+                  />
+                )}
                 <View style={styles.parent}>
                   <TouchableOpacity
                     style={styles.container}
@@ -124,10 +182,12 @@ export default function Profile() {
                 <Block middle style={styles.nameInfo}>
                   <Text
                     style={{ fontFamily: "open-sans-regular" }}
-                    size={28}
+                    size={24}
                     color="#32325D"
                   >
-                    Matias Caliz
+                    {userInfo
+                      ? `${userInfo.name} ${userInfo.surname}`
+                      : "Cargando..."}
                   </Text>
                 </Block>
                 <Block
@@ -146,7 +206,7 @@ export default function Profile() {
                         fontFamily: "open-sans-bold",
                       }}
                     >
-                      13
+                      {recipesCount}
                     </Text>
                     <Text
                       style={{ fontFamily: "open-sans-regular" }}
@@ -185,33 +245,45 @@ export default function Profile() {
                   <Text bold size={16} color="#525F7F" style={{ marginTop: 3 }}>
                     Mis Recetas
                   </Text>
-                  <Button
-                    small
-                    color="transparent"
-                    textStyle={{ color: "#5E72E4", fontSize: 14 }}
-                    onPress={() => {
-                      navigation.navigate("ProfileRecetas");
-                    }}
-                  >
-                    Ver más
-                  </Button>
+                  {recipesCount > 6 && (
+                    <Button
+                      small
+                      color="transparent"
+                      textStyle={{ color: "#5E72E4", fontSize: 14 }}
+                      onPress={() => {
+                        navigation.navigate("ProfileRecetas"); // Asegúrate de tener esta pantalla para mostrar todos los favoritos
+                      }}
+                    >
+                      Ver más
+                    </Button>
+                  )}
                 </Block>
 
-                <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
-                  <Block row space="between" style={styles.favoritesContainer}>
-                    {recipes.map((recipes) => (
-                      <TouchableOpacity
-                        key={recipes.id}
-                        onPress={() => navigateToRecipe(recipes.id)}
-                      >
-                        <Image
-                          source={{ uri: recipes.media }}
-                          style={styles.thumb}
-                        />
-                      </TouchableOpacity>
-                    ))}
+                {recipesCount > 0 ? (
+                  <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
+                    <Block
+                      row
+                      space="between"
+                      style={styles.favoritesContainer}
+                    >
+                      {recipes.slice(0, 6).map((recipe) => (
+                        <TouchableOpacity
+                          key={recipe.id}
+                          onPress={() => navigateToRecipe(recipe.id)}
+                        >
+                          <Image
+                            source={{ uri: recipe.media }}
+                            style={styles.thumb}
+                          />
+                        </TouchableOpacity>
+                      ))}
+                    </Block>
                   </Block>
-                </Block>
+                ) : (
+                  <Text style={{ alignSelf: "center", marginTop: 20 }}>
+                    Sin recetas
+                  </Text>
+                )}
               </Block>
 
               <Block flex>
@@ -222,32 +294,45 @@ export default function Profile() {
                   <Text bold size={16} color="#525F7F" style={{ marginTop: 3 }}>
                     Mis Favoritos
                   </Text>
-                  <Button
-                    small
-                    color="transparent"
-                    textStyle={{ color: "#5E72E4", fontSize: 14 }}
-                    onPress={() => {
-                      navigation.navigate("ProfileFavoritos");
-                    }}
-                  >
-                    Ver más
-                  </Button>
+                  {favoritesCount > 6 && (
+                    <Button
+                      small
+                      color="transparent"
+                      textStyle={{ color: "#5E72E4", fontSize: 14 }}
+                      onPress={() => {
+                        navigation.navigate("ProfileFavoritos"); // Asegúrate de tener esta pantalla para mostrar todos los favoritos
+                      }}
+                    >
+                      Ver más
+                    </Button>
+                  )}
                 </Block>
-                <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
-                  <Block row space="between" style={styles.favoritesContainer}>
-                    {favorites.map((favorite) => (
-                      <TouchableOpacity
-                        key={favorite.id}
-                        onPress={() => navigateToRecipe(favorite.id)}
-                      >
-                        <Image
-                          source={{ uri: favorite.media[0].data }}
-                          style={styles.thumb}
-                        />
-                      </TouchableOpacity>
-                    ))}
+
+                {favoritesCount > 0 ? (
+                  <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
+                    <Block
+                      row
+                      space="between"
+                      style={styles.favoritesContainer}
+                    >
+                      {favorites.slice(0, 6).map((favorite) => (
+                        <TouchableOpacity
+                          key={favorite.id}
+                          onPress={() => navigateToRecipe(favorite.id)}
+                        >
+                          <Image
+                            source={{ uri: favorite.media[0].data }}
+                            style={styles.thumb}
+                          />
+                        </TouchableOpacity>
+                      ))}
+                    </Block>
                   </Block>
-                </Block>
+                ) : (
+                  <Text style={{ alignSelf: "center", marginTop: 20 }}>
+                    Sin favoritos
+                  </Text>
+                )}
               </Block>
             </Block>
             <Block style={{ marginBottom: 25 }} />
