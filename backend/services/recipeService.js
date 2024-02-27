@@ -10,6 +10,8 @@ const { isValidUser } = require("./userService");
 const NotFound = require("../Errors/NotFound");
 const { Op } = require("sequelize");
 const sequelize = require("../configurations/database/sequelizeConnection");
+const {getRecipeRating, deleteRatingByRecipeId} = require("./ratingService");
+const {deleteFavoritesByRecipeId} = require("./favoriteService");
 
 // Función para crear una receta y asociarla con tags y medios
 const createRecipe = async (recipeData) => {
@@ -117,7 +119,6 @@ const createRecipe = async (recipeData) => {
 };
 
 const getRecipes = async (queryData) => {
-  // Inicializa las opciones de inclusión con relaciones que siempre se incluirán
   let includeOptions = [
     {
       model: Media,
@@ -132,23 +133,38 @@ const getRecipes = async (queryData) => {
     },
   ];
 
-  // Si se proporcionó un tag, ajusta la consulta para filtrar por ese tag
   if (queryData.tag) {
     includeOptions.push({
       model: Tag,
       as: "tags",
       where: { key: queryData.tag },
-      required: true, // Asegura que solo se retornen recetas que tengan el tag especificado
+      required: true,
     });
   }
 
-  // Realiza la consulta con las opciones de inclusión
+  // Agrega un filtro por userId si se proporciona
+  if (queryData.userId) {
+    includeOptions.push({
+      model: User,
+      as: "user",
+      where: { id: queryData.userId },
+      required: true, // Solo incluye recetas que pertenecen al userId especificado
+    });
+  }
+
   const recipes = await Recipe.findAll({
-    limit: queryData.limit,
-    offset: queryData.offset,
     include: includeOptions,
   });
-  return recipes;
+
+  const ratingPromise = recipes.map(async it => {
+    const rating = await getRecipeRating(it.id);
+    return { ...it.toJSON(), rating };
+  });
+
+  const updatedRecipes = await Promise.all(ratingPromise);
+
+  updatedRecipes.sort((a, b) => b.rating - a.rating);
+  return updatedRecipes.slice(queryData.offset, queryData.offset + queryData.limit);
 };
 
 const updateRecipe = async (recipeId, updateData) => {
@@ -303,10 +319,24 @@ const getRecipe = async (recipeId) => {
   return recipe.dataValues;
 };
 
+const deleteRecipeById = async (recipeId) => {
+  await Media.destroy({ where:{recipeId: recipeId}})
+
+  await deleteFavoritesByRecipeId(recipeId)
+  await deleteRatingByRecipeId(recipeId)
+  await Recipe.destroy({
+    where:
+        {
+          id: recipeId
+        }
+  })
+};
+
 module.exports = {
   createRecipe,
   getRecipes,
   getRecipe,
   searchRecipes,
   updateRecipe,
+  deleteRecipeById
 };

@@ -18,6 +18,7 @@ import yummlyTheme from "../constants/Theme";
 import RecipeContext from "../navigation/RecipeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import backendGateway from "../api/backendGateway";
+import ConfirmationModal from "./ConfirmationModal";
 
 const { height, width } = Dimensions.get("window");
 const iPhoneX = () =>
@@ -80,6 +81,7 @@ const Header = ({
   const [isFavorite, setIsFavorite] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const checkOwner = async () => {
@@ -128,7 +130,7 @@ const Header = ({
   };
 
   const RenderEditButton = ({ recipeId }) => {
-    // if (!isOwner) return null;
+    if (!isOwner) return null;
     return (
       <TouchableOpacity style={{ paddingHorizontal: 5 }}>
         <Icon
@@ -142,10 +144,30 @@ const Header = ({
     );
   };
 
+  const RenderDeleteButton = ({ recipeId }) => {
+    if (!isOwner) return null;
+    return (
+      <TouchableOpacity style={{ paddingHorizontal: 5 }}>
+        <ConfirmationModal
+          recipeId={recipeId}
+          visible={showModal}
+          setShowModal={setShowModal}
+        />
+        <Icon
+          family="MaterialIcons"
+          name="delete"
+          size={25}
+          onPress={() => setShowModal(true)}
+          color={yummlyTheme.COLORS.WHITE}
+        />
+      </TouchableOpacity>
+    );
+  };
+
   const RenderFavoriteButton = () => {
     return (
       <TouchableOpacity
-        style={{ paddingHorizontal: 5, marginRight: 20 }}
+        style={{ paddingHorizontal: 5 }}
         onPress={handleFavorite}
       >
         <Icon
@@ -184,19 +206,29 @@ const Header = ({
   };
 
   const renderRight = () => {
-    if (title === "Recipe") {
-      return [
-        <RenderEditButton
-          key="edit-recipe"
-          recipeId={props.recipeId}
-          isOwner={isOwner}
-        />,
-        <RenderShareButton key="share-button" />,
-        <RenderFavoriteButton key="favorite-button" />,
-      ];
-    }
-
     switch (title) {
+      case "Recipe":
+        if (isOwner) {
+          return [
+            <RenderShareButton key="share-button" />,
+            <RenderFavoriteButton key="favorite-button" />,
+            <RenderDeleteButton
+              key="delete-recipe"
+              recipeId={props.recipeId}
+              isOwner={isOwner}
+            />,
+            <RenderEditButton
+              key="edit-recipe"
+              recipeId={props.recipeId}
+              isOwner={isOwner}
+            />,
+          ];
+        } else {
+          return [
+            <RenderShareButton key="share-button" />,
+            <RenderFavoriteButton key="favorite-button" />,
+          ];
+        }
       case "Home":
         return [
           <ProfileButton key="profile-title" isWhite={white} />,
@@ -204,7 +236,6 @@ const Header = ({
         ];
       case "Perfil":
         return [<SettingsButton key="settings-title" isWhite={white} />];
-      case "Recipe":
       case "Search":
       case "Configuracion":
         return [<ProfileButton key="profile-title" isWhite={white} />];
@@ -213,56 +244,7 @@ const Header = ({
     }
   };
 
-  const renderSearch = () => {
-    return (
-      <Input
-        right
-        color="black"
-        style={styles.search}
-        placeholder="Qué estás buscando?"
-        placeholderTextColor={"#8898AA"}
-        onFocus={() => {
-          Keyboard.dismiss();
-          navigation.navigate("Search");
-        }}
-        iconContent={
-          <Icon
-            size={16}
-            color={theme.COLORS.MUTED}
-            name="search-zoom-in"
-            family="YummlyExtra"
-          />
-        }
-      />
-    );
-  };
-
-  const renderTabs = () => {
-    const defaultTab = tabs && tabs[0] && tabs[0].id;
-
-    if (!tabs) return null;
-
-    return (
-      <Tabs
-        data={tabs || []}
-        initialIndex={tabIndex || defaultTab}
-        onChange={(id) => navigation.setParams({ tabId: id })}
-      />
-    );
-  };
-
-  const renderHeader = () => {
-    if (search || tabs) {
-      return (
-        <Block center>
-          {search ? renderSearch() : null}
-          {tabs ? renderTabs() : null}
-        </Block>
-      );
-    }
-  };
-
-  const noShadow = ["Search", "Perfil"].includes(title);
+  const noShadow = ["Search", "Perfil", "Home"].includes(title);
   const headerStyles = [
     !noShadow ? styles.shadow : null,
     transparent ? { backgroundColor: "rgba(0,0,0,0)" } : null,
@@ -278,7 +260,7 @@ const Header = ({
         style={navbarStyles}
         transparent={transparent}
         right={renderRight()}
-        rightStyle={{ alignItems: "center" }}
+        rightStyle={{ alignItems: "center", marginRight: isOwner ? 50 : 20 }}
         left={
           <Icon
             name={back ? "chevron-left" : "home"}
@@ -300,7 +282,6 @@ const Header = ({
         ]}
         {...props}
       />
-      {renderHeader()}
     </Block>
   );
 };

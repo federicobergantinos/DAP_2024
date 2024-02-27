@@ -120,7 +120,7 @@ export default class Tabs extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    width: width,
+    width:"100%",
     backgroundColor: theme.COLORS.WHITE,
     zIndex: 2,
   },
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   menu: {
-    paddingHorizontal: theme.SIZES.BASE * 2.5,
     paddingTop: 8,
     paddingBottom: 16,
   },

@@ -3,7 +3,7 @@ const {
   getRecipes,
   getRecipe,
   updateRecipe,
-  searchRecipes,
+  searchRecipes, deleteRecipeById,
 } = require("../services/recipeService");
 const { findUserById } = require("../services/userService");
 const { isFavorite } = require("../services/favoriteService");
@@ -73,24 +73,23 @@ const getAll = async (req, res) => {
   const limit = parseInt(req.query.limit) || 20; // Límite de ítems por página
   const offset = page * limit;
   const tag = req.query.tag;
+  const userId = req.query.userId;
 
   try {
-    // Ajusta getRecipes para aceptar un parámetro de tag y lo usa para filtrar las recetas
-    const recipes = await getRecipes({ limit, offset, tag }); // Asegúrate de que getRecipes maneje el parámetro de tag adecuadamente
+    const recipes = await getRecipes({ limit, offset, tag, userId });
     const response = recipes.map((recipe) => {
-      const { id, title, media, tags } = recipe;
-
+      const { id, title, media, tags, rating } = recipe;
       const filteredMedia = media.filter((m) => m.type === "image");
       const firstImage = filteredMedia.length > 0 ? filteredMedia[0].data : "";
 
-      // Mapea los tags a la forma deseada, por ejemplo, un arreglo de nombres de tags
       const tagsArray = tags.map((tag) => tag.key);
 
       return {
         id,
         title,
-        media: firstImage, // Solo devuelve la primera imagen filtrada
-        tags: tagsArray, // Incluye los tags asociados
+        media: firstImage,
+        tags: tagsArray,
+        rating: rating,
       };
     });
     res.status(200).json(response);
@@ -192,6 +191,20 @@ const uploadImage = async (req, res) => {
   }
 };
 
+const deleteRecipe = async (req, res) => {
+  try {
+
+    deleteRecipeById(req.params.recipeId)
+
+    res.status(204).send()
+  } catch (error) {
+    console.error(`Hubo un problema al subir la imagen: ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "Ha ocurrido un error al actualizar la receta",
+    });
+  }
+};
+
 module.exports = {
   create,
   getAll,
@@ -199,4 +212,5 @@ module.exports = {
   searchAll,
   update,
   uploadImage,
+  deleteRecipe
 };

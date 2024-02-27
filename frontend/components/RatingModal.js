@@ -12,7 +12,6 @@ const ReviewsModal = ({ isVisible, onClose, recipeId, setRecipeRating }) => {
         const getUserRated = async () => {
             const userId = await asyncStorage.getItem('userId')
             const {response, statusCode} = await backendGateway.rating.getUserRate(recipeId, userId)
-            console.log("RESPONSE:", response)
             setUserRating(response.userRating)
         }
         getUserRated()
