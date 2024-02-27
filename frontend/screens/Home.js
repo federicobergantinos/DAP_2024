@@ -16,21 +16,19 @@ import {SearchBar} from "../components/SearchBar";
 import Tabs from "../components/Tabs";
 import tabs from "../constants/tabs";
 import yummlyTheme from "../constants/Theme";
-import Icon from "../components/Icon";
-import RatingModal from "../components/RatingModal";
 import OrderModal from "../components/OrderModal";
 
 const { width } = Dimensions.get("screen");
+const ITEMS_PER_PAGE = 6;
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [data, setData] = useState([]);
-  const [orderedRecipes, setOrderedRecipes] = useState([])
   const [loading, setLoading] = useState(false);
   const [selectedTag, setSelectedTag] = useState(null);
   const [allItemsLoaded, setAllItemsLoaded] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [orderBy, setOrderBy] = useState("default")
+  const [endReachedThreshold, setEndReachedThreshold] = useState(0.1); // Valor inicial
+
   const navigation = useNavigation();
   const route = useRoute();
   const tabId = route.params?.tabId;
@@ -46,35 +44,24 @@ const Home = () => {
     fetchRecipes();
   }, [selectedTag, currentPage]);
 
-  const defaultTab = tabs && tabs[0] && tabs[0].id;
-
   const fetchRecipes = async () => {
     if (loading || allItemsLoaded) return;
 
     setLoading(true);
     try {
       const page = currentPage;
+      console.log(page)
       const tag = selectedTag !== "ALL" ? selectedTag : undefined;
       const { response: recipes } = await backendApi.recipesGateway.getAll(
         page,
         tag
       );
 
-      const allRecipes = data.concat(recipes);
-
       if (recipes.length > 0) {
-        setData(allRecipes);
-        let newOrderedRecipes;
-        if (orderBy === "default") {
-          newOrderedRecipes = allRecipes.slice();
-        } else {
-          newOrderedRecipes = allRecipes.slice().sort((a, b) => b.rating - a.rating);
-        }
-        setOrderedRecipes(newOrderedRecipes);
+        setData((prevData) => [...prevData, ...recipes]);
       } else {
         setAllItemsLoaded(true);
       }
-
     } catch (error) {
       console.error("Error fetching recipes:", error);
     } finally {
@@ -110,31 +97,8 @@ const Home = () => {
     );
   };
 
-  const openModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-
-  const handleOrderBy = (value) => {
-    let newData;
-    if (value === "rating") {
-      newData = data.slice().sort((a, b) => b.rating - a.rating);
-    } else {
-      newData = data.slice();
-    }
-    setOrderedRecipes(newData);
-  };
-
   return (
     <Block flex style={styles.home}>
-      <OrderModal
-          isVisible={modalVisible}
-          onClose={closeModal}
-          onSelect={handleOrderBy}
-      />
       <Block>
         <Block style={styles.header}>
           <Block style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -142,14 +106,14 @@ const Home = () => {
           </Block>
           <Tabs
               data={tabs }
-              initialIndex={defaultTab}
+              initialIndex={tabs[0].id}
               onChange={(id) => navigation.setParams({ tabId: id })}
           />
 
         </Block>
         <Block center>
           <FlatList
-              data={orderedRecipes}
+              data={data}
               renderItem={renderRecipe}
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}

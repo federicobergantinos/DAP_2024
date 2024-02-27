@@ -143,20 +143,18 @@ const getRecipes = async (queryData) => {
   }
 
   const recipes = await Recipe.findAll({
-    limit: queryData.limit,
-    offset: queryData.offset,
     include: includeOptions,
   });
 
   const ratingPromise = recipes.map(async it => {
-    it.rating = await getRecipeRating(it.id);
-    return it;
+    const rating = await getRecipeRating(it.id);
+    return { ...it.toJSON(), rating };
   });
 
   const updatedRecipes = await Promise.all(ratingPromise);
-  updatedRecipes.sort((a, b) => b.rating - a.rating);
 
-  return updatedRecipes;
+  updatedRecipes.sort((a, b) => b.rating - a.rating);
+  return updatedRecipes.slice(queryData.offset, queryData.offset + queryData.limit);
 };
 
 const updateRecipe = async (recipeId, updateData) => {

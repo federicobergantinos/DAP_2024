@@ -32,7 +32,7 @@ const getRecipeRating = async (recipeId) => {
     })
     let ratingSum = 0
     ratings.forEach(it => { ratingSum = ratingSum + it.dataValues.value})
-    return ratingSum/ ratings.length
+    return ratingSum/ ratings.length || 0
 }
 
 const deleteRatingByRecipeId = async (recipeId) => {
