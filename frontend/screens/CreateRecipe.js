@@ -108,7 +108,23 @@ class CreateRecipe extends React.Component {
       ingredients.some((i) => !i.trim()) ||
       steps.some((p) => !p.trim())
     ) {
-      alert("Por favor, completa todos los campos.");
+      const missingFieldsMessage = [
+        title.trim() ? null : "Título",
+        description.trim() ? null : "Descripción",
+        preparationTime === null ? "Tiempo de preparación" : null,
+        servingCount === null ? "Porciones" : null,
+        calories === null ? "Calorías" : null,
+        proteins === null ? "Proteínas" : null,
+        totalFats === null ? "Grasas totales" : null,
+        images.length === 0 ? "Imágenes" : null,
+        video === null ? "Video" : null,
+        ingredients.some((i) => !i.trim()) ? "Ingredientes" : null,
+        steps.some((p) => !p.trim()) ? "Pasos" : null,
+      ]
+          .filter(Boolean)
+          .join(", ");
+      alert(`Por favor, completa todos los campos. Campos faltantes: ${missingFieldsMessage}`);
+      this.setState({ isLoading: false });
       return;
     }
 
