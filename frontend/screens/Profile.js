@@ -40,7 +40,6 @@ export default function Profile() {
           });
           if (response.statusCode === 200) {
             const imageUrl = response.response.images;
-            console.log(imageUrl);
             // Actualizar el perfil del usuario en el backend
             const userData = { photoUrl: imageUrl };
             const updateResponse = await backendApi.users.editProfile(
@@ -74,7 +73,6 @@ export default function Profile() {
         const storedUserId = await AsyncStorage.getItem("userId");
         const { response, statusCode } =
           await backendApi.users.getUser(storedUserId);
-        console.log(response.user);
         setUserId(storedUserId); // Almacenar userId en el estado
         setUserInfo(response.user); // Almacenar userId en el estado
 
@@ -100,34 +98,12 @@ export default function Profile() {
       }
     };
 
-    const editProfile = async (userId, userData) => {
-      try {
-        // La variable userData debe ser un objeto que puede contener name, surname y/o photoUrl
-        const { response, statusCode } = await backendApi.users.editProfile(
-          userId,
-          userData
-        );
-
-        if (statusCode === 200) {
-          console.log("Perfil actualizado con éxito", response);
-        } else {
-          console.error(
-            `Error al actualizar el perfil. Código de estado: ${statusCode}`
-          );
-        }
-      } catch (error) {
-        console.error("Error al editar el perfil:", error);
-        throw error;
-      }
-    };
-
     const fetchRecipes = async () => {
       if (!userId) return; // Asegurar que userId esté disponible
       try {
-        const page = 1;
         const { response: recipes } = await backendApi.recipesGateway.getAll(
-          page,
-          "",
+          0,
+          undefined,
           userId
         );
         setRecipes(recipes);
