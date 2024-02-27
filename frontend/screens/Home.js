@@ -16,10 +16,8 @@ import {SearchBar} from "../components/SearchBar";
 import Tabs from "../components/Tabs";
 import tabs from "../constants/tabs";
 import yummlyTheme from "../constants/Theme";
-import OrderModal from "../components/OrderModal";
 
 const { width } = Dimensions.get("screen");
-const ITEMS_PER_PAGE = 6;
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);

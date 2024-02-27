@@ -18,6 +18,7 @@ import yummlyTheme from "../constants/Theme";
 import RecipeContext from "../navigation/RecipeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import backendGateway from "../api/backendGateway";
+import ConfirmationModal from "./ConfirmationModal";
 
 const { height, width } = Dimensions.get("window");
 const iPhoneX = () =>
@@ -80,6 +81,7 @@ const Header = ({
   const [isFavorite, setIsFavorite] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const checkOwner = async () => {
@@ -142,6 +144,22 @@ const Header = ({
     );
   };
 
+  const RenderDeleteButton = ({ recipeId }) => {
+    if (!isOwner) return null;
+    return (
+        <TouchableOpacity style={{ paddingHorizontal: 5 }}>
+          <ConfirmationModal recipeId={recipeId} visible={showModal} setShowModal={setShowModal}/>
+          <Icon
+              family="MaterialIcons"
+              name="delete"
+              size={25}
+              onPress={() => setShowModal(true)}
+              color={yummlyTheme.COLORS.WHITE}
+          />
+        </TouchableOpacity>
+    );
+  };
+
   const RenderFavoriteButton = () => {
     return (
       <TouchableOpacity
@@ -186,6 +204,10 @@ const Header = ({
   const renderRight = () => {
     if (title === "Recipe") {
       return [
+        <RenderDeleteButton
+            key="delete-recipe"
+            recipeId={props.recipeId}
+            isOwner={isOwner}/>,
         <RenderEditButton
           key="edit-recipe"
           recipeId={props.recipeId}

@@ -21,7 +21,6 @@ const getUserRating = async (recipeId, userId) => {
         attributes: ["value"],
     });
 
-    console.log("USERRATING:",userRating)
     return {userRating: userRating !== null? userRating.dataValues.value: 0}
 }
 

@@ -19,7 +19,6 @@ const getRate = async (req, res) => {
     try {
         const { recipeId, userId } = req.params;
         const recipeRating = await getUserRating(recipeId, userId)
-        console.log("RECIPERATING2", recipeRating)
         res.status(200).json(recipeRating);
     } catch (error) {
         console.error(` ${error}`);
