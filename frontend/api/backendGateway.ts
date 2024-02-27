@@ -6,7 +6,7 @@ import { RecipesDTO } from "./RecipesDTO";
 import { RecipesSearchDTO } from "./RecipesSearchDTO";
 
 const api = axios.create({ baseURL: "https://yummly-elb.federicobergantinos.com:443" });
-// const api = axios.create({ baseURL: "http://172.20.10.2:8080" });
+// const api = axios.create({ baseURL: "http://192.168.0.100:8080" });
 const recipeBaseUrl = "/v1/recipes";
 const usersBaseUrl = "/v1/users";
 

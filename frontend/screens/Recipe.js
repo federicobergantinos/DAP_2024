@@ -216,6 +216,7 @@ export default function Recipe(props) {
                     family="MaterialIcons"
                     name="edit"
                     color={yummlyTheme.COLORS.GRADIENT_START}
+                    style={{paddingHorizontal: 15, paddingVertical: 10}}
                   >
                     Calificar
                   </Text>
@@ -225,7 +226,7 @@ export default function Recipe(props) {
                 flex
                 flexDirection="row"
                 flexWrap="wrap"
-                style={{ paddingTop: 10, paddingBottom: 10, gap: 5 }}
+                style={{ paddingTop: 8, paddingBottom: 12, gap: 10 }}
               >
                 {recipe.tags.map((tag, index) => (
                   <PillContainer key={index}>
@@ -254,7 +255,7 @@ export default function Recipe(props) {
                     color={yummlyTheme.COLORS.MUTED}
                   />
                   <Text color={yummlyTheme.COLORS.MUTED}>
-                    {recipe.preparationTime} mins
+                    {recipe.preparationTime + ' Minutos'}
                   </Text>
                 </Block>
                 <Block
@@ -273,7 +274,7 @@ export default function Recipe(props) {
                     color={yummlyTheme.COLORS.MUTED}
                   />
                   <Text color={yummlyTheme.COLORS.MUTED}>
-                    {recipe.servingCount} personas
+                    {recipe.servingCount===1? recipe.servingCount + ' Persona' : recipe.servingCount + ' Personas'}
                   </Text>
                 </Block>
               </Block>
@@ -346,18 +347,18 @@ export default function Recipe(props) {
                     size={15}
                     style={{
                       fontWeight: "bold",
-                      paddingBottom: 3,
+                      paddingBottom: 5,
                       fontFamily: "open-sans-regular",
                     }}
                     color={yummlyTheme.COLORS.TEXT}
                   >
-                    Calorias: {recipe.calories} kcal
+                    Calorias: {recipe.calories} Kcal
                   </Text>
                   <Text
                     size={15}
                     style={{
                       fontWeight: "bold",
-                      paddingBottom: 3,
+                      paddingBottom: 5,
                       fontFamily: "open-sans-regular",
                     }}
                     color={yummlyTheme.COLORS.TEXT}
@@ -368,7 +369,7 @@ export default function Recipe(props) {
                     size={15}
                     style={{
                       fontWeight: "bold",
-                      paddingBottom: 3,
+                      paddingBottom: 5,
                       fontFamily: "open-sans-regular",
                     }}
                     color={yummlyTheme.COLORS.TEXT}
@@ -381,7 +382,7 @@ export default function Recipe(props) {
                 flex
                 flexDirection="row"
                 style={{
-                  paddingTop: 10,
+                  paddingTop: 15,
                   paddingBottom: 5,
                   alignItems: "center",
                   justifyContent: "flex-start",

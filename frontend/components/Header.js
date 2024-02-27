@@ -196,7 +196,7 @@ const Header = ({
   const renderLeft = () => {
     if (title === "Recipe") {
       // Si el título es "Recipe", navegar directamente al Home
-      return () => navigation.navigate("Home");
+      return () => navigation.replace("Home");
     } else {
       // Para cualquier otro caso, utilizar la acción goBack
       return back
@@ -235,10 +235,8 @@ const Header = ({
           <SettingsButton key="settings-title" isWhite={white} />,
         ];
       case "Perfil":
-        return [<SettingsButton key="settings-title" isWhite={white} />];
       case "Search":
       case "Configuracion":
-        return [<ProfileButton key="profile-title" isWhite={white} />];
       default:
         return null;
     }
