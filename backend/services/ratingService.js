@@ -35,4 +35,11 @@ const getRecipeRating = async (recipeId) => {
     return ratingSum/ ratings.length
 }
 
-module.exports = { rateRecipe, getUserRating, getRecipeRating };
+const deleteRatingByRecipeId = async (recipeId) => {
+    return Rating.destroy({
+        where: { recipeId },
+    });
+};
+
+
+module.exports = { rateRecipe, getUserRating, getRecipeRating, deleteRatingByRecipeId };

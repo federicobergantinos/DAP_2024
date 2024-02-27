@@ -10,6 +10,7 @@ const {
   searchAll,
   update,
   uploadImage,
+  deleteRecipe
 } = require("../controllers/recipeController");
 const { rate, getRate } = require("../controllers/ratingController");
 
@@ -21,5 +22,6 @@ router.get("/:recipeId", getById);
 router.put("/:recipeId", update);
 router.put("/:recipeId/ratings", rate);
 router.get("/:recipeId/users/:userId/ratings", getRate);
+router.delete("/:recipeId", deleteRecipe)
 
 module.exports = router;

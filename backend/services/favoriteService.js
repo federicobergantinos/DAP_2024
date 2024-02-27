@@ -20,6 +20,13 @@ const deleteFavorite = async (userId, recipeId) => {
   });
 };
 
+const deleteFavoritesByRecipeId = async (recipeId) => {
+  return Favorite.destroy({
+    where: { recipeId },
+  });
+};
+
+
 const isFavorite = async (userId, recipeId) => {
   const existingFavorite = await Favorite.findOne({
     where: { userId, recipeId },
@@ -53,4 +60,4 @@ const getFavorites = async (userId) => {
   }
 };
 
-module.exports = { createFavorite, deleteFavorite, isFavorite, getFavorites };
+module.exports = { createFavorite, deleteFavorite, isFavorite, getFavorites, deleteFavoritesByRecipeId };

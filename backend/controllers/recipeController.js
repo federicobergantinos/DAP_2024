@@ -3,7 +3,7 @@ const {
   getRecipes,
   getRecipe,
   updateRecipe,
-  searchRecipes,
+  searchRecipes, deleteRecipeById,
 } = require("../services/recipeService");
 const { findUserById } = require("../services/userService");
 const { isFavorite } = require("../services/favoriteService");
@@ -191,6 +191,20 @@ const uploadImage = async (req, res) => {
   }
 };
 
+const deleteRecipe = async (req, res) => {
+  try {
+
+    deleteRecipeById(req.params.recipeId)
+
+    res.status(204).send()
+  } catch (error) {
+    console.error(`Hubo un problema al subir la imagen: ${error}`);
+    res.status(error.code || 500).json({
+      msg: error.message || "Ha ocurrido un error al actualizar la receta",
+    });
+  }
+};
+
 module.exports = {
   create,
   getAll,
@@ -198,4 +212,5 @@ module.exports = {
   searchAll,
   update,
   uploadImage,
+  deleteRecipe
 };

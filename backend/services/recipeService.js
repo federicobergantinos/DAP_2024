@@ -10,7 +10,8 @@ const { isValidUser } = require("./userService");
 const NotFound = require("../Errors/NotFound");
 const { Op } = require("sequelize");
 const sequelize = require("../configurations/database/sequelizeConnection");
-const {getRecipeRating} = require("./ratingService");
+const {getRecipeRating, deleteRatingByRecipeId} = require("./ratingService");
+const {deleteFavoritesByRecipeId} = require("./favoriteService");
 
 // Función para crear una receta y asociarla con tags y medios
 const createRecipe = async (recipeData) => {
@@ -310,10 +311,24 @@ const getRecipe = async (recipeId) => {
   return recipe.dataValues;
 };
 
+const deleteRecipeById = async (recipeId) => {
+  await Media.destroy({ where:{recipeId: recipeId}})
+
+  await deleteFavoritesByRecipeId(recipeId)
+  await deleteRatingByRecipeId(recipeId)
+  await Recipe.destroy({
+    where:
+        {
+          id: recipeId
+        }
+  })
+};
+
 module.exports = {
   createRecipe,
   getRecipes,
   getRecipe,
   searchRecipes,
   updateRecipe,
+  deleteRecipeById
 };
