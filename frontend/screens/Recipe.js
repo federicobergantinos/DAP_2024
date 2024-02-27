@@ -216,6 +216,7 @@ export default function Recipe(props) {
                     family="MaterialIcons"
                     name="edit"
                     color={yummlyTheme.COLORS.GRADIENT_START}
+                    style={{paddingHorizontal: 15, paddingVertical: 10}}
                   >
                     Calificar
                   </Text>
@@ -225,7 +226,7 @@ export default function Recipe(props) {
                 flex
                 flexDirection="row"
                 flexWrap="wrap"
-                style={{ paddingTop: 10, paddingBottom: 10, gap: 5 }}
+                style={{ paddingTop: 8, paddingBottom: 12, gap: 10 }}
               >
                 {recipe.tags.map((tag, index) => (
                   <PillContainer key={index}>
@@ -346,7 +347,7 @@ export default function Recipe(props) {
                     size={15}
                     style={{
                       fontWeight: "bold",
-                      paddingBottom: 3,
+                      paddingBottom: 5,
                       fontFamily: "open-sans-regular",
                     }}
                     color={yummlyTheme.COLORS.TEXT}
@@ -357,7 +358,7 @@ export default function Recipe(props) {
                     size={15}
                     style={{
                       fontWeight: "bold",
-                      paddingBottom: 3,
+                      paddingBottom: 5,
                       fontFamily: "open-sans-regular",
                     }}
                     color={yummlyTheme.COLORS.TEXT}
@@ -368,7 +369,7 @@ export default function Recipe(props) {
                     size={15}
                     style={{
                       fontWeight: "bold",
-                      paddingBottom: 3,
+                      paddingBottom: 5,
                       fontFamily: "open-sans-regular",
                     }}
                     color={yummlyTheme.COLORS.TEXT}
@@ -381,7 +382,7 @@ export default function Recipe(props) {
                 flex
                 flexDirection="row"
                 style={{
-                  paddingTop: 10,
+                  paddingTop: 15,
                   paddingBottom: 5,
                   alignItems: "center",
                   justifyContent: "flex-start",
